@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface LevelActivityRepository extends JpaRepository<LevelActivity, Integer> {
     List<LevelActivity> findByLevelLevelId(Integer levelId);
+    List<LevelActivity> findByLevelLevelIdAndIsRequiredTrue(Integer levelId);
 }

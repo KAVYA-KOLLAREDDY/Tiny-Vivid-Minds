@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface LevelContentRepository extends JpaRepository<LevelContent, Integer> {
     List<LevelContent> findByLevelLevelIdOrderByContentOrderAsc(Integer levelId);
+    List<LevelContent> findByLevelLevelIdAndIsRequiredTrue(Integer levelId);
 }

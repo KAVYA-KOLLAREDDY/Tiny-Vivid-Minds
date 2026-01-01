@@ -299,7 +299,7 @@ public class StudentController {
             @RequestBody ActivitySubmissionRequest request) {
         try {
             LevelActivitySubmissionDTO submission = levelLearningService.submitActivity(
-                    activityId, request.getAnswers(), request.getSubmissionContent());
+                    activityId, request.getAnswers(), request.getSubmissionContent(), request.getTimeTakenMinutes());
             return ResponseEntity.status(HttpStatus.CREATED).body(submission);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().build();
@@ -334,11 +334,14 @@ public class StudentController {
     public static class ActivitySubmissionRequest {
         private String answers;
         private String submissionContent;
+        private Integer timeTakenMinutes;
 
         public String getAnswers() { return answers; }
         public void setAnswers(String answers) { this.answers = answers; }
         public String getSubmissionContent() { return submissionContent; }
         public void setSubmissionContent(String submissionContent) { this.submissionContent = submissionContent; }
+        public Integer getTimeTakenMinutes() { return timeTakenMinutes; }
+        public void setTimeTakenMinutes(Integer timeTakenMinutes) { this.timeTakenMinutes = timeTakenMinutes; }
     }
 }
 

@@ -14,4 +14,6 @@ public interface LevelActivitySubmissionRepository extends JpaRepository<LevelAc
     List<LevelActivitySubmission> findByStudentUserIdAndActivityLevelLevelId(Integer studentId, Integer levelId);
     Optional<LevelActivitySubmission> findByStudentAndActivity(User student, LevelActivity activity);
     List<LevelActivitySubmission> findByStudentUserIdAndActivityActivityIdOrderByAttemptNumberDesc(Integer studentId, Integer activityId);
+    Optional<LevelActivitySubmission> findTopByStudentUserIdAndActivityActivityIdOrderBySubmittedAtDesc(Integer studentId, Integer activityId);
+    Integer countByStudentUserIdAndActivityActivityId(Integer studentId, Integer activityId);
 }

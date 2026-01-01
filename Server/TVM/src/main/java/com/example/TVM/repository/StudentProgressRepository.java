@@ -13,5 +13,6 @@ public interface StudentProgressRepository extends JpaRepository<StudentProgress
     List<StudentProgress> findByStudentUserIdAndCourseCourseId(Integer studentId, Integer courseId);
     Optional<StudentProgress> findByStudentUserIdAndCourseCourseIdAndLevelLevelId(
             Integer studentId, Integer courseId, Integer levelId);
+    Optional<StudentProgress> findByStudentUserIdAndLevelLevelId(Integer studentId, Integer levelId);
 }
 

@@ -55,10 +55,11 @@ public class TeacherService {
     private UserDTO mapUserToDTO(User user) {
         UserDTO dto = new UserDTO();
         dto.setUserId(user.getUserId());
-        dto.setUsername(user.getUsername());
         dto.setEmail(user.getEmail());
         dto.setFullName(user.getFullName());
-        dto.setRole(user.getRole());
+        dto.setRole(user.getRole().name()); // Convert enum to string
+        dto.setStatus(user.getStatus().name()); // Convert enum to string
+        dto.setCreatedAt(user.getCreatedAt());
         return dto;
     }
 
