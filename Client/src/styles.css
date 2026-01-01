@@ -1,0 +1,776 @@
+/* You can add global styles to this file, and also import other style files */
+
+/* Import Bootstrap */
+@import "bootstrap/dist/css/bootstrap.min.css";
+
+/* Import Toastr */
+@import "ngx-toastr/toastr";
+
+/* Import Google Fonts */
+/* @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"); */
+
+/* Global Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Inter", sans-serif;
+  line-height: 1.6;
+  overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Light Theme Variables */
+:root,
+[data-theme="light"] {
+  /* Primary Colors - Modern Purple/Blue */
+  --primary-color: #6366f1;
+  --primary-hover: #4f46e5;
+  --primary-light: #a5b4fc;
+  --primary-dark: #4338ca;
+
+  /* Secondary Colors - Teal */
+  --secondary-color: #06b6d4;
+  --secondary-hover: #0891b2;
+  --secondary-light: #67e8f9;
+  --secondary-dark: #0e7490;
+
+  /* Accent Colors - Emerald */
+  --accent-color: #10b981;
+  --accent-hover: #059669;
+  --accent-light: #6ee7b7;
+  --accent-dark: #047857;
+
+  /* Status Colors */
+  --success-color: #22c55e;
+  --warning-color: #f59e0b;
+  --danger-color: #ef4444;
+  --info-color: #3b82f6;
+
+  /* Neutral Colors */
+  --white: #ffffff;
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-600: #4b5563;
+  --gray-700: #374151;
+  --gray-800: #1f2937;
+  --gray-900: #111827;
+  --black: #000000;
+
+  /* Background Colors */
+  --bg-primary: var(--white);
+  --bg-secondary: var(--gray-50);
+  --bg-tertiary: var(--gray-100);
+  --bg-card: var(--white);
+  --bg-overlay: rgba(255, 255, 255, 0.95);
+
+  /* Text Colors */
+  --text-primary: var(--gray-900);
+  --text-secondary: var(--gray-600);
+  --text-tertiary: var(--gray-500);
+  --text-inverse: var(--white);
+
+  /* Border Colors */
+  --border-light: var(--gray-200);
+  --border-medium: var(--gray-300);
+  --border-dark: var(--gray-400);
+
+  /* Gradients */
+  --gradient-primary: linear-gradient(
+    135deg,
+    var(--primary-color),
+    var(--secondary-color)
+  );
+  --gradient-secondary: linear-gradient(
+    135deg,
+    var(--secondary-color),
+    var(--accent-color)
+  );
+  --gradient-accent: linear-gradient(
+    135deg,
+    var(--accent-color),
+    var(--primary-color)
+  );
+  --gradient-hero: linear-gradient(
+    135deg,
+    var(--primary-color) 0%,
+    var(--secondary-color) 50%,
+    var(--accent-color) 100%
+  );
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+
+  /* Legacy support */
+  --light-color: var(--gray-100);
+  --dark-color: var(--gray-800);
+  --shadow-light: var(--shadow-md);
+  --shadow-medium: var(--shadow-lg);
+  --shadow-heavy: var(--shadow-xl);
+}
+
+/* Dark Theme Variables */
+[data-theme="dark"] {
+  /* Primary Colors - Adjusted for dark mode */
+  --primary-color: #818cf8;
+  --primary-hover: #6366f1;
+  --primary-light: #a5b4fc;
+  --primary-dark: #4f46e5;
+
+  /* Secondary Colors */
+  --secondary-color: #22d3ee;
+  --secondary-hover: #06b6d4;
+  --secondary-light: #67e8f9;
+  --secondary-dark: #0891b2;
+
+  /* Accent Colors */
+  --accent-color: #34d399;
+  --accent-hover: #10b981;
+  --accent-light: #6ee7b7;
+  --accent-dark: #059669;
+
+  /* Status Colors */
+  --success-color: #4ade80;
+  --warning-color: #fbbf24;
+  --danger-color: #f87171;
+  --info-color: #60a5fa;
+
+  /* Background Colors */
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --bg-tertiary: #334155;
+  --bg-card: #1e293b;
+  --bg-overlay: rgba(15, 23, 42, 0.95);
+
+  /* Text Colors */
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-tertiary: #94a3b8;
+  --text-inverse: var(--gray-900);
+
+  /* Border Colors */
+  --border-light: #334155;
+  --border-medium: #475569;
+  --border-dark: #64748b;
+
+  /* Gradients */
+  --gradient-primary: linear-gradient(
+    135deg,
+    var(--primary-color),
+    var(--secondary-color)
+  );
+  --gradient-secondary: linear-gradient(
+    135deg,
+    var(--secondary-color),
+    var(--accent-color)
+  );
+  --gradient-accent: linear-gradient(
+    135deg,
+    var(--accent-color),
+    var(--primary-color)
+  );
+  --gradient-hero: linear-gradient(
+    135deg,
+    var(--primary-color) 0%,
+    var(--secondary-color) 50%,
+    var(--accent-color) 100%
+  );
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4),
+    0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4),
+    0 4px 6px -2px rgba(0, 0, 0, 0.3);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.4),
+    0 10px 10px -5px rgba(0, 0, 0, 0.3);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+
+  /* Legacy support */
+  --light-color: var(--bg-secondary);
+  --dark-color: var(--text-primary);
+  --shadow-light: var(--shadow-md);
+  --shadow-medium: var(--shadow-lg);
+  --shadow-heavy: var(--shadow-xl);
+}
+
+/* Apply theme colors to body */
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+/* Global Text Styles */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--text-primary);
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+p {
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+}
+
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  color: var(--primary-hover);
+}
+
+/* Bootstrap Overrides for Theme */
+.text-muted {
+  color: var(--text-tertiary) !important;
+}
+
+.text-white {
+  color: var(--text-inverse) !important;
+}
+
+.text-dark {
+  color: var(--text-primary) !important;
+}
+
+.text-light {
+  color: var(--text-secondary) !important;
+}
+
+/* Background Overrides */
+.bg-white {
+  background-color: var(--bg-card) !important;
+}
+
+.bg-light {
+  background-color: var(--bg-secondary) !important;
+}
+
+.bg-dark {
+  background-color: var(--bg-tertiary) !important;
+}
+
+/* Bootstrap Card Overrides for Theme */
+.card {
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border-light) !important;
+  color: var(--text-primary) !important;
+}
+
+.card-header {
+  background-color: var(--bg-secondary) !important;
+  border-bottom: 1px solid var(--border-light) !important;
+  color: var(--text-primary) !important;
+}
+
+.card-body {
+  background-color: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+}
+
+.card-footer {
+  background-color: var(--bg-secondary) !important;
+  border-top: 1px solid var(--border-light) !important;
+  color: var(--text-primary) !important;
+}
+
+.card-title {
+  color: var(--text-primary) !important;
+}
+
+.card-text {
+  color: var(--text-secondary) !important;
+}
+
+/* Smooth Scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Theme Toggle Button */
+.theme-toggle {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: var(--text-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.theme-toggle:hover {
+  background: var(--primary-color);
+  color: var(--text-inverse);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.theme-toggle i {
+  font-size: 1.1rem;
+  transition: transform 0.3s ease;
+}
+
+.theme-toggle:hover i {
+  transform: rotate(180deg);
+}
+
+/* Custom Button Styles */
+.btn-primary {
+  background: var(--gradient-primary);
+  border: none;
+  border-radius: 12px;
+  padding: 12px 24px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-sm);
+  color: var(--text-inverse);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  background: var(--primary-hover);
+}
+
+.btn-secondary {
+  background: var(--gradient-secondary);
+  border: none;
+  border-radius: 12px;
+  padding: 12px 24px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-sm);
+  color: var(--text-inverse);
+}
+
+.btn-secondary:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  background: var(--secondary-hover);
+}
+
+.btn-outline-primary {
+  border: 2px solid var(--primary-color);
+  color: var(--primary-color);
+  background: transparent;
+  border-radius: 12px;
+  padding: 10px 22px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-outline-primary:hover {
+  background: var(--primary-color);
+  color: var(--text-inverse);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-outline-light {
+  border: 2px solid var(--text-inverse);
+  color: var(--text-inverse);
+  background: transparent;
+  border-radius: 12px;
+  padding: 10px 22px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-outline-light:hover {
+  background: var(--text-inverse);
+  color: var(--text-primary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Section Spacing */
+.section-padding {
+  padding: 80px 0;
+}
+
+/* Animation Classes */
+.fade-in {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.6s ease;
+}
+
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.slide-in-left {
+  opacity: 0;
+  transform: translateX(-50px);
+  transition: all 0.6s ease;
+}
+
+.slide-in-left.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.slide-in-right {
+  opacity: 0;
+  transform: translateX(50px);
+  transition: all 0.6s ease;
+}
+
+.slide-in-right.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Card Styles */
+.custom-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: 16px;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.custom-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--border-medium);
+}
+
+/* Text Styles */
+.text-gradient {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Better contrast for gradient text on light backgrounds */
+[data-theme="light"] .text-gradient {
+  background: linear-gradient(
+    135deg,
+    var(--primary-dark),
+    var(--secondary-dark)
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Better contrast for gradient text on dark backgrounds */
+[data-theme="dark"] .text-gradient {
+  background: linear-gradient(
+    135deg,
+    var(--primary-light),
+    var(--secondary-light)
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Form Styles */
+.form-control {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-light) !important;
+  color: var(--text-primary) !important;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.form-control:focus {
+  background: var(--bg-card) !important;
+  border-color: var(--primary-color) !important;
+  color: var(--text-primary) !important;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1) !important;
+}
+
+.form-control::placeholder {
+  color: var(--text-tertiary) !important;
+}
+
+.form-select {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-light) !important;
+  color: var(--text-primary) !important;
+  border-radius: 8px;
+}
+
+.form-select:focus {
+  background: var(--bg-card) !important;
+  border-color: var(--primary-color) !important;
+  color: var(--text-primary) !important;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1) !important;
+}
+
+/* Form Labels */
+.form-label {
+  color: var(--text-primary) !important;
+  font-weight: 500;
+}
+
+/* Form Text */
+.form-text {
+  color: var(--text-secondary) !important;
+}
+
+/* Input Groups */
+.input-group-text {
+  background: var(--bg-secondary) !important;
+  border: 1px solid var(--border-light) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Form Validation */
+.is-valid {
+  border-color: var(--success-color) !important;
+}
+
+.is-invalid {
+  border-color: var(--danger-color) !important;
+}
+
+.valid-feedback {
+  color: var(--success-color) !important;
+}
+
+.invalid-feedback {
+  color: var(--danger-color) !important;
+}
+
+/* Alert Styles */
+.alert {
+  border: none;
+  border-radius: 12px;
+  border-left: 4px solid;
+}
+
+.alert-success {
+  background: rgba(34, 197, 94, 0.1);
+  color: var(--success-color);
+  border-left-color: var(--success-color);
+}
+
+.alert-danger {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--danger-color);
+  border-left-color: var(--danger-color);
+}
+
+.alert-warning {
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--warning-color);
+  border-left-color: var(--warning-color);
+}
+
+.alert-info {
+  background: rgba(59, 130, 246, 0.1);
+  color: var(--info-color);
+  border-left-color: var(--info-color);
+}
+
+/* Navbar Overrides */
+.navbar {
+  background-color: var(--bg-overlay) !important;
+}
+
+.navbar-light {
+  background-color: var(--bg-overlay) !important;
+}
+
+.navbar-dark {
+  background-color: var(--bg-overlay) !important;
+}
+
+/* Additional Bootstrap Overrides */
+.container,
+.container-fluid {
+  color: var(--text-primary);
+}
+
+.row {
+  color: var(--text-primary);
+}
+
+.col,
+[class*="col-"] {
+  color: var(--text-primary);
+}
+
+/* Modal Overrides */
+.modal-content {
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border-light) !important;
+  color: var(--text-primary) !important;
+}
+
+.modal-header {
+  background-color: var(--bg-secondary) !important;
+  border-bottom: 1px solid var(--border-light) !important;
+  color: var(--text-primary) !important;
+}
+
+.modal-body {
+  background-color: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+}
+
+.modal-footer {
+  background-color: var(--bg-secondary) !important;
+  border-top: 1px solid var(--border-light) !important;
+  color: var(--text-primary) !important;
+}
+
+/* List Group Overrides */
+.list-group-item {
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border-light) !important;
+  color: var(--text-primary) !important;
+}
+
+.list-group-item:hover {
+  background-color: var(--bg-secondary) !important;
+}
+
+/* Table Overrides */
+.table {
+  color: var(--text-primary) !important;
+}
+
+.table-striped > tbody > tr:nth-of-type(odd) > td {
+  background-color: var(--bg-secondary) !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .section-padding {
+    padding: 50px 0;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    padding: 10px 25px;
+    font-size: 14px;
+  }
+}
+
+/* ============================================
+   Common Page Body Styles (OnlineAssessment-v3 Pattern)
+   ============================================ */
+
+/* Page Container Base */
+.page-container-base {
+  padding: 2rem;
+  min-height: 100vh;
+  background: #fafbff;
+  animation: fadeIn 0.6s ease-in-out;
+}
+
+/* Card Base Styles */
+.card-base {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.06);
+  font-family: "Poppins", sans-serif;
+  animation: fadeInUp 0.6s ease-in-out;
+}
+
+/* Gradient Heading */
+.gradient-heading {
+  font-size: 1.8rem;
+  font-weight: 700;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: fadeIn 0.8s ease-in-out;
+}
+
+/* Table Base Styles */
+.table-base {
+  border-radius: 12px;
+  overflow: hidden;
+  font-size: 14px;
+}
+
+.table-base thead {
+  background: var(--gradient-primary);
+  color: #fff;
+}
+
+.table-base th,
+.table-base td {
+  text-align: center;
+  vertical-align: middle;
+  padding: 12px 10px;
+}
+
+.table-base tbody tr {
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.table-base tbody tr:hover {
+  background-color: #f2f8ff;
+  transform: scale(1.01);
+}
+
+/* Button Base Styles */
+.btn-base {
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.btn-base:hover {
+  transform: translateY(-2px) scale(1.05);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

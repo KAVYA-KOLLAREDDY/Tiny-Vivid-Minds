@@ -1,0 +1,56 @@
+<div class="social-sidebar">
+  <div class="social-links">
+    <a
+      *ngFor="let link of socialLinks; let i = index"
+      [href]="link.url"
+      [attr.aria-label]="link.name"
+      class="social-link"
+      [class]="'social-link ' + link.name.toLowerCase()"
+      [style.animation-delay]="i * 0.1 + 's'"
+      (click)="openSocialLink(link.url); $event.preventDefault()"
+    >
+      <i [class]="link.icon"></i>
+    </a>
+
+    <!-- Plus icon for additional social links -->
+    <button
+      class="social-link plus-link"
+      [attr.aria-label]="'More social media'"
+      [style.animation-delay]="socialLinks.length * 0.1 + 's'"
+      (click)="toggleModal()"
+    >
+      <i class="fas fa-plus"></i>
+    </button>
+  </div>
+
+  <!-- Decorative line -->
+  <div class="decorative-line"></div>
+</div>
+
+<!-- Modal for additional social links -->
+<div class="modal-overlay" [class.show]="showModal" (click)="closeModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Connect With Us</h3>
+      <button class="close-btn" (click)="closeModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="additional-social-grid">
+        <a
+          *ngFor="let link of additionalSocialLinks"
+          [href]="link.url"
+          [attr.aria-label]="link.name"
+          class="additional-social-link"
+          [style.background-color]="link.color"
+          (click)="openAdditionalSocialLink(link.url); $event.preventDefault()"
+        >
+          <i [class]="link.icon"></i>
+          <span>{{ link.name }}</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

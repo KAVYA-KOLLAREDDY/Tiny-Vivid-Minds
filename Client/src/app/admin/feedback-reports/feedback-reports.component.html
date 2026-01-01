@@ -1,0 +1,535 @@
+<div class="feedback-reports-container">
+  <div class="page-header">
+    <h1>Feedback & Reports</h1>
+  </div>
+
+  <!-- Tabs Navigation -->
+  <div class="tabs-container">
+    <button 
+      class="tab-btn" 
+      [class.active]="activeTab() === 'feedback'"
+      (click)="setActiveTab('feedback')">
+      <i class="fas fa-comments"></i>
+      <span>Feedback</span>
+    </button>
+    <button 
+      class="tab-btn" 
+      [class.active]="activeTab() === 'demo-requests'"
+      (click)="setActiveTab('demo-requests')">
+      <i class="fas fa-calendar-check"></i>
+      <span>Demo Requests</span>
+    </button>
+    <button 
+      class="tab-btn" 
+      [class.active]="activeTab() === 'contact-messages'"
+      (click)="setActiveTab('contact-messages')">
+      <i class="fas fa-envelope"></i>
+      <span>Contact Messages</span>
+    </button>
+  </div>
+
+  <!-- Feedback Tab Content -->
+  @if (activeTab() === 'feedback') {
+    <div class="tab-content">
+      <div class="section-header">
+        <h2>
+          <i class="fas fa-comments"></i>
+          Feedback
+        </h2>
+        <button 
+          class="btn-refresh" 
+          (click)="loadFeedbacks()"
+          [disabled]="isLoadingFeedbacks()"
+          title="Refresh feedback">
+          <i class="fas fa-sync-alt" [class.spinning]="isLoadingFeedbacks()"></i>
+          <span>Refresh</span>
+        </button>
+      </div>
+      <div class="table-container">
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Course</th>
+                <th>Rating</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              @if (isLoadingFeedbacks()) {
+                <tr>
+                  <td colspan="5" class="loading-cell">
+                    <div class="spinner-container">
+                      <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                      </div>
+                      <p>Loading feedback...</p>
+                    </div>
+                  </td>
+                </tr>
+              } @else {
+                @for (feedback of feedbacks(); track feedback.id) {
+                  <tr>
+                    <td class="name-cell">
+                      <div class="name-info">
+                        <strong>{{ feedback.name || feedback.childName || 'Anonymous' }}</strong>
+                        @if (feedback.childName) {
+                          <span class="child-name">({{ feedback.childName }})</span>
+                        }
+                      </div>
+                    </td>
+                    <td class="course-cell">{{ feedback.course || 'General' }}</td>
+                    <td class="rating-cell">
+                      <div class="rating-display">
+                        <span class="rating-stars">{{ getRatingStars(feedback.rating || 0) }}</span>
+                        <span class="rating-number">({{ feedback.rating || 0 }}/5)</span>
+                      </div>
+                    </td>
+                    <td>
+                      <span class="badge status-badge" [ngClass]="getStatusClass(feedback.isApproved ? 'approved' : 'pending')">
+                        {{ feedback.isApproved ? 'Approved' : 'Pending' }}
+                      </span>
+                    </td>
+                    <td class="actions-cell">
+                      <div class="action-buttons">
+                        <button 
+                          class="btn-action btn-view" 
+                          (click)="openFeedbackModal(feedback)"
+                          title="View Details">
+                          <i class="fas fa-eye"></i>
+                        </button>
+                        @if (!feedback.isApproved) {
+                          <button 
+                            class="btn-action btn-approve" 
+                            (click)="approveFeedback(feedback.id!)"
+                            title="Approve Feedback">
+                            <i class="fas fa-check"></i>
+                          </button>
+                          <button 
+                            class="btn-action btn-reject" 
+                            (click)="rejectFeedback(feedback.id!)"
+                            title="Reject Feedback">
+                            <i class="fas fa-times"></i>
+                          </button>
+                        }
+                        <button 
+                          class="btn-action btn-feature" 
+                          (click)="featureFeedback(feedback.id!)"
+                          [class.featured]="feedback.isFeatured"
+                          [title]="feedback.isFeatured ? 'Unfeature' : 'Mark as Featured'">
+                          <i class="fas fa-star"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td colspan="5" class="empty-cell">
+                      <div class="empty-state">
+                        <i class="fas fa-comments"></i>
+                        <p>No feedback submissions yet.</p>
+                      </div>
+                    </td>
+                  </tr>
+                }
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Demo Requests Tab Content -->
+  @if (activeTab() === 'demo-requests') {
+    <div class="tab-content">
+      <div class="section-header">
+        <h2>
+          <i class="fas fa-calendar-check"></i>
+          Demo Requests
+        </h2>
+        <button 
+          class="btn-refresh" 
+          (click)="loadDemoBookings()"
+          [disabled]="isLoadingDemos()"
+          title="Refresh demo requests">
+          <i class="fas fa-sync-alt" [class.spinning]="isLoadingDemos()"></i>
+          <span>Refresh</span>
+        </button>
+      </div>
+      <div class="table-container">
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Course</th>
+                <th>Date & Time</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              @if (isLoadingDemos()) {
+                <tr>
+                  <td colspan="6" class="loading-cell">
+                    <div class="spinner-container">
+                      <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                      </div>
+                      <p>Loading demo requests...</p>
+                    </div>
+                  </td>
+                </tr>
+              } @else {
+                @for (demo of demoBookings(); track demo.id) {
+                  <tr>
+                    <td class="name-cell">
+                      <strong>{{ demo.parentName }}</strong>
+                      <div class="child-info">{{ demo.childName }}, Age {{ demo.childAge }}</div>
+                    </td>
+                    <td class="email-cell">{{ demo.email }}</td>
+                    <td class="course-cell">{{ demo.preferredCourse }}</td>
+                    <td class="datetime-cell">
+                      <div class="datetime-info">
+                        <i class="fas fa-calendar"></i>
+                        <span>{{ demo.preferredDate }}</span>
+                        <i class="fas fa-clock"></i>
+                        <span>{{ demo.preferredTime }}</span>
+                      </div>
+                    </td>
+                    <td>
+                      <span class="badge status-badge" [ngClass]="getStatusClass(demo.status)">
+                        {{ getStatusDisplay(demo.status) }}
+                      </span>
+                    </td>
+                    <td class="actions-cell">
+                      <div class="action-buttons">
+                        <button 
+                          class="btn-action btn-view" 
+                          (click)="openDemoModal(demo)"
+                          title="View Details">
+                          <i class="fas fa-eye"></i>
+                        </button>
+                        @if (demo.status?.toUpperCase() === 'PENDING') {
+                          <button 
+                            class="btn-action btn-approve" 
+                            (click)="updateDemoStatus(demo.id!, 'CONFIRMED')"
+                            title="Confirm Demo">
+                            <i class="fas fa-check"></i>
+                          </button>
+                        }
+                      </div>
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td colspan="6" class="empty-cell">
+                      <div class="empty-state">
+                        <i class="fas fa-calendar-check"></i>
+                        <p>No demo requests yet.</p>
+                      </div>
+                    </td>
+                  </tr>
+                }
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Contact Messages Tab Content -->
+  @if (activeTab() === 'contact-messages') {
+    <div class="tab-content">
+      <div class="section-header">
+        <h2>
+          <i class="fas fa-envelope"></i>
+          Contact Messages
+        </h2>
+        <button 
+          class="btn-refresh" 
+          (click)="loadContacts()"
+          [disabled]="isLoadingContacts()"
+          title="Refresh contact messages">
+          <i class="fas fa-sync-alt" [class.spinning]="isLoadingContacts()"></i>
+          <span>Refresh</span>
+        </button>
+      </div>
+      <div class="table-container">
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Subject</th>
+                <th>Message Type</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              @if (isLoadingContacts()) {
+                <tr>
+                  <td colspan="6" class="loading-cell">
+                    <div class="spinner-container">
+                      <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                      </div>
+                      <p>Loading contact messages...</p>
+                    </div>
+                  </td>
+                </tr>
+              } @else {
+                @for (contact of contacts(); track contact.id || $index) {
+                  <tr>
+                    <td class="name-cell">
+                      <strong>{{ contact.name }}</strong>
+                    </td>
+                    <td class="email-cell">{{ contact.email }}</td>
+                    <td class="subject-cell">{{ contact.subject || 'N/A' }}</td>
+                    <td>
+                      <span class="badge type-badge">
+                        {{ getContactMessageType(contact) }}
+                      </span>
+                    </td>
+                    <td>
+                      <span class="badge status-badge" [ngClass]="getStatusClass(contact.status)">
+                        {{ getStatusDisplay(contact.status) }}
+                      </span>
+                    </td>
+                    <td class="actions-cell">
+                      <div class="action-buttons">
+                        <button 
+                          class="btn-action btn-view" 
+                          (click)="openContactModal(contact)"
+                          title="View Details">
+                          <i class="fas fa-eye"></i>
+                        </button>
+                        @if (contact.status?.toUpperCase() === 'NEW') {
+                          <button 
+                            class="btn-action btn-approve" 
+                            (click)="updateContactStatus(contact.id!, 'REPLIED')"
+                            title="Mark as Replied">
+                            <i class="fas fa-check"></i>
+                          </button>
+                        }
+                      </div>
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td colspan="6" class="empty-cell">
+                      <div class="empty-state">
+                        <i class="fas fa-envelope"></i>
+                        <p>No contact messages yet.</p>
+                      </div>
+                    </td>
+                  </tr>
+                }
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  }
+</div>
+
+<!-- Feedback Detail Modal -->
+@if (showFeedbackModal() && selectedFeedback()) {
+  <div class="modal-overlay" (click)="closeFeedbackModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Feedback Details</h2>
+        <button class="modal-close" (click)="closeFeedbackModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="detail-section">
+          <div class="detail-group">
+            <h4><i class="fas fa-user"></i> Parent Name</h4>
+            <p>{{ selectedFeedback()!.name || 'Not provided' }}</p>
+          </div>
+          <div class="detail-group">
+            <h4><i class="fas fa-child"></i> Child Name</h4>
+            <p>{{ selectedFeedback()!.childName || 'Not provided' }}</p>
+          </div>
+          @if (selectedFeedback()!.childAge) {
+            <div class="detail-group">
+              <h4><i class="fas fa-birthday-cake"></i> Child Age</h4>
+              <p>{{ selectedFeedback()!.childAge }} years</p>
+            </div>
+          }
+          <div class="detail-group">
+            <h4><i class="fas fa-envelope"></i> Email</h4>
+            <p>{{ selectedFeedback()!.email }}</p>
+          </div>
+          <div class="detail-group">
+            <h4><i class="fas fa-book"></i> Course</h4>
+            <p>{{ selectedFeedback()!.course || 'General' }}</p>
+          </div>
+          <div class="detail-group">
+            <h4><i class="fas fa-star"></i> Rating</h4>
+            <div class="rating-display-large">
+              <span class="rating-stars">{{ getRatingStars(selectedFeedback()!.rating || 0) }}</span>
+              <span class="rating-number">{{ selectedFeedback()!.rating || 0 }} / 5</span>
+            </div>
+          </div>
+          <div class="detail-group">
+            <h4><i class="fas fa-comment"></i> Comments</h4>
+            <p class="comments-text">{{ selectedFeedback()!.message || 'No comments provided' }}</p>
+          </div>
+          <div class="detail-group">
+            <h4><i class="fas fa-calendar"></i> Submitted</h4>
+            <p>{{ formatDate(selectedFeedback()!.createdAt) }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        @if (!selectedFeedback()!.isApproved) {
+          <button class="btn-modal btn-approve" (click)="approveFeedback(selectedFeedback()!.id!); closeFeedbackModal()">
+            <i class="fas fa-check"></i>
+            Approve
+          </button>
+          <button class="btn-modal btn-reject" (click)="rejectFeedback(selectedFeedback()!.id!); closeFeedbackModal()">
+            <i class="fas fa-times"></i>
+            Reject
+          </button>
+        }
+        <button class="btn-modal btn-secondary" (click)="closeFeedbackModal()">Close</button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Demo Booking Detail Modal -->
+@if (showDemoModal() && selectedDemo()) {
+  <div class="modal-overlay" (click)="closeDemoModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Demo Request Details</h2>
+        <button class="modal-close" (click)="closeDemoModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="detail-section">
+          <div class="detail-group">
+            <h4><i class="fas fa-user"></i> Parent Name</h4>
+            <p>{{ selectedDemo()!.parentName }}</p>
+          </div>
+          <div class="detail-group">
+            <h4><i class="fas fa-child"></i> Child Name</h4>
+            <p>{{ selectedDemo()!.childName }}, Age {{ selectedDemo()!.childAge }}</p>
+          </div>
+          <div class="detail-group">
+            <h4><i class="fas fa-envelope"></i> Email</h4>
+            <p>{{ selectedDemo()!.email }}</p>
+          </div>
+          <div class="detail-group">
+            <h4><i class="fas fa-phone"></i> Phone</h4>
+            <p>{{ selectedDemo()!.phone }}</p>
+          </div>
+          <div class="detail-group">
+            <h4><i class="fas fa-book"></i> Preferred Course</h4>
+            <p>{{ selectedDemo()!.preferredCourse }}</p>
+          </div>
+          <div class="detail-group">
+            <h4><i class="fas fa-calendar"></i> Preferred Date</h4>
+            <p>{{ selectedDemo()!.preferredDate }}</p>
+          </div>
+          <div class="detail-group">
+            <h4><i class="fas fa-clock"></i> Preferred Time</h4>
+            <p>{{ selectedDemo()!.preferredTime }}</p>
+          </div>
+          @if (selectedDemo()!.message) {
+            <div class="detail-group">
+              <h4><i class="fas fa-comment"></i> Message</h4>
+              <p class="comments-text">{{ selectedDemo()!.message }}</p>
+            </div>
+          }
+          <div class="detail-group">
+            <h4><i class="fas fa-info-circle"></i> Status</h4>
+            <span class="badge status-badge" [ngClass]="getStatusClass(selectedDemo()!.status)">
+              {{ getStatusDisplay(selectedDemo()!.status) }}
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        @if (selectedDemo()!.status?.toUpperCase() === 'PENDING') {
+          <button class="btn-modal btn-approve" (click)="updateDemoStatus(selectedDemo()!.id!, 'CONFIRMED')">
+            <i class="fas fa-check"></i>
+            Confirm Demo
+          </button>
+        }
+        <button class="btn-modal btn-secondary" (click)="closeDemoModal()">Close</button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Contact Detail Modal -->
+@if (showContactModal() && selectedContact()) {
+  <div class="modal-overlay" (click)="closeContactModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Contact Message Details</h2>
+        <button class="modal-close" (click)="closeContactModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="detail-section">
+          <div class="detail-group">
+            <h4><i class="fas fa-user"></i> Name</h4>
+            <p>{{ selectedContact()!.name }}</p>
+          </div>
+          <div class="detail-group">
+            <h4><i class="fas fa-envelope"></i> Email</h4>
+            <p>{{ selectedContact()!.email }}</p>
+          </div>
+          <div class="detail-group">
+            <h4><i class="fas fa-phone"></i> Phone</h4>
+            <p>{{ selectedContact()!.phone }}</p>
+          </div>
+          <div class="detail-group">
+            <h4><i class="fas fa-tag"></i> Subject</h4>
+            <p>{{ selectedContact()!.subject }}</p>
+          </div>
+          <div class="detail-group">
+            <h4><i class="fas fa-comment"></i> Message</h4>
+            <p class="comments-text">{{ selectedContact()!.message }}</p>
+          </div>
+          <div class="detail-group">
+            <h4><i class="fas fa-info-circle"></i> Status</h4>
+            <span class="badge status-badge" [ngClass]="getStatusClass(selectedContact()!.status)">
+              {{ getStatusDisplay(selectedContact()!.status) }}
+            </span>
+          </div>
+          <div class="detail-group">
+            <h4><i class="fas fa-calendar"></i> Received</h4>
+            <p>{{ formatDate(selectedContact()!.createdAt) }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        @if (selectedContact()!.status?.toUpperCase() === 'NEW') {
+          <button class="btn-modal btn-approve" (click)="updateContactStatus(selectedContact()!.id!, 'REPLIED')">
+            <i class="fas fa-check"></i>
+            Mark as Replied
+          </button>
+        }
+        <button class="btn-modal btn-secondary" (click)="closeContactModal()">Close</button>
+      </div>
+    </div>
+  </div>
+}
+

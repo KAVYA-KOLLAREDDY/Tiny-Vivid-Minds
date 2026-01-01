@@ -1,0 +1,100 @@
+<div class="student-progress-container">
+  <div class="page-header">
+    <button class="back-btn" (click)="goBack()">
+      <i class="fas fa-arrow-left"></i>
+      <span>Back to Students</span>
+    </button>
+    <h1>Student Progress</h1>
+  </div>
+
+  @if (isLoading()) {
+    <div class="loading-container">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  } @else {
+    <div class="progress-card">
+      <!-- Student and Course Info -->
+      <div class="info-section">
+        <div class="info-row">
+          <div class="info-item">
+            <label>Student:</label>
+            <span class="info-value">{{ studentName() }}</span>
+          </div>
+          <div class="info-item">
+            <label>Course:</label>
+            <span class="info-value">{{ courseName() }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Current Level and Status -->
+      <div class="info-section">
+        <div class="info-row">
+          <div class="info-item">
+            <label>Current Level:</label>
+            <span class="level-badge">{{ currentLevel()?.levelName || 'Not Started' }}</span>
+          </div>
+          <div class="info-item">
+            <label>Status:</label>
+            <span class="status-badge" [class]="'status-' + status()">
+              {{ getStatusDisplay(status()) }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Progress Bar -->
+      <div class="progress-section">
+        <label>Progress</label>
+        <div class="progress-bar-wrapper">
+          <div class="progress-bar" [style.width.%]="progressPercentage()">
+            <span class="progress-text">{{ progressPercentage() }}%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Action Buttons -->
+      <div class="actions-section">
+        <button 
+          class="action-btn complete-btn"
+          (click)="markLevelCompleted()"
+          [disabled]="isSaving() || !currentLevel()">
+          <i class="fas fa-check-circle"></i>
+          <span>Mark Level Completed</span>
+        </button>
+        <button 
+          class="action-btn assign-btn"
+          (click)="assignNextLevel()"
+          [disabled]="isSaving() || !nextLevel()">
+          <i class="fas fa-arrow-up"></i>
+          <span>Assign Next Level</span>
+        </button>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Remarks Section -->
+      <div class="remarks-section">
+        <label for="remarks">
+          <i class="fas fa-comment"></i>
+          Remarks
+        </label>
+        <textarea
+          id="remarks"
+          class="remarks-textarea"
+          [(ngModel)]="remarks"
+          placeholder="Enter remarks or notes about the student's progress..."
+          rows="4"></textarea>
+      </div>
+    </div>
+  }
+</div>
+

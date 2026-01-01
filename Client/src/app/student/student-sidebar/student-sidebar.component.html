@@ -1,0 +1,54 @@
+<button
+  class="sidebar-toggle d-lg-none"
+  type="button"
+  data-bs-toggle="collapse"
+  data-bs-target="#sidebarMenu"
+  aria-expanded="false"
+  aria-controls="sidebarMenu"
+  aria-label="Toggle sidebar"
+>
+  <i class="fas fa-bars"></i>
+</button>
+
+<nav class="sidebar collapse d-lg-block" id="sidebarMenu">
+  <h2>Student Panel</h2>
+  <ul>
+    <li>
+      <a routerLink="/student/dashboard" routerLinkActive="active">
+        <i class="fas fa-home"></i>
+        <span>Dashboard</span>
+      </a>
+    </li>
+    <li>
+      <a routerLink="/student/courses" routerLinkActive="active">
+        <i class="fas fa-book"></i>
+        <span>My Courses</span>
+      </a>
+    </li>
+    <li>
+      <a routerLink="/student/progress" routerLinkActive="active">
+        <i class="fas fa-chart-line"></i>
+        <span>My Progress</span>
+      </a>
+    </li>
+    <li>
+      <a routerLink="/student/attendance" routerLinkActive="active">
+        <i class="fas fa-calendar-check"></i>
+        <span>Attendance</span>
+      </a>
+    </li>
+    <li>
+      <a routerLink="/student/exam-submission" routerLinkActive="active">
+        <i class="fas fa-file-upload"></i>
+        <span>Exam Submission</span>
+      </a>
+    </li>
+    <li>
+      <a routerLink="/student/certificates" routerLinkActive="active">
+        <i class="fas fa-certificate"></i>
+        <span>Certificates</span>
+      </a>
+    </li>
+  </ul>
+</nav>
+

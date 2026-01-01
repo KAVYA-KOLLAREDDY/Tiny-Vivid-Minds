@@ -1,0 +1,725 @@
+.exam-submission-container {
+  padding: 2rem;
+  min-height: 100vh;
+  background: var(--bg-primary);
+  font-family: "Inter", sans-serif;
+}
+
+.page-header {
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.page-header h1 {
+  color: var(--text-primary);
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  gap: 1rem;
+}
+
+.loading-text {
+  color: var(--text-secondary);
+  margin: 0;
+  font-size: 1rem;
+}
+
+.no-courses-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.no-courses-message i {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  color: var(--primary-color);
+  opacity: 0.7;
+}
+
+.no-courses-message p {
+  font-size: 1.1rem;
+  margin: 0;
+  max-width: 500px;
+}
+
+.submission-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Submission Card */
+.submission-card {
+  background: var(--bg-card);
+  border: 2px solid var(--border-light);
+  border-radius: 0;
+  padding: 0;
+  box-shadow: var(--shadow-md);
+}
+
+.card-section {
+  padding: 1.5rem 2rem;
+}
+
+.card-divider {
+  height: 1px;
+  background: var(--border-light);
+  margin: 0;
+  width: 100%;
+}
+
+.card-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+/* Form Styles */
+.submission-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.required {
+  color: #ef4444;
+  font-weight: 700;
+}
+
+.optional {
+  color: var(--text-secondary);
+  font-weight: 400;
+  font-size: 0.9rem;
+}
+
+.form-select {
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.form-select:hover {
+  border-color: var(--primary-color);
+}
+
+.form-select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.form-select.error {
+  border-color: #ef4444;
+}
+
+/* File Upload */
+.file-upload-wrapper {
+  position: relative;
+}
+
+.file-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.file-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1.5rem;
+  background: var(--bg-secondary);
+  border: 2px dashed var(--border-light);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+  justify-content: center;
+}
+
+.file-label:hover {
+  background: var(--bg-card);
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.file-label i {
+  font-size: 1.25rem;
+}
+
+.file-input.error + .file-label {
+  border-color: #ef4444;
+}
+
+.file-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  margin-top: 0.5rem;
+}
+
+.file-info i {
+  color: var(--primary-color);
+  font-size: 1.1rem;
+}
+
+.file-name {
+  font-weight: 500;
+  color: var(--text-primary);
+  flex: 1;
+}
+
+.file-size {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.file-hint {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.file-hint i {
+  color: var(--primary-color);
+}
+
+/* Textarea */
+.form-textarea {
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-family: inherit;
+  resize: vertical;
+  transition: all 0.3s ease;
+  width: 100%;
+}
+
+.form-textarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.form-textarea::placeholder {
+  color: var(--text-tertiary);
+}
+
+/* Error Message */
+.error-message {
+  color: #ef4444;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.error-message::before {
+  content: "⚠";
+  font-size: 1rem;
+}
+
+/* Form Actions */
+.form-actions {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 0.5rem;
+}
+
+.submit-button {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 2rem;
+  background: var(--primary-color);
+  color: var(--text-inverse);
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-sm);
+}
+
+.submit-button:hover:not(:disabled) {
+  background: var(--primary-color-dark, #4f46e5);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.submit-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.submit-button i {
+  font-size: 1.1rem;
+}
+
+/* Info Card */
+.info-card {
+  background: var(--bg-card);
+  border: 2px solid var(--border-light);
+  border-radius: 0;
+  padding: 0;
+  box-shadow: var(--shadow-md);
+}
+
+.info-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 1rem 0;
+}
+
+.validation-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.validation-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--text-primary);
+  font-size: 1rem;
+}
+
+.validation-list i {
+  color: #10b981;
+  font-size: 1.1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .exam-submission-container {
+    padding: 1rem;
+  }
+
+  .page-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .card-section {
+    padding: 1rem 1.5rem;
+  }
+
+  .card-title {
+    font-size: 1.25rem;
+  }
+
+  .file-label {
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+  }
+
+  .submit-button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 576px) {
+  .exam-submission-container {
+    padding: 0.75rem;
+  }
+
+  .page-header h1 {
+    font-size: 1.25rem;
+  }
+
+  .card-section {
+    padding: 1rem;
+  }
+
+  .form-label,
+  .form-select,
+  .form-textarea {
+    font-size: 0.9rem;
+  }
+
+  .file-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+}
+
+/* Submissions Card */
+.submissions-card {
+  background: var(--bg-card);
+  border: 2px solid var(--border-light);
+  border-radius: 0;
+  padding: 0;
+  box-shadow: var(--shadow-md);
+}
+
+.submissions-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.toggle-button {
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  transition: color 0.3s ease;
+}
+
+.toggle-button:hover {
+  color: var(--primary-color);
+}
+
+/* Filter Section */
+.filter-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.filter-label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.filter-select {
+  min-width: 200px;
+}
+
+/* Loading Submissions */
+.loading-submissions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 2rem;
+  color: var(--text-secondary);
+}
+
+/* Empty State */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+  color: var(--text-secondary);
+}
+
+.empty-state i {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.empty-state p {
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+/* Submissions Table */
+.submissions-table-wrapper {
+  overflow-x: auto;
+}
+
+.submissions-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.submissions-table thead {
+  background: var(--bg-secondary);
+  border-bottom: 2px solid var(--border-light);
+}
+
+.submissions-table th {
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.submissions-table td {
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-light);
+  color: var(--text-primary);
+}
+
+.submissions-table tbody tr:hover {
+  background: var(--bg-secondary);
+}
+
+.submissions-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.details-row {
+  background: var(--bg-secondary);
+}
+
+.details-row td {
+  padding: 0.75rem 1rem 0.75rem 3rem;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.submission-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.detail-item {
+  color: var(--text-secondary);
+}
+
+.detail-item strong {
+  color: var(--text-primary);
+  margin-right: 0.5rem;
+}
+
+/* File Name Cell */
+.file-name-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.file-name-cell i {
+  color: var(--primary-color);
+}
+
+/* Status Badge */
+.status-badge {
+  display: inline-block;
+  padding: 0.375rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status-pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status-graded {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.status-approved {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.status-rejected {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* Grade */
+.grade {
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+.no-grade {
+  color: var(--text-tertiary);
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.action-btn {
+  background: none;
+  border: 1px solid var(--border-light);
+  border-radius: 4px;
+  padding: 0.375rem 0.75rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: var(--text-primary);
+}
+
+.view-btn:hover {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+  color: var(--text-inverse);
+}
+
+.delete-btn:hover {
+  background: #ef4444;
+  border-color: #ef4444;
+  color: var(--text-inverse);
+}
+
+/* Responsive Table */
+@media (max-width: 768px) {
+  .submissions-table-wrapper {
+    overflow-x: scroll;
+  }
+
+  .submissions-table {
+    min-width: 800px;
+  }
+
+  .filter-section {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filter-select {
+    width: 100%;
+  }
+}
+
+/* Feature Status */
+.feature-status {
+  margin-top: 0.5rem;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.status-badge.enabled {
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+.status-badge.disabled {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+
+.status-badge i {
+  font-size: 0.75rem;
+}
+
+/* Completion Info */
+.completion-info {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.completion-info h3 {
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+  font-size: 1.25rem;
+}
+
+.completion-info p {
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+.completion-info ul {
+  text-align: left;
+  margin: 1rem 0;
+  padding-left: 2rem;
+}
+
+.completion-info li {
+  margin-bottom: 0.5rem;
+}
+
+.completion-info strong {
+  color: var(--primary-color);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .exam-submission-container {
+    padding: 1rem;
+  }
+
+  .completion-info {
+    padding: 0 1rem;
+  }
+
+  .completion-info ul {
+    padding-left: 1.5rem;
+  }
+}
+

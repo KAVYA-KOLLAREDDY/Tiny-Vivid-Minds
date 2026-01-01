@@ -1,0 +1,447 @@
+.social-sidebar {
+  position: fixed;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  /* Hot reload test - this should update automatically */
+}
+
+.social-links {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+}
+
+.social-link {
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+  animation: slideInLeft 0.6s ease-out forwards;
+  opacity: 0;
+  transform: translateX(-100px);
+}
+
+.social-link::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    var(--primary-color),
+    var(--secondary-color)
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  border-radius: 12px;
+}
+
+.social-link i {
+  font-size: 20px;
+  color: white;
+  position: relative;
+  z-index: 2;
+  transition: all 0.3s ease;
+}
+
+/* Individual social media colors */
+.social-link.facebook {
+  background: #1877f2;
+}
+
+.social-link.facebook:hover {
+  background: #166fe5;
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 8px 25px rgba(24, 119, 242, 0.4);
+}
+
+.social-link.whatsapp {
+  background: #25d366;
+}
+
+.social-link.whatsapp:hover {
+  background: #20ba5a;
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4);
+}
+
+.social-link.linkedin {
+  background: #0077b5;
+}
+
+.social-link.linkedin:hover {
+  background: #005885;
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 8px 25px rgba(0, 119, 181, 0.4);
+}
+
+.social-link.instagram {
+  background: #e4405f;
+}
+
+.social-link.instagram:hover {
+  background: #c13584;
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 8px 25px rgba(228, 64, 95, 0.4);
+}
+
+.social-link:hover i {
+  transform: scale(1.1);
+}
+
+/* Plus link styling */
+.plus-link {
+  background: var(--gradient-primary) !important;
+  border: none !important;
+  cursor: pointer;
+}
+
+.plus-link:hover {
+  background: var(--primary-hover) !important;
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+}
+
+.plus-link i {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+/* Decorative line */
+.decorative-line {
+  width: 2px;
+  height: 100px;
+  background: linear-gradient(
+    to bottom,
+    var(--primary-color),
+    var(--secondary-color),
+    var(--accent-color)
+  );
+  border-radius: 2px;
+  opacity: 0.6;
+  animation: drawLine 1s ease-out 0.5s forwards;
+  transform: scaleY(0);
+  transform-origin: top;
+}
+
+/* Animations */
+@keyframes slideInLeft {
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes drawLine {
+  to {
+    transform: scaleY(1);
+  }
+}
+
+/* Tooltip on hover */
+.social-link::after {
+  content: attr(aria-label);
+  position: absolute;
+  left: 60px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--text-primary);
+  color: var(--white);
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  z-index: 1001;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.social-link::before {
+  content: "";
+  position: absolute;
+  left: 55px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 6px solid transparent;
+  border-right-color: var(--text-primary);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  z-index: 1001;
+}
+
+.social-link:hover::after,
+.social-link:hover::before {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .social-sidebar {
+    left: 10px;
+    top: auto;
+    bottom: 20px;
+    transform: none;
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  .social-links {
+    flex-direction: row;
+    gap: 10px;
+  }
+
+  .social-link {
+    width: 45px;
+    height: 45px;
+  }
+
+  .social-link i {
+    font-size: 18px;
+  }
+
+  .decorative-line {
+    width: 100px;
+    height: 2px;
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+
+  @keyframes drawLine {
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+  /* Hide tooltips on mobile */
+  .social-link::after,
+  .social-link::before {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .social-sidebar {
+    left: 5px;
+    bottom: 15px;
+  }
+
+  .social-link {
+    width: 40px;
+    height: 40px;
+  }
+
+  .social-link i {
+    font-size: 16px;
+  }
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.modal-overlay.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal-content {
+  background: var(--bg-card);
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow: hidden;
+  transform: scale(0.8) translateY(50px);
+  transition: all 0.3s ease;
+  border: 1px solid var(--border-light);
+}
+
+.modal-overlay.show .modal-content {
+  transform: scale(1) translateY(0);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 25px;
+  border-bottom: 1px solid var(--border-light);
+  background: var(--bg-primary);
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.close-btn {
+  width: 35px;
+  height: 35px;
+  border: none;
+  background: var(--bg-secondary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: var(--text-secondary);
+}
+
+.close-btn:hover {
+  background: var(--primary-color);
+  color: var(--white);
+  transform: scale(1.1);
+}
+
+.modal-body {
+  padding: 25px;
+}
+
+.additional-social-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+}
+
+.additional-social-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 15px 20px;
+  border-radius: 12px;
+  text-decoration: none;
+  color: white;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.additional-social-link::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.1);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.additional-social-link:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+.additional-social-link:hover::before {
+  opacity: 1;
+}
+
+.additional-social-link i {
+  font-size: 20px;
+  position: relative;
+  z-index: 2;
+}
+
+.additional-social-link span {
+  position: relative;
+  z-index: 2;
+  font-size: 14px;
+}
+
+/* Responsive Modal */
+@media (max-width: 768px) {
+  .modal-content {
+    width: 95%;
+    margin: 20px;
+  }
+
+  .modal-header {
+    padding: 15px 20px;
+  }
+
+  .modal-header h3 {
+    font-size: 1.3rem;
+  }
+
+  .modal-body {
+    padding: 20px;
+  }
+
+  .additional-social-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .additional-social-link {
+    padding: 12px 15px;
+  }
+
+  .additional-social-link i {
+    font-size: 18px;
+  }
+
+  .additional-social-link span {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .modal-content {
+    width: 98%;
+    margin: 10px;
+  }
+
+  .modal-header {
+    padding: 12px 15px;
+  }
+
+  .modal-body {
+    padding: 15px;
+  }
+
+  .additional-social-link {
+    padding: 10px 12px;
+  }
+}

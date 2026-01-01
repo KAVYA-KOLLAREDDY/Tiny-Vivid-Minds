@@ -1,0 +1,7 @@
+@if (!isInternalRoute()) {
+  <app-header></app-header>
+}
+<router-outlet></router-outlet>
+@if (!isInternalRoute()) {
+  <app-footer></app-footer>
+}

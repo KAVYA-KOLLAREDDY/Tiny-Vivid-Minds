@@ -1,0 +1,639 @@
+<div class="manage-users-container">
+  <div class="page-header">
+    <h1>Manage Users</h1>
+  </div>
+
+  <!-- Filters Section -->
+  <div class="filters-section">
+    <div class="filter-buttons">
+      <button
+        class="filter-btn"
+        [class.active]="selectedFilter() === 'all'"
+        (click)="setFilter('all')"
+      >
+        All
+      </button>
+      <button
+        class="filter-btn"
+        [class.active]="selectedFilter() === 'teachers'"
+        (click)="setFilter('teachers')"
+      >
+        Teachers
+      </button>
+      <button
+        class="filter-btn"
+        [class.active]="selectedFilter() === 'students'"
+        (click)="setFilter('students')"
+      >
+        Students
+      </button>
+      <button
+        class="filter-btn"
+        [class.active]="selectedFilter() === 'pending'"
+        (click)="setFilter('pending')"
+      >
+        Pending
+      </button>
+    </div>
+  </div>
+
+  <!-- Search and Add User Section -->
+  <div class="actions-section">
+    <div class="search-container">
+      <i class="fas fa-search search-icon"></i>
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Search by name or email..."
+        [value]="searchQuery()"
+        (input)="onSearchChange($any($event.target).value)"
+      />
+    </div>
+    <button class="btn-add-user" (click)="addNewUser()">
+      <i class="fas fa-plus"></i>
+      <span>Add New User</span>
+    </button>
+  </div>
+
+  <!-- Users Table -->
+  <div class="table-container">
+    <div class="table-wrapper">
+      <table class="users-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (isLoading()) {
+          <tr>
+            <td colspan="5" class="loading-cell">
+              <div class="spinner-container">
+                <div class="spinner-border text-primary" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+                <p>Loading users...</p>
+              </div>
+            </td>
+          </tr>
+          } @else { @for (user of paginatedUsers(); track user.userId) {
+          <tr>
+            <td class="name-cell">{{ user.fullName || "N/A" }}</td>
+            <td class="email-cell">{{ user.email || "N/A" }}</td>
+            <td>
+              <span
+                class="badge role-badge"
+                [ngClass]="getRoleClass(user.role)"
+              >
+                {{ getRoleDisplay(user.role) }}
+              </span>
+            </td>
+            <td>
+              <span
+                class="badge status-badge"
+                [ngClass]="getStatusClass(user.status)"
+              >
+                {{ getStatusDisplay(user.status) }}
+              </span>
+            </td>
+            <td class="actions-cell">
+              <div class="action-buttons">
+                <button
+                  class="btn-action btn-view"
+                  (click)="openUserModal(user)"
+                  title="View Details"
+                >
+                  <i class="fas fa-eye"></i>
+                  <span>View</span>
+                </button>
+                @if (user.status && user.status.toLowerCase() === 'pending') {
+                <button
+                  class="btn-action btn-approve"
+                  (click)="openConfirmModal(user, 'approve')"
+                  title="Approve User"
+                >
+                  <i class="fas fa-check"></i>
+                  <span>Approve</span>
+                </button>
+                <button
+                  class="btn-action btn-reject"
+                  (click)="openConfirmModal(user, 'reject')"
+                  title="Reject User"
+                >
+                  <i class="fas fa-times"></i>
+                  <span>Reject</span>
+                </button>
+                }
+              </div>
+            </td>
+          </tr>
+          } @empty {
+          <tr>
+            <td colspan="5" class="empty-cell">
+              <div class="empty-state">
+                <i class="fas fa-users"></i>
+                <p>No users found</p>
+              </div>
+            </td>
+          </tr>
+          } }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  @if (totalPages() > 1 && !isLoading()) {
+  <div class="pagination-container">
+    <button
+      class="pagination-btn"
+      [disabled]="currentPage() === 1"
+      (click)="previousPage()"
+    >
+      <i class="fas fa-chevron-left"></i>
+      Previous
+    </button>
+    <div class="pagination-numbers">
+      @for (page of getPageNumbers(); track page) { @if (page === -1) {
+      <span class="pagination-ellipsis">...</span>
+      } @else {
+      <button
+        class="pagination-number"
+        [class.active]="currentPage() === page"
+        (click)="goToPage(page)"
+      >
+        {{ page }}
+      </button>
+      } }
+    </div>
+    <button
+      class="pagination-btn"
+      [disabled]="currentPage() === totalPages()"
+      (click)="nextPage()"
+    >
+      Next
+      <i class="fas fa-chevron-right"></i>
+    </button>
+  </div>
+  }
+</div>
+
+<!-- User Profile Modal -->
+@if (showUserModal()) {
+<div class="modal-overlay" (click)="closeUserModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>User Profile</h2>
+      <button class="modal-close" (click)="closeUserModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      @if (selectedUser()) {
+      <div class="profile-section">
+        <div class="profile-header">
+          <div class="profile-avatar">
+            <i class="fas fa-user"></i>
+          </div>
+          <div class="profile-info">
+            <h3>{{ selectedUser()!.fullName }}</h3>
+            <p class="profile-email">{{ selectedUser()!.email }}</p>
+            <div class="profile-badges">
+              <span
+                class="badge role-badge"
+                [ngClass]="getRoleClass(selectedUser()!.role)"
+              >
+                {{ getRoleDisplay(selectedUser()!.role) }}
+              </span>
+              <span
+                class="badge status-badge"
+                [ngClass]="getStatusClass(selectedUser()!.status)"
+              >
+                {{ getStatusDisplay(selectedUser()!.status) }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="profile-details">
+          @if (selectedUser() && selectedUser()!.role &&
+          selectedUser()!.role.toLowerCase() === 'teacher' &&
+          selectedUser()!.teacherProfile) {
+          <div class="detail-group">
+            <h4><i class="fas fa-graduation-cap"></i> Qualification</h4>
+            <p>
+              {{
+                selectedUser()!.teacherProfile?.qualification || "Not provided"
+              }}
+            </p>
+          </div>
+          <div class="detail-group">
+            <h4><i class="fas fa-briefcase"></i> Experience</h4>
+            <p>
+              {{ selectedUser()!.teacherProfile?.experienceYears || "N/A" }}
+              years
+            </p>
+          </div>
+          <div class="detail-group">
+            <h4><i class="fas fa-star"></i> Specialization</h4>
+            <p>
+              {{
+                selectedUser()!.teacherProfile?.specialization || "Not provided"
+              }}
+            </p>
+          </div>
+          @if (selectedUser()!.teacherProfile?.bio) {
+          <div class="detail-group">
+            <h4><i class="fas fa-info-circle"></i> Bio</h4>
+            <p>{{ selectedUser()!.teacherProfile?.bio }}</p>
+          </div>
+          } } @if (selectedUser() && selectedUser()!.role &&
+          selectedUser()!.role.toLowerCase() === 'student' &&
+          selectedUser()!.studentProfile) {
+          <div class="detail-group">
+            <h4><i class="fas fa-birthday-cake"></i> Age</h4>
+            <p>
+              {{ selectedUser()!.studentProfile?.age || "Not provided" }} years
+            </p>
+          </div>
+          <div class="detail-group">
+            <h4><i class="fas fa-book"></i> Class Level</h4>
+            <p>
+              {{ selectedUser()!.studentProfile?.classLevel || "Not provided" }}
+            </p>
+          </div>
+          <div class="detail-group">
+            <h4><i class="fas fa-user-friends"></i> Parent Name</h4>
+            <p>
+              {{ selectedUser()!.studentProfile?.parentName || "Not provided" }}
+            </p>
+          </div>
+          <div class="detail-group">
+            <h4><i class="fas fa-phone"></i> Contact Number</h4>
+            <p>
+              {{
+                selectedUser()!.studentProfile?.contactNumber || "Not provided"
+              }}
+            </p>
+          </div>
+          } @if (!selectedUser()!.teacherProfile &&
+          !selectedUser()!.studentProfile) {
+          <div class="detail-group">
+            <p class="no-profile">
+              No additional profile information available.
+            </p>
+          </div>
+          }
+        </div>
+      </div>
+      }
+    </div>
+    <div class="modal-footer">
+      <button class="btn-modal btn-secondary" (click)="closeUserModal()">
+        Close
+      </button>
+    </div>
+  </div>
+</div>
+}
+
+<!-- Confirmation Modal -->
+@if (showConfirmModal()) {
+<div class="modal-overlay" (click)="closeConfirmModal()">
+  <div class="modal-content modal-confirm" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Confirm Action</h2>
+      <button class="modal-close" (click)="closeConfirmModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="confirm-content">
+        <div
+          class="confirm-icon"
+          [ngClass]="
+            confirmAction() === 'approve' ? 'icon-approve' : 'icon-reject'
+          "
+        >
+          <i
+            [class]="
+              confirmAction() === 'approve'
+                ? 'fas fa-check-circle'
+                : 'fas fa-times-circle'
+            "
+          ></i>
+        </div>
+        <h3>
+          Are you sure you want to
+          {{ confirmAction() === "approve" ? "approve" : "reject" }}
+          <strong>{{ selectedUser()?.fullName }}</strong
+          >?
+        </h3>
+        <p>
+          This action will
+          {{ confirmAction() === "approve" ? "approve" : "reject" }} the user
+          and update their status accordingly.
+        </p>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-modal btn-secondary" (click)="closeConfirmModal()">
+        Cancel
+      </button>
+      <button
+        class="btn-modal"
+        [ngClass]="confirmAction() === 'approve' ? 'btn-approve' : 'btn-reject'"
+        (click)="confirmActionHandler()"
+      >
+        {{ confirmAction() === "approve" ? "Approve" : "Reject" }}
+      </button>
+    </div>
+  </div>
+</div>
+}
+
+<!-- Add New User Modal -->
+@if (showAddUserModal()) {
+<div class="modal-overlay" (click)="closeAddUserModal()">
+  <div class="modal-content modal-add-user" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Add New User</h2>
+      <button class="modal-close" (click)="closeAddUserModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="addUserForm" (ngSubmit)="onSubmitAddUser()">
+        <!-- Role Selection -->
+        <div class="form-group mb-3">
+          <label class="form-label">User Role</label>
+          <div class="role-selection">
+            <button
+              type="button"
+              class="role-btn"
+              [class.active]="selectedRole() === 'teacher'"
+              (click)="onRoleChange('teacher')"
+            >
+              <i class="fas fa-chalkboard-teacher"></i>
+              Teacher
+            </button>
+            <button
+              type="button"
+              class="role-btn"
+              [class.active]="selectedRole() === 'student'"
+              (click)="onRoleChange('student')"
+            >
+              <i class="fas fa-user-graduate"></i>
+              Student
+            </button>
+          </div>
+        </div>
+
+        <!-- Common Fields -->
+        <div class="form-group mb-3">
+          <label for="fullName" class="form-label">
+            <i class="fas fa-user me-2"></i>Full Name
+          </label>
+          <input
+            type="text"
+            class="form-control"
+            id="fullName"
+            formControlName="fullName"
+            placeholder="Enter full name"
+            [class.is-invalid]="
+              addUserForm.get('fullName')?.invalid &&
+              addUserForm.get('fullName')?.touched
+            "
+          />
+          @if (addUserForm.get('fullName')?.invalid &&
+          addUserForm.get('fullName')?.touched) {
+          <div class="invalid-feedback">
+            Full name is required (min. 2 characters)
+          </div>
+          }
+        </div>
+
+        <div class="form-group mb-3">
+          <label for="email" class="form-label">
+            <i class="fas fa-envelope me-2"></i>Email Address
+          </label>
+          <input
+            type="email"
+            class="form-control"
+            id="email"
+            formControlName="email"
+            placeholder="Enter email address"
+            [class.is-invalid]="
+              addUserForm.get('email')?.invalid &&
+              addUserForm.get('email')?.touched
+            "
+          />
+          @if (addUserForm.get('email')?.invalid &&
+          addUserForm.get('email')?.touched) {
+          <div class="invalid-feedback">Valid email is required</div>
+          }
+        </div>
+
+        <!-- Teacher Specific Fields -->
+        @if (selectedRole() === 'teacher') {
+        <div class="form-group mb-3">
+          <label for="qualification" class="form-label">
+            <i class="fas fa-graduation-cap me-2"></i>Qualification
+          </label>
+          <input
+            type="text"
+            class="form-control"
+            id="qualification"
+            formControlName="qualification"
+            placeholder="e.g., B.Ed, M.Sc Mathematics"
+            [class.is-invalid]="
+              addUserForm.get('qualification')?.invalid &&
+              addUserForm.get('qualification')?.touched
+            "
+          />
+          @if (addUserForm.get('qualification')?.invalid &&
+          addUserForm.get('qualification')?.touched) {
+          <div class="invalid-feedback">Qualification is required</div>
+          }
+        </div>
+
+        <div class="form-group mb-3">
+          <label for="experienceYears" class="form-label">
+            <i class="fas fa-briefcase me-2"></i>Years of Experience
+          </label>
+          <input
+            type="number"
+            class="form-control"
+            id="experienceYears"
+            formControlName="experienceYears"
+            placeholder="Enter years of experience"
+            min="0"
+            [class.is-invalid]="
+              addUserForm.get('experienceYears')?.invalid &&
+              addUserForm.get('experienceYears')?.touched
+            "
+          />
+          @if (addUserForm.get('experienceYears')?.invalid &&
+          addUserForm.get('experienceYears')?.touched) {
+          <div class="invalid-feedback">
+            Experience years is required (min. 0)
+          </div>
+          }
+        </div>
+
+        <div class="form-group mb-3">
+          <label for="specialization" class="form-label">
+            <i class="fas fa-star me-2"></i>Specialization
+          </label>
+          <input
+            type="text"
+            class="form-control"
+            id="specialization"
+            formControlName="specialization"
+            placeholder="e.g., Abacus, Vedic Maths"
+            [class.is-invalid]="
+              addUserForm.get('specialization')?.invalid &&
+              addUserForm.get('specialization')?.touched
+            "
+          />
+          @if (addUserForm.get('specialization')?.invalid &&
+          addUserForm.get('specialization')?.touched) {
+          <div class="invalid-feedback">Specialization is required</div>
+          }
+        </div>
+
+        <div class="form-group mb-3">
+          <label for="bio" class="form-label">
+            <i class="fas fa-info-circle me-2"></i>Bio (Optional)
+          </label>
+          <textarea
+            class="form-control"
+            id="bio"
+            formControlName="bio"
+            rows="3"
+            placeholder="Tell us about yourself..."
+          ></textarea>
+        </div>
+        }
+
+        <!-- Student Specific Fields -->
+        @if (selectedRole() === 'student') {
+        <div class="form-group mb-3">
+          <label for="age" class="form-label">
+            <i class="fas fa-birthday-cake me-2"></i>Age
+          </label>
+          <input
+            type="number"
+            class="form-control"
+            id="age"
+            formControlName="age"
+            placeholder="Enter student's age"
+            min="5"
+            max="18"
+            [class.is-invalid]="
+              addUserForm.get('age')?.invalid && addUserForm.get('age')?.touched
+            "
+          />
+          @if (addUserForm.get('age')?.invalid &&
+          addUserForm.get('age')?.touched) {
+          <div class="invalid-feedback">Age is required (between 5 and 18)</div>
+          }
+        </div>
+
+        <div class="form-group mb-3">
+          <label for="classLevel" class="form-label">
+            <i class="fas fa-book me-2"></i>Class Level
+          </label>
+          <input
+            type="text"
+            class="form-control"
+            id="classLevel"
+            formControlName="classLevel"
+            placeholder="e.g., Grade 5, Class 3"
+            [class.is-invalid]="
+              addUserForm.get('classLevel')?.invalid &&
+              addUserForm.get('classLevel')?.touched
+            "
+          />
+          @if (addUserForm.get('classLevel')?.invalid &&
+          addUserForm.get('classLevel')?.touched) {
+          <div class="invalid-feedback">Class level is required</div>
+          }
+        </div>
+
+        <div class="form-group mb-3">
+          <label for="parentName" class="form-label">
+            <i class="fas fa-user-friends me-2"></i>Parent/Guardian Name
+          </label>
+          <input
+            type="text"
+            class="form-control"
+            id="parentName"
+            formControlName="parentName"
+            placeholder="Enter parent/guardian name"
+            [class.is-invalid]="
+              addUserForm.get('parentName')?.invalid &&
+              addUserForm.get('parentName')?.touched
+            "
+          />
+          @if (addUserForm.get('parentName')?.invalid &&
+          addUserForm.get('parentName')?.touched) {
+          <div class="invalid-feedback">Parent/Guardian name is required</div>
+          }
+        </div>
+
+        <div class="form-group mb-3">
+          <label for="contactNumber" class="form-label">
+            <i class="fas fa-phone me-2"></i>Contact Number
+          </label>
+          <input
+            type="tel"
+            class="form-control"
+            id="contactNumber"
+            formControlName="contactNumber"
+            placeholder="Enter contact number"
+            [class.is-invalid]="
+              addUserForm.get('contactNumber')?.invalid &&
+              addUserForm.get('contactNumber')?.touched
+            "
+          />
+          @if (addUserForm.get('contactNumber')?.invalid &&
+          addUserForm.get('contactNumber')?.touched) {
+          <div class="invalid-feedback">Contact number is required</div>
+          }
+        </div>
+        }
+
+        <!-- Password Info -->
+        <div class="alert alert-info mb-3">
+          <i class="fas fa-info-circle me-2"></i>
+          <strong>Default Password:</strong> Tinyvividminds&#64;123
+        </div>
+
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn-modal btn-secondary"
+            (click)="closeAddUserModal()"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="btn-modal btn-primary"
+            [disabled]="addUserForm.invalid || isSubmitting()"
+          >
+            @if (isSubmitting()) {
+            <i class="fas fa-spinner fa-spin me-2"></i>Creating... } @else {
+            <i class="fas fa-user-plus me-2"></i>Create User }
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+}

@@ -1,0 +1,93 @@
+/* Desktop Sidebar */
+.sidebar {
+  background: var(--gradient-primary);
+  width: 250px;
+  height: calc(100vh - 75px);
+  position: fixed;
+  top: 78px;
+  left: 0;
+  padding: 30px 20px;
+  color: white;
+  box-shadow: 4px 0 12px rgba(0, 0, 0, 0.08);
+  font-family: 'Poppins', sans-serif;
+  overflow-y: auto;
+  border-top-right-radius: 0px;
+  z-index: 1050;
+  transition: all 0.3s ease-in-out;
+}
+
+.sidebar h2 {
+  text-align: center;
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  font-weight: bold;
+  color: white;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar ul li {
+  margin-bottom: 10px;
+}
+
+.sidebar ul li a {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: white;
+  text-decoration: none;
+  padding: 12px 18px;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  font-size: 16px;
+}
+
+.sidebar ul li a:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.sidebar ul li a.active {
+  background-color: rgba(255, 255, 255, 0.25);
+  font-weight: 700;
+}
+
+/* Sidebar Toggle Button */
+.sidebar-toggle {
+  display: none;
+}
+
+/* Adjust sidebar for small screens */
+@media (max-width: 991.98px) {
+  .sidebar {
+    position: static;
+    width: 100%;
+    height: auto;
+    box-shadow: none;
+    padding: 10px;
+    border-radius: 0;
+  }
+
+  .sidebar-toggle {
+    display: block;
+    padding: 0.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: var(--gradient-primary);
+    color: white;
+    cursor: pointer;
+    margin-bottom: 1rem;
+    border-radius: 5px;
+  }
+
+  .sidebar ul {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .sidebar ul li {
+    margin-bottom: 10px;
+  }
+}

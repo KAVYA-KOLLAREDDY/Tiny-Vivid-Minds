@@ -1,0 +1,624 @@
+<!-- Social Media Sidebar -->
+<app-social-sidebar></app-social-sidebar>
+
+<!-- Hero Section -->
+<section class="course-hero coaching-hero">
+  <!-- Skip Link for Accessibility -->
+  <a href="#benefits" class="skip-link">Skip to main content</a>
+
+  <div class="container">
+    <div class="row align-items-center min-vh-50">
+      <div class="col-lg-12 text-center">
+        <div class="hero-content">
+          <h1 class="hero-title">
+            Learning made personal —
+            <span class="text-gradient">tailored online classes</span> just for
+            your child
+          </h1>
+          <p class="hero-subtitle">
+            Customized one-on-one sessions in Math, HandWriting, and Phonetics
+            that strengthen skills and build confidence through engaging,
+            personalized learning experiences.
+          </p>
+          <!-- Tab Navigation -->
+          <div
+            class="hero-tabs mt-5"
+            role="tablist"
+            aria-label="Available courses"
+          >
+            <div class="tab-indicators">
+              <div class="tab-line" role="presentation"></div>
+              <div class="tab-line" role="presentation"></div>
+              <div class="tab-line" role="presentation"></div>
+            </div>
+            <div class="tab-labels">
+              <span
+                class="tab-label"
+                role="tab"
+                tabindex="0"
+                aria-selected="true"
+                >Mathematics</span
+              >
+              <span
+                class="tab-label"
+                role="tab"
+                tabindex="0"
+                aria-selected="false"
+                >HandWriting</span
+              >
+              <span
+                class="tab-label"
+                role="tab"
+                tabindex="0"
+                aria-selected="false"
+                >Phonetics</span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Benefits Section - Personalized Lesson Design -->
+<section id="benefits" class="benefits-section section-padding">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 mx-auto text-center mb-5">
+        <div class="section-header">
+          <span class="section-category">Benefits</span>
+          <h2 class="section-title fade-in">
+            <span class="text-gradient">Personalized learning for every child</span>
+          </h2>
+          <p class="section-subtitle fade-in">
+            Comprehensive learning approach tailored to individual student needs across Math, HandWriting, and Phonetics
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="row align-items-center">
+      <div class="col-lg-6">
+        <div class="benefits-content">
+          <div class="benefit-item fade-in scale-in">
+            <div class="benefit-icon">
+              <i class="fas fa-cogs fa-2x text-primary"></i>
+            </div>
+            <div class="benefit-content">
+              <h4 class="benefit-title">Individualized attention</h4>
+              <p class="benefit-description">
+                One-on-one sessions that focus on your child's unique learning style and pace
+              </p>
+            </div>
+          </div>
+          <div class="benefit-item fade-in scale-in">
+            <div class="benefit-icon">
+              <i class="fas fa-route fa-2x text-secondary"></i>
+            </div>
+            <div class="benefit-content">
+              <h4 class="benefit-title">Adaptive learning strategies</h4>
+              <p class="benefit-description">
+                Targeted lessons that bridge gaps and accelerate understanding in Math, HandWriting, and Phonetics
+              </p>
+            </div>
+          </div>
+          <div class="benefit-item fade-in scale-in">
+            <div class="benefit-icon">
+              <i class="fas fa-globe fa-2x text-accent"></i>
+            </div>
+            <div class="benefit-content">
+              <h4 class="benefit-title">Comprehensive skill development</h4>
+              <p class="benefit-description">
+                Support that aligns with school curriculum and builds essential life skills
+              </p>
+            </div>
+          </div>
+          <div class="benefit-item fade-in scale-in">
+            <div class="benefit-icon">
+              <i class="fas fa-brain fa-2x text-success"></i>
+            </div>
+            <div class="benefit-content">
+              <h4 class="benefit-title">Confidence through mastery</h4>
+              <p class="benefit-description">
+                Skill-building approach that develops critical thinking and academic excellence
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="benefits-image p-5">
+          <div class="image-placeholder">
+            <img
+              src="/abacusBackside3.png"
+              alt="Personalized Math Coaching"
+              style="
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                border-radius: 14px;
+              "
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row mt-4">
+      <div class="col-12 text-center">
+        <div class="benefits-cta">
+          <a href="#learning" class="btn btn-outline-primary me-3"
+            >Learn more</a
+          >
+          <a href="#learning" class="btn btn-link"
+            >Explore <i class="fas fa-arrow-right"></i
+          ></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Learning Section - Interactive Online Sessions -->
+<section id="learning" class="learning-section section-padding bg-light">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 mx-auto text-center mb-5">
+        <div class="section-header">
+          <span class="section-category">Courses</span>
+          <h2 class="section-title fade-in">
+            <span class="text-gradient">Our personalized courses</span>
+          </h2>
+          <p class="section-subtitle fade-in">
+            Specialized one-on-one instruction in essential academic skills
+          </p>
+        </div>
+      </div>
+    </div>
+    <!-- Course Carousel -->
+    <div class="courses-carousel-container">
+      <div
+        class="courses-carousel"
+        (mouseenter)="onCarouselMouseEnter()"
+        (mouseleave)="onCarouselMouseLeave()"
+      >
+        <div class="carousel-wrapper">
+          <div
+            class="carousel-slide"
+            *ngFor="let course of courses; let i = index"
+            [class.active]="i === currentSlide"
+            [attr.aria-hidden]="i !== currentSlide"
+          >
+            <div class="carousel-card">
+              <div class="card-image-section">
+                <div class="card-image-container">
+                  <img
+                    [src]="course.image"
+                    [alt]="course.title + ' Course'"
+                    class="card-image"
+                  />
+                  <div class="card-overlay">
+                    <div class="card-icon">
+                      <i [class]="course.icon + ' fa-3x'"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="card-content-section">
+                <div class="card-header">
+                  <h3 class="card-title">{{ course.title }}</h3>
+                  <div class="card-accent-line"></div>
+                </div>
+                <p class="card-description">{{ course.description }}</p>
+                <div class="card-features">
+                  <div class="feature-item">
+                    <i class="fas fa-user-graduate text-primary me-2"></i>
+                    <span>One-on-One Instruction</span>
+                  </div>
+                  <div class="feature-item">
+                    <i class="fas fa-clock text-secondary me-2"></i>
+                    <span>Flexible Scheduling</span>
+                  </div>
+                  <div class="feature-item">
+                    <i class="fas fa-chart-line text-accent me-2"></i>
+                    <span>Progress Tracking</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Carousel Navigation -->
+        <button
+          class="carousel-nav carousel-prev"
+          (click)="prevSlide()"
+          aria-label="Previous course"
+        >
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        <button
+          class="carousel-nav carousel-next"
+          (click)="nextSlide()"
+          aria-label="Next course"
+        >
+          <i class="fas fa-chevron-right"></i>
+        </button>
+
+        <!-- Carousel Indicators -->
+        <div class="carousel-indicators">
+          <button
+            class="indicator"
+            *ngFor="let course of courses; let i = index"
+            [class.active]="i === currentSlide"
+            (click)="goToSlide(i)"
+            [attr.aria-label]="'Go to ' + course.title + ' course'"
+          ></button>
+        </div>
+
+        <!-- Auto-play Toggle -->
+        <button
+          class="autoplay-toggle"
+          (click)="toggleAutoPlay()"
+          [attr.aria-label]="isAutoPlaying ? 'Pause auto-play' : 'Start auto-play'"
+        >
+          <i [class]="isAutoPlaying ? 'fas fa-pause' : 'fas fa-play'"></i>
+        </button>
+      </div>
+    </div>
+    <div class="row mt-4">
+      <div class="col-12 text-center">
+        <div class="learning-cta">
+          <a href="#tools" class="btn btn-link me-3">Explore</a>
+          <a href="#tools" class="btn btn-link"
+            >Explore <i class="fas fa-arrow-right"></i
+          ></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Tools Section - Our Learning Resources -->
+<section id="tools" class="tools-section section-padding">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-6">
+        <div class="tools-content">
+          <div class="section-header">
+            <span class="section-category">Tools</span>
+            <h2 class="section-title fade-in">
+              Our <span class="text-gradient">learning resources</span>
+            </h2>
+            <p class="section-subtitle fade-in">
+              Comprehensive digital tools to support personalized learning across all subjects
+            </p>
+          </div>
+          <div class="tools-features">
+            <div class="tool-feature">
+              <div class="tool-icon">
+                <i class="fas fa-desktop fa-2x text-primary"></i>
+              </div>
+              <span class="tool-text"
+                >Interactive digital learning ecosystem</span
+              >
+            </div>
+            <div class="tool-feature">
+              <div class="tool-icon">
+                <i class="fas fa-wrench fa-2x text-secondary"></i>
+              </div>
+              <span class="tool-text">Adaptive learning tools for all subjects</span>
+            </div>
+            <div class="tool-feature">
+              <div class="tool-icon">
+                <i class="fas fa-globe fa-2x text-accent"></i>
+              </div>
+              <span class="tool-text"
+                >Comprehensive support beyond classroom walls</span
+              >
+            </div>
+          </div>
+          <div class="tools-cta mt-4">
+            <a href="#students" class="btn btn-outline-primary me-3">Explore</a>
+            <a href="#students" class="btn btn-link"
+              >Details <i class="fas fa-arrow-right"></i
+            ></a>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="tools-image">
+          <div class="image-placeholder">
+            <img
+              src="/abacusBackside3.png"
+              alt="Learning tools"
+              style="
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                border-radius: 14px;
+              "
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Students Section - Who Can Benefit -->
+<section id="students" class="students-section section-padding bg-light">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-6">
+        <div class="students-image">
+          <div class="image-placeholder">
+            <img
+              src="/abacusBackside2.jpeg"
+              alt="Students learning"
+              style="
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                border-radius: 14px;
+              "
+            />
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="students-content">
+          <div class="section-header">
+            <span class="section-category">Students</span>
+            <h2 class="section-title fade-in">
+              Who can benefit from our
+              <span class="text-gradient">personalized courses</span>
+            </h2>
+            <p class="section-subtitle fade-in">
+              Our personalized approach supports diverse learning needs and
+              skill levels across Math, HandWriting, and Phonetics.
+            </p>
+          </div>
+          <div class="students-features">
+            <div class="student-feature">
+              <i class="fas fa-check-circle text-success me-2"></i>
+              <span
+                >Empowering young learners from elementary to high school in Math, HandWriting, and Phonetics</span
+              >
+            </div>
+            <div class="student-feature">
+              <i class="fas fa-check-circle text-success me-2"></i>
+              <span>Targeted support for struggling and advanced learners</span>
+            </div>
+            <div class="student-feature">
+              <i class="fas fa-check-circle text-success me-2"></i>
+              <span
+                >Flexible learning paths for every academic journey</span
+              >
+            </div>
+          </div>
+          <div class="students-cta mt-4">
+            <a href="#pathways" class="btn btn-outline-primary me-3"
+              >Discover</a
+            >
+            <a href="#pathways" class="btn btn-link"
+              >Learn <i class="fas fa-arrow-right"></i
+            ></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Pathways Section - Flexible Learning Pathways -->
+<section id="pathways" class="pathways-section section-padding">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-6">
+        <div class="pathways-content">
+          <div class="pathway-item fade-in scale-in">
+            <h4 class="pathway-title">Flexible learning pathways</h4>
+            <p class="pathway-description">Personalized individual attention</p>
+          </div>
+          <div class="pathway-item fade-in scale-in">
+            <h4 class="pathway-title">Adaptive learning strategies</h4>
+            <p class="pathway-description">
+              Discover multiple approaches to learning that adapt to your
+              child's unique needs and learning style across Math, HandWriting, and Phonetics. Our flexible formats
+              ensure engaging and effective academic growth.
+            </p>
+          </div>
+          <div class="pathway-item fade-in scale-in">
+            <h4 class="pathway-title">Comprehensive learning formats</h4>
+            <p class="pathway-description">
+              We offer diverse learning options to match each student's unique
+              potential. From personalized one-on-one sessions to
+              small group instruction, our approach ensures comprehensive support.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="pathways-image">
+          <div class="image-placeholder">
+            <img
+              src="/abacusBackside.jpeg"
+              alt="Learning pathways"
+              style="
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                border-radius: 14px;
+              "
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="testimonials-section section-padding">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 mx-auto text-center mb-5">
+        <h2 class="section-title fade-in">
+          What Parents Say About Our
+          <span class="text-gradient">Personalized Courses</span>
+        </h2>
+        <p class="section-subtitle fade-in">
+          Real feedback from families who have experienced the benefits of
+          one-on-one instruction in Math, HandWriting, and Phonetics
+        </p>
+      </div>
+    </div>
+    <!-- Loading State -->
+    <div *ngIf="isLoadingTestimonials" class="row">
+      <div class="col-12 text-center">
+        <div class="testimonial-loading">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p class="mt-3 text-muted">Loading testimonials...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- No Testimonials State -->
+    <div
+      *ngIf="!isLoadingTestimonials && testimonials.length === 0"
+      class="row"
+    >
+      <div class="col-12 text-center">
+        <div class="no-testimonials">
+          <div class="stars mb-4">
+            <i class="fas fa-star text-warning"></i>
+            <i class="fas fa-star text-warning"></i>
+            <i class="fas fa-star text-warning"></i>
+            <i class="fas fa-star text-warning"></i>
+            <i class="fas fa-star text-warning"></i>
+          </div>
+          <p class="testimonial-text">
+            "Be the first to share your Personalized Coaching experience!"
+          </p>
+          <div class="no-testimonials-cta mt-4">
+            <a routerLink="/feedback" class="btn btn-primary">
+              <i class="fas fa-comment me-2"></i>
+              Share Your Experience
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dynamic Testimonials -->
+    <div *ngIf="!isLoadingTestimonials && testimonials.length > 0" class="row">
+      <div
+        *ngFor="let testimonial of getCurrentPageTestimonials(); let i = index"
+        class="col-lg-6 col-md-6 mb-4"
+      >
+        <div class="testimonial-card custom-card testimonial-visible">
+          <div class="testimonial-content">
+            <div class="stars mb-3">
+              <i
+                *ngFor="let starClass of generateStars(testimonial.rating)"
+                [class]="starClass + ' text-warning'"
+              ></i>
+            </div>
+            <p class="testimonial-text">"{{ testimonial.message }}"</p>
+            <div class="testimonial-author">
+              <div class="author-avatar">
+                <div class="avatar-initial">
+                  {{ testimonial.name.charAt(0).toUpperCase() }}
+                </div>
+              </div>
+              <div class="author-info">
+                <h6 class="author-name">{{ testimonial.name }}</h6>
+                <p class="author-role">
+                  Parent
+                  <span *ngIf="testimonial.childName">
+                    of {{ testimonial.childName }}
+                    <span *ngIf="testimonial.childAge">
+                      (Age {{ testimonial.childAge }})</span
+                    >
+                  </span>
+                </p>
+                <small class="testimonial-date text-muted">
+                  {{ formatDate(testimonial.createdAt) }}
+                </small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pagination Controls -->
+    <div
+      *ngIf="!isLoadingTestimonials && testimonials.length > 1"
+      class="row mt-4"
+    >
+      <div class="col-12">
+        <!-- Navigation Arrows -->
+        <div class="testimonial-navigation">
+          <button
+            class="nav-btn prev-btn"
+            (click)="prevPage()"
+            [disabled]="currentPage === 1"
+          >
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          <button
+            class="nav-btn next-btn"
+            (click)="nextPage()"
+            [disabled]="currentPage === totalPages"
+          >
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+
+        <!-- Pagination Dots -->
+        <div class="testimonial-pagination">
+          <span
+            *ngFor="let page of [].constructor(totalPages); let i = index"
+            class="dot"
+            [class.active]="i + 1 === currentPage"
+            (click)="goToPage(i + 1)"
+          ></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section section-padding">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 mx-auto text-center">
+        <div class="cta-content fade-in">
+          <h2 class="cta-title">
+            Empower Your Child's Learning Journey One Personalized Step at a Time!
+          </h2>
+          <p class="cta-subtitle">
+            Help your child build essential skills in Math, HandWriting, and Phonetics — with personalized
+            online classes made just for them!
+          </p>
+          <div class="cta-buttons">
+            <a
+              routerLink="/contact"
+              fragment="book-demo"
+              class="btn btn-primary btn-lg me-3"
+            >
+              <i class="fas fa-calendar-alt me-2"></i>Book Free Demo
+            </a>
+            <a routerLink="/contact" class="btn btn-outline-light btn-lg">
+              <i class="fas fa-phone me-2"></i>Contact Us
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,330 @@
+<div class="student-assignment-container">
+  <div class="page-header">
+    <h1>Assign Students</h1>
+  </div>
+
+  <!-- Assignment Form -->
+  <div class="assignment-form-section">
+    <div class="form-card">
+      <h3 class="form-title">
+        <i class="fas fa-user-graduate"></i>
+        Assign Student(s) to Teacher
+      </h3>
+      <div class="form-content">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Select Course *</label>
+            <select 
+              class="form-select" 
+              [ngModel]="selectedCourseId()?.toString() || ''"
+              (ngModelChange)="onCourseChange($event)"
+              [disabled]="isLoading() || courses().length === 0">
+              <option value="">-- Select Course --</option>
+              @if (isLoading()) {
+                <option disabled>Loading courses...</option>
+              } @else {
+                @for (course of courses(); track course.courseId) {
+                  <option [value]="course.courseId.toString()">{{ course.courseName }}</option>
+                }
+              }
+            </select>
+            @if (courses().length === 0 && !isLoading()) {
+              <span class="error-text">No courses available. Please create a course first.</span>
+            }
+          </div>
+
+          <div class="form-group">
+            <label>Select Teacher *</label>
+            <select 
+              class="form-select" 
+              [ngModel]="selectedTeacherId()?.toString() || ''"
+              (ngModelChange)="onTeacherChange($event)"
+              [disabled]="isLoading() || teachers().length === 0">
+              <option value="">-- Select Teacher --</option>
+              @if (isLoading()) {
+                <option disabled>Loading teachers...</option>
+              } @else {
+                @for (teacher of teachers(); track teacher.userId) {
+                  <option [value]="teacher.userId.toString()">{{ teacher.fullName || 'Unknown' }} ({{ teacher.email || 'No email' }})</option>
+                }
+              }
+            </select>
+            @if (teachers().length === 0 && !isLoading()) {
+              <span class="error-text">No approved teachers available.</span>
+            }
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Select Student(s) *</label>
+          <select 
+            class="form-select form-select-multi" 
+            multiple
+            size="5"
+            [disabled]="isLoading() || students().length === 0 || !selectedCourseId()"
+            (change)="onStudentChange($event)">
+            @for (student of students(); track student.userId) {
+              <option 
+                [value]="student.userId"
+                [class.already-assigned]="isStudentAlreadyAssigned(student.userId)"
+                [disabled]="isStudentAlreadyAssigned(student.userId)">
+                {{ student.fullName }} ({{ student.email }})
+                @if (isStudentAlreadyAssigned(student.userId)) {
+                  <span class="assignment-note"> - Already assigned to this course</span>
+                }
+              </option>
+            }
+          </select>
+          <div class="form-help">
+            <i class="fas fa-info-circle"></i>
+            <span>Hold Ctrl (Windows) or Cmd (Mac) to select multiple students</span>
+          </div>
+          @if (selectedStudentIds().length > 0) {
+            <div class="selected-count">
+              {{ selectedStudentIds().length }} student(s) selected
+            </div>
+          }
+          @if (students().length === 0 && !isLoading()) {
+            <span class="error-text">No approved students available.</span>
+          }
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Preferred Time *</label>
+            <div class="time-input-group">
+              <input 
+                type="time" 
+                class="form-control"
+                [value]="preferredTime()"
+                (change)="onTimeChange($any($event.target).value)"
+                [disabled]="isLoading()"
+                required>
+              <select 
+                class="form-select timezone-select"
+                [value]="timezone()"
+                (change)="onTimezoneChange($any($event.target).value)"
+                [disabled]="isLoading()">
+                <option value="US">US (EST/EDT)</option>
+                <option value="Indian">Indian (IST)</option>
+              </select>
+            </div>
+            <div class="form-help">
+              <i class="fas fa-clock"></i>
+              <span>Select the preferred time and timezone for classes</span>
+            </div>
+            @if (preferredTime()) {
+              <div class="time-preview">
+                <i class="fas fa-eye"></i>
+                <span>Selected: {{ formatTimeWithTimezone(preferredTime()) }}</span>
+              </div>
+            }
+          </div>
+
+          <div class="form-group">
+            <label>Duration (minutes) *</label>
+            <input 
+              type="number" 
+              class="form-control"
+              [value]="durationMinutes()"
+              (change)="onDurationChange($any($event.target).value)"
+              [disabled]="isLoading()"
+              min="15"
+              max="480"
+              step="15"
+              required>
+            <div class="form-help">
+              <i class="fas fa-hourglass-half"></i>
+              <span>Class duration in minutes (e.g., 60 for 1 hour)</span>
+            </div>
+            @if (durationMinutes()) {
+              <div class="time-preview">
+                <i class="fas fa-info-circle"></i>
+                <span>{{ formatDuration(durationMinutes()) }}</span>
+              </div>
+            }
+          </div>
+
+          <div class="form-group">
+            <label>Start Date *</label>
+            <input 
+              type="date" 
+              class="form-control"
+              [value]="startDate()"
+              (change)="onStartDateChange($any($event.target).value)"
+              [disabled]="isLoading()"
+              [min]="getTodayDate()"
+              required>
+            <div class="form-help">
+              <i class="fas fa-calendar-alt"></i>
+              <span>Select when the assignment should start</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>End Date</label>
+            <input 
+              type="date" 
+              class="form-control"
+              [value]="endDate()"
+              (change)="onEndDateChange($any($event.target).value)"
+              [disabled]="isLoading()"
+              [min]="getMinEndDate()">
+            <div class="form-help">
+              <i class="fas fa-calendar-check"></i>
+              <span>Optional: Select when the assignment should end</span>
+            </div>
+            @if (endDate() && startDate() && endDate() < startDate()) {
+              <span class="error-text">
+                <i class="fas fa-exclamation-circle"></i>
+                End date must be after start date
+              </span>
+            }
+          </div>
+        </div>
+
+        @if (hasDuplicateAssignments()) {
+          <div class="alert alert-error">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>One or more selected students are already assigned to a teacher for this course.</span>
+          </div>
+        }
+
+        <div class="form-actions">
+          <button 
+            class="btn-assign" 
+            (click)="assignStudents()"
+            [disabled]="!canAssign() || isAssigning()">
+            @if (isAssigning()) {
+              <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+              <span>Assigning...</span>
+            } @else {
+              <i class="fas fa-link"></i>
+              <span>Assign Student(s)</span>
+            }
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Assignments Table -->
+  <div class="assignments-section">
+    <div class="section-header">
+      <h2>
+        <i class="fas fa-list"></i>
+        Student Assignments
+      </h2>
+      <button 
+        class="btn-refresh" 
+        (click)="loadAssignments()"
+        [disabled]="isLoadingAssignments()"
+        title="Refresh assignments">
+        <i class="fas fa-sync-alt" [class.spinning]="isLoadingAssignments()"></i>
+        <span>Refresh</span>
+      </button>
+    </div>
+
+    <div class="table-container">
+      <div class="table-wrapper">
+        <table class="assignments-table">
+          <thead>
+            <tr>
+              <th>Student</th>
+              <th>Teacher</th>
+              <th>Course</th>
+              <th>Start Date</th>
+              <th>End Date</th>
+              <th>Preferred Time</th>
+              <th>Duration</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            @if (isLoadingAssignments()) {
+              <tr>
+                <td colspan="8" class="loading-cell">
+                  <div class="spinner-container">
+                    <div class="spinner-border text-primary" role="status">
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p>Loading assignments...</p>
+                  </div>
+                </td>
+              </tr>
+            } @else {
+              @for (assignment of assignments(); track assignment.assignmentId || $index) {
+                <tr>
+                  <td class="student-cell">
+                    <div class="student-info">
+                      <i class="fas fa-user-graduate"></i>
+                      <span>{{ assignment.studentName || getStudentName(assignment.studentId) }}</span>
+                    </div>
+                  </td>
+                  <td class="teacher-cell">
+                    <div class="teacher-info">
+                      <i class="fas fa-chalkboard-teacher"></i>
+                      <span>{{ assignment.teacherName || getTeacherName(assignment.teacherId) }}</span>
+                    </div>
+                  </td>
+                  <td class="course-cell">
+                    <div class="course-info">
+                      <i class="fas fa-book"></i>
+                      <span>{{ assignment.courseName || getCourseName(assignment.courseId) }}</span>
+                    </div>
+                  </td>
+                  <td class="date-cell">
+                    <div class="date-info">
+                      <i class="fas fa-calendar-alt"></i>
+                      <span>{{ formatDate(assignment.startDate) }}</span>
+                    </div>
+                  </td>
+                  <td class="date-cell">
+                    <div class="date-info">
+                      <i class="fas fa-calendar-check"></i>
+                      <span>{{ formatDate(assignment.endDate) || 'N/A' }}</span>
+                    </div>
+                  </td>
+                  <td class="time-cell">
+                    <div class="time-info">
+                      <i class="fas fa-clock"></i>
+                      <span>
+                        {{ formatTime(assignment.preferredTime) }}
+                        @if (assignment.timezone) {
+                          <span class="timezone-badge">
+                            ({{ assignment.timezone === 'US' ? 'EST/EDT' : 'IST' }})
+                          </span>
+                        }
+                      </span>
+                    </div>
+                  </td>
+                  <td class="duration-cell">
+                    <div class="duration-info">
+                      <i class="fas fa-hourglass-half"></i>
+                      <span>{{ formatDuration(assignment.durationMinutes || 60) }}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="badge status-badge" [ngClass]="getStatusClass(assignment.status)">
+                      {{ getStatusDisplay(assignment.status) }}
+                    </span>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="8" class="empty-cell">
+                    <div class="empty-state">
+                      <i class="fas fa-inbox"></i>
+                      <p>No student assignments yet. Assign students to teachers to get started.</p>
+                    </div>
+                  </td>
+                </tr>
+              }
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+

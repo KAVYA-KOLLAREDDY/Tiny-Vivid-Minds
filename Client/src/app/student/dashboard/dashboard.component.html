@@ -1,0 +1,226 @@
+<div class="dashboard-container">
+  <!-- Loading State -->
+  @if (isLoading()) {
+    <div class="loading-container">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p>Loading your dashboard...</p>
+    </div>
+  }
+
+  <!-- Dashboard Content -->
+  @if (!isLoading()) {
+    <div class="dashboard-content">
+      <!-- Welcome Section -->
+      <div class="welcome-section">
+        <h1 class="welcome-title">Welcome back, {{ studentName() }}! 👋</h1>
+        <p class="welcome-subtitle">Here's an overview of your learning journey</p>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="stats-grid">
+        <div class="stat-card stat-card-primary">
+          <div class="stat-icon">
+            <i class="fas fa-book"></i>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value">{{ stats().totalCourses }}</div>
+            <div class="stat-label">Total Courses</div>
+          </div>
+        </div>
+
+        <div class="stat-card stat-card-success">
+          <div class="stat-icon">
+            <i class="fas fa-check-circle"></i>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value">{{ stats().attendancePercentage }}%</div>
+            <div class="stat-label">Attendance</div>
+          </div>
+        </div>
+
+        <div class="stat-card stat-card-info">
+          <div class="stat-icon">
+            <i class="fas fa-layer-group"></i>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value">{{ stats().completedLevels }}</div>
+            <div class="stat-label">Completed Levels</div>
+          </div>
+        </div>
+
+        <div class="stat-card stat-card-warning">
+          <div class="stat-icon">
+            <i class="fas fa-file-alt"></i>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value">{{ stats().pendingExams }}</div>
+            <div class="stat-label">Pending Exams</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Content Grid -->
+      <div class="content-grid">
+        <!-- Active Course / Course Progress Section -->
+        <div class="content-card course-progress-card">
+          <div class="card-header">
+            <h2 class="card-title">
+              <i class="fas fa-graduation-cap"></i>
+              My Courses
+            </h2>
+            @if (courses().length > 3) {
+              <button type="button" class="btn-view-all" (click)="viewMyCourses()">
+                View All
+                <i class="fas fa-arrow-right"></i>
+              </button>
+            }
+          </div>
+
+          <div class="card-body">
+            @if (courses().length > 0) {
+              <div class="courses-list">
+                @for (course of recentCourses(); track course.courseId) {
+                  <div class="course-item" (click)="viewCourseDetails(course.courseId)">
+                    <div class="course-header">
+                      <h3 class="course-name">{{ course.courseName }}</h3>
+                      <span class="course-progress-badge">{{ course.progress }}%</span>
+                    </div>
+                    @if (course.description) {
+                      <p class="course-description">{{ course.description }}</p>
+                    }
+                    <div class="course-info">
+                      <span class="course-level">
+                        <i class="fas fa-layer-group"></i>
+                        {{ course.currentLevel || 'Not Started' }}
+                      </span>
+                      @if (course.totalLevels && course.totalLevels > 0) {
+                        <span class="course-levels-count">
+                          {{ course.completedLevels || 0 }} / {{ course.totalLevels }} levels completed
+                        </span>
+                      }
+                    </div>
+                    <div class="progress-bar-wrapper">
+                      <div class="progress-bar" [style.width.%]="course.progress">
+                        <span class="progress-fill"></span>
+                      </div>
+                    </div>
+                  </div>
+                }
+              </div>
+            } @else {
+              <div class="empty-state">
+                <i class="fas fa-book-open"></i>
+                <p>No courses enrolled yet</p>
+                <button type="button" class="btn-primary" (click)="viewMyCourses()">
+                  Browse Courses
+                </button>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Upcoming Classes Section -->
+        <div class="content-card upcoming-classes-card">
+          <div class="card-header">
+            <h2 class="card-title">
+              <i class="fas fa-calendar-alt"></i>
+              Upcoming Classes
+            </h2>
+          </div>
+
+          <div class="card-body">
+            @if (nextClass()) {
+              <div class="next-class-item">
+                <div class="class-date-time">
+                  <div class="class-date">
+                    <i class="fas fa-calendar"></i>
+                    {{ formatDate(nextClass()!.date) }}
+                  </div>
+                  <div class="class-time">
+                    <i class="fas fa-clock"></i>
+                    {{ formatTime(nextClass()!.time) }}
+                  </div>
+                </div>
+                <div class="class-details">
+                  <div class="class-course">
+                    <i class="fas fa-book"></i>
+                    {{ nextClass()!.courseName }}
+                  </div>
+                  <div class="class-teacher">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    {{ nextClass()!.teacherName }}
+                  </div>
+                </div>
+              </div>
+            } @else {
+              <div class="empty-state">
+                <i class="fas fa-calendar-times"></i>
+                <p>No upcoming classes scheduled</p>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions Section -->
+      <div class="content-card quick-actions-card">
+        <div class="card-header">
+          <h2 class="card-title">
+            <i class="fas fa-bolt"></i>
+            Quick Actions
+          </h2>
+        </div>
+
+        <div class="card-body">
+          <div class="quick-actions-grid">
+            <button type="button" class="quick-action-btn" (click)="viewMyCourses()">
+              <div class="action-icon">
+                <i class="fas fa-book"></i>
+              </div>
+              <div class="action-content">
+                <div class="action-title">My Courses</div>
+                <div class="action-desc">View all enrolled courses</div>
+              </div>
+              <i class="fas fa-chevron-right action-arrow"></i>
+            </button>
+
+            <button type="button" class="quick-action-btn" (click)="viewAttendance()">
+              <div class="action-icon">
+                <i class="fas fa-check-circle"></i>
+              </div>
+              <div class="action-content">
+                <div class="action-title">Attendance</div>
+                <div class="action-desc">Check your attendance record</div>
+              </div>
+              <i class="fas fa-chevron-right action-arrow"></i>
+            </button>
+
+            <button type="button" class="quick-action-btn" (click)="submitExam()">
+              <div class="action-icon">
+                <i class="fas fa-file-alt"></i>
+              </div>
+              <div class="action-content">
+                <div class="action-title">Submit Exam</div>
+                <div class="action-desc">Upload your exam files</div>
+              </div>
+              <i class="fas fa-chevron-right action-arrow"></i>
+            </button>
+
+            <button type="button" class="quick-action-btn" (click)="downloadCertificate()">
+              <div class="action-icon">
+                <i class="fas fa-certificate"></i>
+              </div>
+              <div class="action-content">
+                <div class="action-title">Certificates</div>
+                <div class="action-desc">Download your certificates</div>
+              </div>
+              <i class="fas fa-chevron-right action-arrow"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

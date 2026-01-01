@@ -1,0 +1,247 @@
+<div class="my-students-container">
+  <div class="page-header">
+    <h1>Student List</h1>
+    <p>Displays students grouped by course</p>
+  </div>
+
+  <!-- Filters Section -->
+  <div class="filters-section">
+    <div class="filters-row">
+      <div class="filter-group">
+        <label for="courseFilter">
+          <i class="fas fa-book"></i>
+          Filter by Course
+        </label>
+        <select 
+          id="courseFilter" 
+          class="filter-select"
+          [value]="selectedCourseId() ?? ''"
+          (change)="onCourseFilterChange($any($event.target).value)">
+          <option value="">All Courses</option>
+          @for (course of availableCourses(); track course.courseId) {
+            <option [value]="course.courseId">{{ course.courseName }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="levelFilter">
+          <i class="fas fa-layer-group"></i>
+          Filter by Level
+        </label>
+        <select 
+          id="levelFilter" 
+          class="filter-select"
+          [value]="selectedLevelId() ?? ''"
+          (change)="onLevelFilterChange($any($event.target).value)"
+          [disabled]="selectedCourseId() === null && availableLevels().length === 0">
+          <option value="">All Levels</option>
+          @for (level of availableLevels(); track level.levelId) {
+            <option [value]="level.levelId">{{ level.levelName }}</option>
+          }
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Students Table -->
+  <div class="table-wrapper">
+    @if (isLoading()) {
+      <div class="loading-container">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    } @else {
+      <div class="table-responsive">
+        <table class="students-table">
+          <thead>
+            <tr>
+              <th>Student</th>
+              <th>Course</th>
+              <th>Current Level</th>
+              <th>Progress</th>
+              <th>Next Class Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @if (filteredStudents().length === 0) {
+              <tr>
+                <td colspan="6" class="empty-state">
+                  <i class="fas fa-users-slash"></i>
+                  <p>No students found</p>
+                </td>
+              </tr>
+            } @else {
+              @for (student of filteredStudents(); track student.assignmentId) {
+                <tr>
+                  <td class="student-name-cell">
+                    <div class="student-info">
+                      <i class="fas fa-user-graduate"></i>
+                      <span>{{ student.studentName }}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="course-info">
+                      <i class="fas fa-book"></i>
+                      <span>{{ student.courseName }}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="level-badge">{{ student.currentLevel }}</span>
+                  </td>
+                  <td>
+                    <div class="progress-cell">
+                      <div class="progress-bar-wrapper">
+                        <div class="progress-bar" [style.width.%]="student.progress">
+                          <span class="progress-text">{{ student.progress }}%</span>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="date-cell">
+                      <i class="fas fa-calendar"></i>
+                      <span>{{ formatDate(student.nextClassDate) }}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="actions-cell">
+                      <button 
+                        class="action-btn view-progress-btn"
+                        (click)="viewProgress(student)"
+                        title="View Progress">
+                        <i class="fas fa-chart-line"></i>
+                        <span>View Progress</span>
+                      </button>
+                      <button 
+                        class="action-btn assign-level-btn"
+                        (click)="assignNextLevelForStudent(student)"
+                        title="Assign Next Level">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>Assign Next Level</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</div>
+
+<!-- Progress Modal -->
+@if (showProgressModal()) {
+  <div class="modal-overlay" (click)="closeProgressModal()">
+    <div class="modal-content progress-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Student Progress</h2>
+        <button class="modal-close" (click)="closeProgressModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        @if (isLoadingProgress()) {
+          <div class="loading-container">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        } @else if (progressData()) {
+          @let progress = progressData()!;
+          <div class="progress-card">
+            <!-- Student and Course Info -->
+            <div class="info-section">
+              <div class="info-row">
+                <div class="info-item">
+                  <label>Student:</label>
+                  <span class="info-value">{{ progress.studentName }}</span>
+                </div>
+                <div class="info-item">
+                  <label>Course:</label>
+                  <span class="info-value">{{ progress.courseName }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- Current Level and Status -->
+            <div class="info-section">
+              <div class="info-row">
+                <div class="info-item">
+                  <label>Current Level:</label>
+                  <span class="level-badge">{{ progress.currentLevel?.levelName || 'Not Started' }}</span>
+                </div>
+                <div class="info-item">
+                  <label>Status:</label>
+                  <span class="status-badge" [class]="'status-' + progress.status">
+                    {{ getStatusDisplay(progress.status) }}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- Progress Bar -->
+            <div class="progress-section">
+              <label>Progress</label>
+              <div class="progress-bar-wrapper">
+                <div class="progress-bar" [style.width.%]="progress.progressPercentage">
+                  <span class="progress-text">{{ progress.progressPercentage }}%</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- Action Buttons -->
+            <div class="actions-section">
+              <button 
+                class="action-btn complete-btn"
+                (click)="markLevelCompleted()"
+                [disabled]="isLoadingProgress() || !progress.currentLevel">
+                <i class="fas fa-check-circle"></i>
+                <span>Mark Level Completed</span>
+              </button>
+              <button 
+                class="action-btn assign-btn"
+                (click)="assignNextLevel()"
+                [disabled]="isLoadingProgress() || !progress.nextLevel">
+                <i class="fas fa-arrow-up"></i>
+                <span>Assign Next Level</span>
+              </button>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- Remarks Section -->
+            <div class="remarks-section">
+              <label for="remarks">
+                <i class="fas fa-comment"></i>
+                Remarks
+              </label>
+              <textarea
+                id="remarks"
+                class="remarks-textarea"
+                [value]="progressRemarks()"
+                (input)="progressRemarks.set($any($event.target).value)"
+                placeholder="Enter remarks or notes about the student's progress..."
+                rows="4"></textarea>
+            </div>
+          </div>
+        }
+      </div>
+      <div class="modal-footer">
+        <button class="btn-modal btn-secondary" (click)="closeProgressModal()">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+}

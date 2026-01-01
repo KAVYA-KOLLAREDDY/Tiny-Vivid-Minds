@@ -1,0 +1,317 @@
+<div class="exam-submission-container">
+  <div class="page-header">
+    <h1>📤 Exam Submission</h1>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoadingCourses()" class="loading-container">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading courses...</span>
+    </div>
+    <p class="loading-text">Loading courses...</p>
+  </div>
+
+  <!-- Exam Submission Form -->
+  <div *ngIf="!isLoadingCourses()" class="submission-content">
+    <div class="submission-card">
+      <!-- Header -->
+      <div class="card-section">
+        <h2 class="card-title">Upload Exam Paper</h2>
+        @if (requireCourseCompletion()) {
+          <div class="feature-status">
+            <span class="status-badge enabled">
+              <i class="fas fa-check-circle"></i>
+              Course Completion Required
+            </span>
+          </div>
+        } @else {
+          <div class="feature-status">
+            <span class="status-badge disabled">
+              <i class="fas fa-info-circle"></i>
+              Open for All Courses
+            </span>
+          </div>
+        }
+      </div>
+
+      <!-- Form Section -->
+      <div class="card-divider"></div>
+      <div class="card-section">
+        @if (courses().length === 0) {
+          <div class="no-courses-message">
+            <i class="fas fa-info-circle"></i>
+            @if (requireCourseCompletion()) {
+              <div class="completion-info">
+                <h3>Exam Submission Requirements</h3>
+                <p>Exam paper upload is only available for <strong>completed courses</strong>.</p>
+                <p>To upload exams, you must:</p>
+                <ul>
+                  <li>Complete all levels in the course</li>
+                  <li>Finish all required activities and quizzes</li>
+                  <li>Mark each level as completed</li>
+                </ul>
+                <p>Check your <strong>"My Courses"</strong> page to see your progress and complete any remaining levels.</p>
+              </div>
+            } @else {
+              <p>No courses available. Please contact your administrator to enroll in a course.</p>
+            }
+          </div>
+        } @else {
+          <form (ngSubmit)="onSubmit()" class="submission-form">
+            <!-- Course Selection -->
+            <div class="form-group">
+              <label for="courseSelect" class="form-label">
+                Select Course: <span class="required">*</span>
+              </label>
+              <select 
+                id="courseSelect"
+                class="form-select"
+                [class.error]="courseError()"
+                (change)="onCourseChange($event)"
+                [value]="selectedCourseId() || ''">
+                <option value="">-- Select a Course --</option>
+                @for (course of courses(); track course.courseId) {
+                  <option [value]="course.courseId">
+                    {{ course.courseName }}
+                    @if (course.isCompleted) {
+                      (Completed - Ready for Exam)
+                    } @else {
+                      ({{ course.completionPercentage }}% Complete)
+                    }
+                  </option>
+                }
+              </select>
+              @if (courseError()) {
+                <div class="error-message">{{ courseError() }}</div>
+              }
+            </div>
+
+          <!-- File Upload -->
+          <div class="form-group">
+            <label for="fileInput" class="form-label">
+              File Upload: <span class="required">*</span>
+            </label>
+            <div class="file-upload-wrapper">
+              <input 
+                type="file" 
+                id="fileInput"
+                class="file-input"
+                accept=".pdf,.png,.jpg,.jpeg"
+                (change)="onFileSelected($event)"
+                [class.error]="fileError()">
+              <label for="fileInput" class="file-label">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <span>Choose File</span>
+              </label>
+            </div>
+            @if (selectedFile()) {
+              <div class="file-info">
+                <i class="fas fa-file"></i>
+                <span class="file-name">{{ getFileName() }}</span>
+                <span class="file-size">({{ getFileSize() }})</span>
+              </div>
+            }
+            @if (fileError()) {
+              <div class="error-message">{{ fileError() }}</div>
+            }
+            <div class="file-hint">
+              <i class="fas fa-info-circle"></i>
+              <span>Accepted formats: PDF, PNG, JPG (Max size: 10 MB)</span>
+            </div>
+          </div>
+
+          <!-- Notes -->
+          <div class="form-group">
+            <label for="notesInput" class="form-label">
+              Notes: <span class="optional">(optional)</span>
+            </label>
+            <textarea 
+              id="notesInput"
+              class="form-textarea"
+              rows="4"
+              placeholder="Add any additional notes or comments..."
+              [value]="notes()"
+              (input)="onNotesChange($event)"></textarea>
+          </div>
+
+            <!-- Submit Button -->
+            <div class="form-actions">
+              <button 
+                type="submit" 
+                class="submit-button"
+                [disabled]="isSubmitting()">
+                @if (isSubmitting()) {
+                  <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                  <span>Submitting...</span>
+                } @else {
+                  <i class="fas fa-paper-plane"></i>
+                  <span>Submit</span>
+                }
+              </button>
+            </div>
+          </form>
+        }
+      </div>
+    </div>
+
+    <!-- Validation Info Card -->
+    <div class="info-card">
+      <div class="card-section">
+        <h3 class="info-title">🧩 Validation</h3>
+        <ul class="validation-list">
+          <li>
+            <i class="fas fa-check-circle"></i>
+            <span>File ≤ 10MB</span>
+          </li>
+          <li>
+            <i class="fas fa-check-circle"></i>
+            <span>Required course selected</span>
+          </li>
+          <li>
+            <i class="fas fa-check-circle"></i>
+            <span>Only PDF, PNG, JPG formats allowed</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Previous Submissions -->
+    <div class="submissions-card">
+      <div class="card-section">
+        <div class="submissions-header">
+          <h2 class="card-title">📋 Previous Submissions</h2>
+          <button 
+            type="button"
+            class="toggle-button"
+            (click)="showSubmissions.set(!showSubmissions())">
+            @if (showSubmissions()) {
+              <i class="fas fa-chevron-up"></i>
+            } @else {
+              <i class="fas fa-chevron-down"></i>
+            }
+          </button>
+        </div>
+      </div>
+
+      @if (showSubmissions()) {
+        <div class="card-divider"></div>
+        <div class="card-section">
+          <!-- Filter -->
+          <div class="filter-section">
+            <label for="courseFilter" class="filter-label">Filter by Course:</label>
+            <select 
+              id="courseFilter"
+              class="form-select filter-select"
+              (change)="onCourseFilterChange($event)"
+              [value]="selectedCourseFilter() || ''">
+              <option value="">All Courses</option>
+              @for (course of courses(); track course.courseId) {
+                <option [value]="course.courseId">{{ course.courseName }}</option>
+              }
+            </select>
+          </div>
+
+          <!-- Loading State -->
+          @if (isLoadingSubmissions()) {
+            <div class="loading-submissions">
+              <div class="spinner-border spinner-border-sm text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+              <span>Loading submissions...</span>
+            </div>
+          }
+
+          <!-- Submissions Table -->
+          @if (!isLoadingSubmissions()) {
+            @if (submissions().length === 0) {
+              <div class="empty-state">
+                <i class="fas fa-inbox"></i>
+                <p>No submissions found</p>
+              </div>
+            } @else {
+              <div class="submissions-table-wrapper">
+                <table class="submissions-table">
+                  <thead>
+                    <tr>
+                      <th>Course</th>
+                      <th>File Name</th>
+                      <th>Status</th>
+                      <th>Grade</th>
+                      <th>Submitted On</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (submission of submissions(); track submission.submissionId) {
+                      <tr>
+                        <td>{{ submission.courseName }}</td>
+                        <td>
+                          <div class="file-name-cell">
+                            <i class="fas fa-file"></i>
+                            <span>{{ submission.fileName }}</span>
+                          </div>
+                        </td>
+                        <td>
+                          <span class="status-badge" [ngClass]="getStatusClass(submission.status)">
+                            {{ submission.status }}
+                          </span>
+                        </td>
+                        <td>
+                          @if (submission.grade !== null && submission.grade !== undefined) {
+                            <span class="grade">{{ submission.grade }}</span>
+                          } @else {
+                            <span class="no-grade">-</span>
+                          }
+                        </td>
+                        <td>{{ formatDate(submission.submittedOn) }}</td>
+                        <td>
+                          <div class="action-buttons">
+                            <button 
+                              type="button"
+                              class="action-btn view-btn"
+                              (click)="viewFile(submission)"
+                              title="View File">
+                              <i class="fas fa-eye"></i>
+                            </button>
+                            @if (canDelete(submission)) {
+                              <button 
+                                type="button"
+                                class="action-btn delete-btn"
+                                (click)="deleteSubmission(submission.submissionId)"
+                                title="Delete">
+                                <i class="fas fa-trash"></i>
+                              </button>
+                            }
+                          </div>
+                        </td>
+                      </tr>
+                      @if (submission.remarks || submission.submittedNotes) {
+                        <tr class="details-row">
+                          <td colspan="6">
+                            <div class="submission-details">
+                              @if (submission.submittedNotes) {
+                                <div class="detail-item">
+                                  <strong>Notes:</strong> {{ submission.submittedNotes }}
+                                </div>
+                              }
+                              @if (submission.remarks) {
+                                <div class="detail-item">
+                                  <strong>Teacher Remarks:</strong> {{ submission.remarks }}
+                                </div>
+                              }
+                            </div>
+                          </td>
+                        </tr>
+                      }
+                    }
+                  </tbody>
+                </table>
+              </div>
+            }
+          }
+        </div>
+      }
+    </div>
+  </div>
+</div>
+

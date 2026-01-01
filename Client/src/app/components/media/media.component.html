@@ -1,0 +1,302 @@
+<!-- Hero Section -->
+<section class="hero-section">
+  <div class="hero-background"></div>
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-12 text-center hero-content">
+        <h1 class="hero-title fade-in">
+          See How Our Young Minds Shine Every Day!
+        </h1>
+        <p class="hero-subtitle fade-in">
+          From online classrooms to real smiles — here's a glimpse of how Tiny
+          Vivid Minds turns math learning into confidence and fun.
+        </p>
+        <div class="hero-buttons fade-in">
+          <button class="btn btn-primary" (click)="openYouTube()">
+            <i class="fab fa-youtube me-2"></i>Watch on YouTube
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Featured Video Section -->
+<section class="section-padding">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 mx-auto">
+        <h2 class="section-title text-center fade-in">
+          Watch How Learning Comes Alive!
+        </h2>
+        <p class="section-subtitle text-center fade-in">
+          Experience how our expert trainers connect with students across 5+
+          countries through fun, engaging math activities that make learning
+          visual, simple, and joyful. <br />
+          Our interactive classes make math visual, fun, and truly exciting for
+          every child.
+        </p>
+      </div>
+    </div>
+    <div class="row mt-5">
+      <div class="col-lg-10 mx-auto">
+        <div class="video-wrapper fade-in">
+          <iframe
+            [src]="getSafeYouTubeUrl('dQw4w9WgXcQ')"
+            title="Featured Video"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+          ></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Instagram Reels Section -->
+<section class="section-padding bg-light">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-10 mx-auto text-center mb-5">
+        <h2 class="section-title fade-in">From Our Instagram Classroom</h2>
+        <p class="section-subtitle fade-in">
+          Short, joyful moments captured from our real sessions — laughter,
+          teamwork, and learning in motion!
+        </p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="reels-grid fade-in">
+          <div
+            *ngFor="let reel of instagramReels; let i = index"
+            class="reel-item"
+          >
+            <!-- Show Instagram embed if URL is provided, otherwise show placeholder -->
+            <div *ngIf="reel.embedUrl; else placeholderTemplate" class="reel-embed-wrapper">
+              <iframe
+                [src]="getSafeInstagramUrl(reel.embedUrl)"
+                [title]="reel.caption"
+                class="instagram-embed"
+                frameborder="0"
+                allow="encrypted-media"
+                scrolling="no"
+              ></iframe>
+              <p class="reel-caption">{{ reel.caption }}</p>
+            </div>
+            <ng-template #placeholderTemplate>
+              <div class="reel-placeholder">
+                <div class="reel-icon">
+                  <i class="fab fa-instagram fa-3x"></i>
+                </div>
+                <p class="reel-caption">{{ reel.caption }}</p>
+                <small class="text-muted">Add Instagram video URL in media.component.ts</small>
+              </div>
+            </ng-template>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Photo Gallery Section -->
+<section class="section-padding">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-10 mx-auto text-center mb-5">
+        <h2 class="section-title fade-in">Tiny Moments, Big Achievements</h2>
+      </div>
+    </div>
+    <div class="row gallery-container">
+      <div
+        *ngFor="let photo of galleryPhotos; let i = index"
+        class="col-lg-4 col-md-6 mb-4 gallery-item fade-in"
+      >
+        <div class="gallery-card">
+          <img [src]="photo.url" [alt]="photo.caption" class="gallery-image" />
+          <div class="gallery-overlay">
+            <p class="gallery-caption">{{ photo.caption }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- YouTube Playlist Section -->
+<section class="section-padding bg-light">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-10 mx-auto text-center mb-5">
+        <h2 class="section-title fade-in">Watch More on Our YouTube Channel</h2>
+        <p class="section-subtitle fade-in">
+          Explore tips, tricks, and learning activities from our trainers.
+          Subscribe to watch more interactive math sessions and student
+          showcases.
+        </p>
+      </div>
+    </div>
+    <div class="row">
+      <div
+        *ngFor="let videoId of playlistVideoIds; let i = index"
+        class="col-lg-4 col-md-6 mb-4"
+      >
+        <div class="video-card fade-in">
+          <div class="video-thumbnail">
+            <iframe
+              [src]="getSafeYouTubeUrl(videoId)"
+              title="{{ videoTitles[i] }}"
+              frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen
+            ></iframe>
+          </div>
+          <div class="video-info">
+            <h5 class="video-title">{{ videoTitles[i] }}</h5>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row mt-4">
+      <div class="col-lg-12 text-center">
+        <button class="btn btn-primary" (click)="openYouTube()">
+          <i class="fab fa-youtube me-2"></i>Visit Our YouTube Channel
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Event & Achievements Section -->
+<section class="section-padding achievements-section">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-10 mx-auto text-center mb-5">
+        <h2 class="section-title fade-in">Celebrating Our Students' Success</h2>
+        <p class="section-subtitle fade-in">
+          From national competitions to personal milestones — our students keep
+          making us proud. Here's a glimpse of their journey towards becoming
+          confident mental math champions!
+        </p>
+      </div>
+    </div>
+
+    <!-- Count-up Stats -->
+    <div class="row mb-5">
+      <div
+        *ngFor="let stat of achievementsStats; let i = index"
+        class="col-lg-4 col-md-4 col-sm-6 mb-4"
+      >
+        <div class="achievement-stat-card fade-in">
+          <div class="stat-icon">
+            <i class="fas {{ stat.icon }}"></i>
+          </div>
+          <div class="stat-value">
+            {{ getAnimatedValue(i) }}
+          </div>
+          <div class="stat-label">{{ stat.label }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Achievement Images Grid -->
+    <!-- <div class="row">
+      <div
+        *ngFor="let achievement of achievementImages; let i = index"
+        class="col-lg-3 col-md-6 mb-4"
+      >
+        <div class="achievement-image-card fade-in">
+          <div class="achievement-image-wrapper">
+            <img
+              [src]="achievement.url"
+              [alt]="achievement.caption"
+              class="achievement-image"
+            />
+            <div class="achievement-overlay">
+              <p class="achievement-caption">{{ achievement.caption }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div> -->
+  </div>
+</section>
+
+<!-- Behind the Scenes Section -->
+<section class="section-padding">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-10 mx-auto text-center mb-5">
+        <h2 class="section-title fade-in">
+          Behind Every Smile, There's a Story
+        </h2>
+        <p class="section-subtitle fade-in">
+          Meet the passionate teachers and trainers who make every class
+          meaningful. Get a peek into our live online sessions, virtual
+          workshops, and joyful learning environment.
+        </p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="behind-scenes-grid">
+          <div class="behind-scenes-item fade-in">
+            <img
+              src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800"
+              alt="Teacher conducting online session"
+              class="behind-scenes-image"
+            />
+            <div class="behind-scenes-overlay">
+              <p>Passionate Teachers</p>
+            </div>
+          </div>
+          <div class="behind-scenes-item fade-in">
+            <img
+              src="https://images.unsplash.com/photo-1509062522246-3755977927d7?w=800"
+              alt="Live online session"
+              class="behind-scenes-image"
+            />
+            <div class="behind-scenes-overlay">
+              <p>Live Online Sessions</p>
+            </div>
+          </div>
+          <div class="behind-scenes-item fade-in">
+            <img
+              src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800"
+              alt="Interactive workshops"
+              class="behind-scenes-image"
+            />
+            <div class="behind-scenes-overlay">
+              <p>Interactive Workshops</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section section-padding">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 mx-auto text-center">
+        <h2 class="cta-title fade-in">Be Part of Our Growing Family!</h2>
+        <p class="cta-subtitle fade-in">
+          Join hundreds of happy learners from around the world who are
+          discovering the fun side of math.
+        </p>
+        <div class="cta-buttons fade-in">
+          <a routerLink="/contact" fragment="book-demo" class="btn btn-primary btn-lg me-3">
+            <i class="fas fa-calendar-check me-2"></i>Book a Free Demo Now
+          </a>
+          <a routerLink="/courses/abacus" class="btn btn-outline-primary btn-lg">
+            <i class="fas fa-graduation-cap me-2"></i>Explore Programs
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

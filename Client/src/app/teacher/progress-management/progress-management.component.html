@@ -1,0 +1,132 @@
+<div class="progress-management-container">
+  <div class="page-header">
+    <h1>Progress Management</h1>
+    <p>View and manage all students' progress</p>
+  </div>
+
+  <!-- Filters Section -->
+  <div class="filters-section">
+    <div class="filters-row">
+      <div class="filter-group">
+        <label for="courseFilter">
+          <i class="fas fa-book"></i>
+          Filter by Course
+        </label>
+        <select 
+          id="courseFilter" 
+          class="filter-select"
+          [value]="selectedCourseId() ?? ''"
+          (change)="onCourseFilterChange($any($event.target).value)">
+          <option value="">All Courses</option>
+          @for (course of availableCourses(); track course.courseId) {
+            <option [value]="course.courseId">{{ course.courseName }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="filter-group search-group">
+        <label for="searchInput">
+          <i class="fas fa-search"></i>
+          Search
+        </label>
+        <input
+          id="searchInput"
+          type="text"
+          class="search-input"
+          placeholder="Search by student or course name..."
+          [value]="searchTerm()"
+          (input)="onSearchChange($any($event.target).value)">
+      </div>
+    </div>
+  </div>
+
+  <!-- Debug Info -->
+  <div class="debug-info" style="background: #f0f9ff; padding: 10px; margin: 10px 0; border-radius: 4px; border: 1px solid #0ea5e9;">
+    <strong>Debug Info:</strong>
+    <br>Loading: {{ isLoading() }}
+    <br>Students: {{ students().length }}
+    <br>Assignments: {{ assignments().length }}
+    <br>Progress Data: {{ progressData().length }}
+    <br>Filtered Progress: {{ filteredProgress().length }}
+  </div>
+
+  <!-- Progress Table -->
+  <div class="table-wrapper">
+    @if (isLoading()) {
+      <div class="loading-container">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    } @else {
+      <div class="table-responsive">
+        <table class="progress-table">
+          <thead>
+            <tr>
+              <th>Student</th>
+              <th>Course</th>
+              <th>Current Level</th>
+              <th>Progress</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @if (filteredProgress().length === 0) {
+              <tr>
+                <td colspan="6" class="empty-state">
+                  <i class="fas fa-chart-line"></i>
+                  <p>No progress data found</p>
+                </td>
+              </tr>
+            } @else {
+              @for (progress of filteredProgress(); track progress.assignmentId) {
+                <tr>
+                  <td class="student-name-cell">
+                    <div class="student-info">
+                      <i class="fas fa-user-graduate"></i>
+                      <span>{{ progress.studentName }}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="course-info">
+                      <i class="fas fa-book"></i>
+                      <span>{{ progress.courseName }}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="level-badge">{{ progress.currentLevel }}</span>
+                  </td>
+                  <td>
+                    <div class="progress-cell">
+                      <div class="progress-bar-wrapper">
+                        <div class="progress-bar" [style.width.%]="progress.progress">
+                          <span class="progress-text">{{ progress.progress }}%</span>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="status-badge" [class]="getStatusClass(progress.status)">
+                      {{ progress.status }}
+                    </span>
+                  </td>
+                  <td>
+                    <button 
+                      class="action-btn view-btn"
+                      (click)="viewProgress(progress)"
+                      title="View Progress">
+                      <i class="fas fa-eye"></i>
+                      <span>View</span>
+                    </button>
+                  </td>
+                </tr>
+              }
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</div>
+

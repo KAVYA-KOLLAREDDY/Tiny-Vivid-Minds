@@ -1,0 +1,226 @@
+.footer {
+  background: var(--bg-secondary) !important;
+  border-top: 1px solid var(--border-light);
+  position: relative;
+  overflow: hidden;
+  color: var(--text-primary) !important;
+}
+
+.footer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.05)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.05)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.03)"/><circle cx="10" cy="60" r="0.5" fill="rgba(255,255,255,0.03)"/><circle cx="90" cy="40" r="0.5" fill="rgba(255,255,255,0.03)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.footer-brand h4 {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.footer-brand p {
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: var(--text-primary) !important;
+}
+
+.footer h5 {
+  color: var(--text-primary) !important;
+  font-weight: 600;
+}
+
+.footer-link {
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.footer-link:hover {
+  color: var(--primary-color);
+  text-decoration: none;
+  transform: translateX(3px);
+}
+
+.social-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-light);
+  border-radius: 50%;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  font-size: 1.1rem;
+}
+
+.social-link:hover {
+  background: var(--gradient-primary);
+  color: var(--text-inverse);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+
+.contact-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  color: var(--text-primary) !important;
+}
+
+.contact-item span {
+  color: var(--text-primary) !important;
+}
+
+.contact-item i {
+  margin-top: 2px;
+  width: 16px;
+  text-align: center;
+}
+
+.newsletter-form .form-control {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  color: var(--text-primary);
+  border-radius: 25px 0 0 25px;
+}
+
+.newsletter-form .form-control::placeholder {
+  color: var(--text-secondary);
+}
+
+.footer p {
+  color: var(--text-primary) !important;
+}
+
+.newsletter-form .form-control:focus {
+  background: var(--bg-card);
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  color: var(--text-primary);
+}
+
+.newsletter-form .btn {
+  border-radius: 0 25px 25px 0;
+  border: 1px solid var(--primary-color);
+}
+
+.cta-buttons .btn {
+  font-size: 0.85rem;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+}
+
+.cta-buttons .btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.cta-buttons .btn-outline-light {
+  border: 2px solid var(--text-primary) !important;
+  color: var(--text-primary) !important;
+  background: transparent !important;
+}
+
+.cta-buttons .btn-outline-light:hover {
+  background: var(--text-primary) !important;
+  color: var(--bg-secondary) !important;
+  border-color: var(--text-primary) !important;
+}
+
+/* Ensure Join Our Team button is visible */
+.footer .btn-outline-light {
+  border: 2px solid var(--text-primary) !important;
+  color: var(--text-primary) !important;
+  background: transparent !important;
+  font-weight: 500 !important;
+}
+
+.footer .btn-outline-light:hover {
+  background: var(--text-primary) !important;
+  color: var(--bg-secondary) !important;
+  border-color: var(--text-primary) !important;
+}
+
+/* Override Bootstrap btn-outline-light specifically in footer */
+footer .btn-outline-light {
+  border: 2px solid var(--text-primary) !important;
+  color: var(--text-primary) !important;
+  background: transparent !important;
+  font-weight: 500 !important;
+  opacity: 1 !important;
+}
+
+footer .btn-outline-light:hover {
+  background: var(--text-primary) !important;
+  color: var(--bg-secondary) !important;
+  border-color: var(--text-primary) !important;
+  opacity: 1 !important;
+}
+
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .footer {
+    text-align: center;
+  }
+
+  .footer-brand {
+    text-align: center;
+  }
+
+  .social-links {
+    justify-content: center;
+  }
+
+  .contact-item {
+    justify-content: center;
+  }
+
+  .footer-links {
+    justify-content: center;
+    margin-top: 1rem;
+  }
+
+  .newsletter-form .input-group {
+    flex-direction: column;
+  }
+
+  .newsletter-form .form-control,
+  .newsletter-form .btn {
+    border-radius: 25px;
+    margin-bottom: 0.5rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .footer {
+    padding: 2rem 0;
+  }
+
+  .footer-brand h4 {
+    font-size: 1.3rem;
+  }
+
+  .social-link {
+    width: 35px;
+    height: 35px;
+    font-size: 1rem;
+  }
+}

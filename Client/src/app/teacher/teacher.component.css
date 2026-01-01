@@ -1,0 +1,38 @@
+.teacher-container {
+  min-height: 100vh;
+  background: white;
+  margin-top: 75px;
+  padding: 0;
+}
+
+.teacher-container .row {
+  margin: 0;
+}
+
+.teacher-container .col-3 {
+  padding-right: 0;
+  width: 250px;
+}
+
+.teacher-container .col {
+  padding-left: 0;
+  margin-left: 250px;
+  padding-top: 20px;
+  padding-right: 20px;
+}
+
+@media (max-width: 991.98px) {
+  .teacher-container {
+    margin-top: 0;
+  }
+
+  .teacher-container .col-3 {
+    width: 100%;
+  }
+
+  .teacher-container .col {
+    margin-left: 0;
+    width: 100%;
+    padding-top: 10px;
+  }
+}

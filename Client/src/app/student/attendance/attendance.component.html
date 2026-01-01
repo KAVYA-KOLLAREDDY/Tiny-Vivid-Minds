@@ -1,0 +1,217 @@
+<div class="attendance-container">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1>
+        <i class="fas fa-calendar-check"></i>
+        My Attendance
+      </h1>
+      <p>Track your attendance across all enrolled courses</p>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  @if (isLoading()) {
+    <div class="loading-container">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p>Loading attendance data...</p>
+    </div>
+  }
+
+  <!-- Attendance Content -->
+  @if (!isLoading()) {
+    <div class="attendance-content">
+      <!-- Statistics Cards -->
+      <div class="stats-grid">
+        <div class="stat-card stat-primary">
+          <div class="stat-icon">
+            <i class="fas fa-percentage"></i>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value">{{ attendancePercentage() }}%</div>
+            <div class="stat-label">Overall Attendance</div>
+          </div>
+        </div>
+
+        <div class="stat-card stat-success">
+          <div class="stat-icon">
+            <i class="fas fa-check-circle"></i>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value">{{ stats().present }}</div>
+            <div class="stat-label">Present</div>
+          </div>
+        </div>
+
+        <div class="stat-card stat-danger">
+          <div class="stat-icon">
+            <i class="fas fa-times-circle"></i>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value">{{ stats().absent }}</div>
+            <div class="stat-label">Absent</div>
+          </div>
+        </div>
+
+        <div class="stat-card stat-warning">
+          <div class="stat-icon">
+            <i class="fas fa-calendar-alt"></i>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value">{{ stats().rescheduled }}</div>
+            <div class="stat-label">Rescheduled</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filters -->
+      <div class="filters-section">
+        <div class="filter-box">
+          <i class="fas fa-filter"></i>
+          <select 
+            [value]="selectedCourseId() || ''"
+            (change)="onCourseFilterChange($event)"
+            class="filter-select">
+            <option value="">All Courses</option>
+            @for (course of courses(); track course.courseId) {
+              <option [value]="course.courseId">{{ course.courseName }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <!-- Calendar Card -->
+      <div class="calendar-card">
+        <!-- Calendar Header -->
+        <div class="calendar-header">
+          <button type="button" class="nav-button" (click)="previousMonth()" aria-label="Previous month">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          <h2 class="calendar-title">{{ currentMonthYear() }}</h2>
+          <button type="button" class="nav-button" (click)="nextMonth()" aria-label="Next month">
+            <i class="fas fa-chevron-right"></i>
+          </button>
+          <button type="button" class="today-button" (click)="goToToday()">Today</button>
+        </div>
+
+        <!-- Legend -->
+        <div class="calendar-legend">
+          <div class="legend-item">
+            <span class="legend-dot present"></span>
+            <span>Present</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot absent"></span>
+            <span>Absent</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot rescheduled"></span>
+            <span>Rescheduled</span>
+          </div>
+        </div>
+
+        <!-- Calendar Grid -->
+        <div class="calendar-grid">
+          <!-- Weekday Headers -->
+          <div class="calendar-weekday" *ngFor="let day of ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']">
+            {{ day }}
+          </div>
+
+          <!-- Calendar Days -->
+          <div 
+            *ngFor="let day of calendarDays()" 
+            class="calendar-day"
+            [class.current-month]="day.isCurrentMonth"
+            [class.today]="day.isToday"
+            [class]="getAttendanceClass(day.attendanceStatus)"
+            [class.has-attendance]="day.attendanceRecord"
+            (click)="openDetailsModal(day)">
+            <span class="day-number">{{ day.day }}</span>
+            @if (day.attendanceStatus) {
+              <span class="attendance-dot" 
+                    [class.present]="day.attendanceStatus === 'Present'"
+                    [class.absent]="day.attendanceStatus === 'Absent'"
+                    [class.rescheduled]="day.attendanceStatus === 'Rescheduled'"></span>
+            }
+            @if (day.attendanceRecord && selectedCourseId() === null) {
+              <span class="course-badge">{{ day.attendanceRecord.courseName.substring(0, 3) }}</span>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>
+
+<!-- Attendance Details Modal -->
+@if (showDetailsModal() && selectedAttendance()) {
+  <div class="modal-overlay" (click)="closeDetailsModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>
+          <i class="fas fa-calendar-check"></i>
+          Attendance Details
+        </h2>
+        <button type="button" class="modal-close" (click)="closeDetailsModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="detail-item">
+          <div class="detail-label">
+            <i class="fas fa-calendar"></i>
+            Date
+          </div>
+          <div class="detail-value">{{ formatDate(selectedAttendance()!.classDate) }}</div>
+        </div>
+
+        <div class="detail-item">
+          <div class="detail-label">
+            <i class="fas fa-book"></i>
+            Course
+          </div>
+          <div class="detail-value">{{ selectedAttendance()!.courseName }}</div>
+        </div>
+
+        <div class="detail-item">
+          <div class="detail-label">
+            <i class="fas fa-chalkboard-teacher"></i>
+            Teacher
+          </div>
+          <div class="detail-value">{{ selectedAttendance()!.teacherName }}</div>
+        </div>
+
+        <div class="detail-item">
+          <div class="detail-label">
+            <i class="fas fa-info-circle"></i>
+            Status
+          </div>
+          <div class="detail-value">
+            <span class="status-badge" [class]="'status-' + selectedAttendance()!.status.toLowerCase()">
+              {{ selectedAttendance()!.status }}
+            </span>
+          </div>
+        </div>
+
+        @if (selectedAttendance()!.remarks) {
+          <div class="detail-item">
+            <div class="detail-label">
+              <i class="fas fa-comment"></i>
+              Remarks
+            </div>
+            <div class="detail-value">{{ selectedAttendance()!.remarks }}</div>
+          </div>
+        }
+      </div>
+      
+      <div class="modal-footer">
+        <button type="button" class="btn-modal btn-secondary" (click)="closeDetailsModal()">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+}

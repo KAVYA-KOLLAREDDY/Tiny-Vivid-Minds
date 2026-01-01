@@ -1,0 +1,53 @@
+<button
+  class="sidebar-toggle d-lg-none"
+  type="button"
+  data-bs-toggle="collapse"
+  data-bs-target="#sidebarMenu"
+  aria-expanded="false"
+  aria-controls="sidebarMenu"
+  aria-label="Toggle sidebar"
+>
+  <i class="fas fa-bars"></i>
+</button>
+
+<nav class="sidebar collapse d-lg-block" id="sidebarMenu">
+  <h2>Admin Panel</h2>
+  <ul>
+    <li>
+      <a routerLink="/admin/dashboard" routerLinkActive="active">
+        <i class="fas fa-tachometer-alt"></i>
+        <span>Dashboard</span>
+      </a>
+    </li>
+    <li>
+      <a routerLink="/admin/users" routerLinkActive="active">
+        <i class="fas fa-users"></i>
+        <span>Manage Users</span>
+      </a>
+    </li>
+    <li>
+      <a routerLink="/admin/courses" routerLinkActive="active">
+        <i class="fas fa-book"></i>
+        <span>Courses</span>
+      </a>
+    </li>
+    <li>
+      <a routerLink="/admin/assignments" routerLinkActive="active">
+        <i class="fas fa-chalkboard-teacher"></i>
+        <span>Assign Teachers</span>
+      </a>
+    </li>
+    <li>
+      <a routerLink="/admin/student-assignments" routerLinkActive="active">
+        <i class="fas fa-user-graduate"></i>
+        <span>Assign Students</span>
+      </a>
+    </li>
+    <li>
+      <a routerLink="/admin/feedbacks" routerLinkActive="active">
+        <i class="fas fa-comments"></i>
+        <span>Feedback & Reports</span>
+      </a>
+    </li>
+  </ul>
+</nav>

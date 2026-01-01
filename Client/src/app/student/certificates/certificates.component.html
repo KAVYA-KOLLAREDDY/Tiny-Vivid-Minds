@@ -1,0 +1,79 @@
+<div class="certificates-container">
+  <div class="page-header">
+    <h1>🎓 Certificates</h1>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading()" class="loading-container">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <!-- Certificates Content -->
+  <div *ngIf="!isLoading()" class="certificates-content">
+    @if (certificates().length === 0) {
+      <div class="empty-state">
+        <i class="fas fa-certificate"></i>
+        <p>No certificates available yet</p>
+        <p class="empty-hint">Complete a course to receive your certificate!</p>
+      </div>
+    } @else {
+      @for (certificate of certificates(); track certificate.certificateId) {
+        <div class="certificate-card">
+          <!-- Certificate Header -->
+          <div class="card-section">
+            <h2 class="card-title">Certificate Card</h2>
+          </div>
+
+          <!-- Certificate Info -->
+          <div class="card-divider"></div>
+          <div class="card-section">
+            <div class="certificate-info">
+              <div class="info-row">
+                <span class="info-label">Course:</span>
+                <span class="info-value">{{ certificate.courseName }}</span>
+                <span class="info-separator">|</span>
+                <span class="info-label">Issued:</span>
+                <span class="info-value">{{ formatDate(certificate.issuedDate) }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="card-divider"></div>
+          <div class="card-section">
+            <div class="action-buttons">
+              <button class="action-button primary" (click)="downloadCertificate(certificate)">
+                <i class="fas fa-download"></i>
+                <span>Download PDF</span>
+              </button>
+              <button class="action-button secondary" (click)="toggleVerificationCode(certificate.certificateId)">
+                <i class="fas fa-key"></i>
+                <span>View Verification Code</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Verification Code Display -->
+          @if (isVerificationCodeVisible(certificate.certificateId)) {
+            <div class="card-divider"></div>
+            <div class="card-section verification-section">
+              <div class="verification-code-container">
+                <label class="verification-label">Verification Code:</label>
+                <div class="verification-code-display">
+                  <code class="verification-code">{{ getVerificationCode(certificate.certificateId) }}</code>
+                  <button class="copy-button" (click)="copyVerificationCode(certificate.certificateId)" title="Copy to clipboard">
+                    <i class="fas fa-copy"></i>
+                  </button>
+                </div>
+                <p class="verification-hint">Use this code to verify your certificate authenticity</p>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    }
+  </div>
+</div>
+

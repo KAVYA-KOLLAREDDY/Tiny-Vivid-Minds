@@ -1,0 +1,207 @@
+<div class="attendance-container">
+  <div class="page-header">
+    <h1>Attendance</h1>
+    <p>Mark and manage student attendance</p>
+  </div>
+
+  <!-- Add New Record Button -->
+  <div class="action-bar">
+    <button class="add-btn" (click)="openAddModal()">
+      <i class="fas fa-plus"></i>
+      <span>Add New Attendance Record</span>
+    </button>
+  </div>
+
+  <!-- Attendance Table -->
+  <div class="table-wrapper">
+    @if (isLoading()) {
+    <div class="loading-container">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+    } @else {
+    <div class="table-responsive">
+      <table class="attendance-table">
+        <thead>
+          <tr>
+            <th>Student</th>
+            <th>Course</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Remarks</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (attendanceRecords().length === 0) {
+          <tr>
+            <td colspan="6" class="empty-state">
+              <i class="fas fa-clipboard-list"></i>
+              <p>No attendance records found</p>
+            </td>
+          </tr>
+          } @else { @for (record of attendanceRecords(); track record.id) {
+          <tr>
+            <td class="student-cell">
+              <div class="student-info">
+                <i class="fas fa-user-graduate"></i>
+                <span>{{ record.studentName }}</span>
+              </div>
+            </td>
+            <td>
+              <div class="course-info">
+                <i class="fas fa-book"></i>
+                <span>{{ record.courseName }}</span>
+              </div>
+            </td>
+            <td>
+              <div class="date-cell">
+                <i class="fas fa-calendar"></i>
+                <span>{{ formatDate(record.classDate) }}</span>
+              </div>
+            </td>
+            <td>
+              <div class="status-cell">
+                <select
+                  class="status-select"
+                  [value]="record.status"
+                  (change)="
+                    updateAttendanceStatus(record, $any($event.target).value)
+                  "
+                >
+                  <option value="Present">Present (P)</option>
+                  <option value="Absent">Absent (A)</option>
+                  <option value="Rescheduled">Rescheduled (R)</option>
+                </select>
+                <span
+                  class="status-badge"
+                  [class]="getStatusClass(record.status)"
+                >
+                  {{ record.status.charAt(0) }}
+                </span>
+              </div>
+            </td>
+            <td>
+              <div class="remarks-cell">
+                <input
+                  type="text"
+                  class="remarks-input"
+                  [value]="record.remarks"
+                  placeholder="Add remarks..."
+                  (blur)="saveRemarks(record)"
+                  (input)="updateRemarks(record, $any($event.target).value)"
+                />
+              </div>
+            </td>
+            <td>
+              <button
+                class="action-btn delete-btn"
+                (click)="deleteRecord(record)"
+                title="Delete"
+              >
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+          } }
+        </tbody>
+      </table>
+    </div>
+    }
+  </div>
+
+  <!-- Add Attendance Modal -->
+  @if (showAddModal()) {
+  <div class="modal-overlay" (click)="closeAddModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Add New Attendance Record</h2>
+        <button class="close-btn" (click)="closeAddModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <form (ngSubmit)="addAttendanceRecord()">
+          <div class="form-group">
+            <label for="studentSelect">
+              <i class="fas fa-user-graduate"></i>
+              Student
+            </label>
+            <select
+              id="studentSelect"
+              class="form-control"
+              [value]="newAttendance().studentId || ''"
+              (change)="onStudentChange($any($event.target).value)"
+              required
+            >
+              <option value="">Select Student</option>
+              @for (student of availableStudents(); track student.studentId) {
+              <option [value]="student.studentId">
+                {{ student.studentName }} - {{ student.courseName }}
+              </option>
+              }
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="classDate">
+              <i class="fas fa-calendar"></i>
+              Class Date
+            </label>
+            <input
+              id="classDate"
+              type="date"
+              class="form-control"
+              [value]="newAttendance().classDate"
+              (input)="onClassDateChange($any($event.target).value)"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="statusSelect">
+              <i class="fas fa-check-circle"></i>
+              Status
+            </label>
+            <select
+              id="statusSelect"
+              class="form-control"
+              [value]="newAttendance().status"
+              (change)="onStatusChange($any($event.target).value)"
+              required
+            >
+              <option value="Present">Present (P)</option>
+              <option value="Absent">Absent (A)</option>
+              <option value="Rescheduled">Rescheduled (R)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="remarks">
+              <i class="fas fa-comment"></i>
+              Remarks
+            </label>
+            <textarea
+              id="remarks"
+              class="form-control"
+              rows="3"
+              placeholder="Enter remarks (optional)..."
+              [value]="newAttendance().remarks"
+              (input)="onRemarksChange($any($event.target).value)"
+            ></textarea>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn-cancel" (click)="closeAddModal()">
+              Cancel
+            </button>
+            <button type="submit" class="btn-submit">Add Record</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  }
+</div>

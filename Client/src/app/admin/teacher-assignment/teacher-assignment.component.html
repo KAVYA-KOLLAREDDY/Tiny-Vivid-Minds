@@ -1,0 +1,167 @@
+<div class="teacher-assignment-container">
+  <div class="page-header">
+    <h1>Assign Teachers</h1>
+  </div>
+
+  <!-- Assignment Form -->
+  <div class="assignment-form-section">
+    <div class="form-card">
+      <h3 class="form-title">
+        <i class="fas fa-user-plus"></i>
+        Assign Teacher to Course
+      </h3>
+      <div class="form-content">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Select Course *</label>
+            <select 
+              class="form-select" 
+              [value]="selectedCourseId()?.toString() || ''"
+              (change)="onCourseChange($any($event.target).value)"
+              [disabled]="isLoading() || courses().length === 0">
+              <option value="">-- Select Course --</option>
+              @if (isLoading()) {
+                <option disabled>Loading courses...</option>
+              } @else {
+                @for (course of courses(); track course.courseId) {
+                  <option [value]="course.courseId.toString()">{{ course.courseName }}</option>
+                }
+              }
+            </select>
+            @if (isLoading()) {
+              <span class="info-text">Loading courses...</span>
+            } @else if (courses().length === 0) {
+              <span class="error-text">No courses available. Please create a course first.</span>
+            }
+          </div>
+
+          <div class="form-group">
+            <label>Select Teacher *</label>
+            <select 
+              class="form-select" 
+              [value]="selectedTeacherId()?.toString() || ''"
+              (change)="onTeacherChange($any($event.target).value)"
+              [disabled]="isLoading() || teachers().length === 0">
+              <option value="">-- Select Teacher --</option>
+              @if (isLoading()) {
+                <option disabled>Loading teachers...</option>
+              } @else {
+                @for (teacher of teachers(); track teacher.userId) {
+                  <option [value]="teacher.userId.toString()">{{ teacher.fullName || 'Unknown' }} ({{ teacher.email || 'No email' }})</option>
+                }
+              }
+            </select>
+            @if (isLoading()) {
+              <span class="info-text">Loading teachers...</span>
+            } @else if (teachers().length === 0) {
+              <span class="error-text">No approved teachers available.</span>
+            } @else {
+              <span class="info-text">{{ teachers().length }} teacher(s) available</span>
+            }
+          </div>
+        </div>
+
+        @if (isAlreadyAssigned()) {
+          <div class="alert alert-warning">
+            <i class="fas fa-exclamation-triangle"></i>
+            This teacher is already assigned to this course.
+          </div>
+        }
+
+        <div class="form-actions">
+          <button 
+            class="btn-assign" 
+            (click)="assignTeacher()"
+            [disabled]="!canAssign() || isAssigning()">
+            @if (isAssigning()) {
+              <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+              <span>Assigning...</span>
+            } @else {
+              <i class="fas fa-link"></i>
+              <span>Assign Teacher</span>
+            }
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Assignments Table -->
+  <div class="assignments-section">
+    <div class="section-header">
+      <h2>
+        <i class="fas fa-list"></i>
+        Assigned Teachers
+      </h2>
+      <button 
+        class="btn-refresh" 
+        (click)="loadAssignments()"
+        [disabled]="isLoadingAssignments()"
+        title="Refresh assignments">
+        <i class="fas fa-sync-alt" [class.spinning]="isLoadingAssignments()"></i>
+        <span>Refresh</span>
+      </button>
+    </div>
+
+    <div class="table-container">
+      <div class="table-wrapper">
+        <table class="assignments-table">
+          <thead>
+            <tr>
+              <th>Assigned Teacher</th>
+              <th>Course</th>
+              <th>Date Assigned</th>
+            </tr>
+          </thead>
+          <tbody>
+            @if (isLoadingAssignments()) {
+              <tr>
+                <td colspan="3" class="loading-cell">
+                  <div class="spinner-container">
+                    <div class="spinner-border text-primary" role="status">
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p>Loading assignments...</p>
+                  </div>
+                </td>
+              </tr>
+            } @else {
+              @for (assignment of assignments(); track assignment.assignmentId || $index) {
+                <tr>
+                  <td class="teacher-cell">
+                    <div class="teacher-info">
+                      <i class="fas fa-chalkboard-teacher"></i>
+                      <span>{{ assignment.teacherName || getTeacherName(assignment.teacherId) }}</span>
+                    </div>
+                  </td>
+                  <td class="course-cell">
+                    <div class="course-info">
+                      <i class="fas fa-book"></i>
+                      <span>{{ assignment.courseName || getCourseName(assignment.courseId) }}</span>
+                    </div>
+                  </td>
+                  <td class="date-cell">
+                    <div class="date-info">
+                      <i class="fas fa-calendar"></i>
+                      <span>{{ formatDate(assignment.assignedAt) }}</span>
+                    </div>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="3" class="empty-cell">
+                    <div class="empty-state">
+                      <i class="fas fa-inbox"></i>
+                      <p>No teacher assignments yet. Assign a teacher to a course to get started.</p>
+                    </div>
+                  </td>
+                </tr>
+              }
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+

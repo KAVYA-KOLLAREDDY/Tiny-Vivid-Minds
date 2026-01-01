@@ -1,0 +1,281 @@
+<div class="calendar-container">
+  <div class="page-header">
+    <div class="header-content">
+      <div>
+        <h1>Calendar</h1>
+        <p>View and manage your class schedule</p>
+      </div>
+      <div class="view-controls">
+        <button 
+          class="view-btn" 
+          [class.active]="currentView() === 'month'"
+          (click)="changeView('month')">
+          <i class="fas fa-calendar-alt"></i>
+          <span>Month</span>
+        </button>
+        <button 
+          class="view-btn" 
+          [class.active]="currentView() === 'week'"
+          (click)="changeView('week')">
+          <i class="fas fa-calendar-week"></i>
+          <span>Week</span>
+        </button>
+        <button 
+          class="view-btn" 
+          [class.active]="currentView() === 'day'"
+          (click)="changeView('day')">
+          <i class="fas fa-calendar-day"></i>
+          <span>Day</span>
+        </button>
+        <button class="view-btn today-btn" (click)="goToToday()">
+          <i class="fas fa-home"></i>
+          <span>Today</span>
+        </button>
+        <button 
+          class="view-btn refresh-btn" 
+          (click)="onRefresh()"
+          [disabled]="isLoading()"
+          title="Refresh Calendar">
+          <i class="fas fa-sync-alt" [class.fa-spin]="isLoading()"></i>
+          <span>Refresh</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="calendar-layout">
+    <!-- Main Calendar View -->
+    <div class="calendar-main" [class.with-sidebar]="showSidePanel()">
+  @if (isLoading()) {
+    <div class="loading-container">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  } @else {
+    <div class="calendar-wrapper">
+          <full-calendar #fullCalendar [options]="calendarOptions"></full-calendar>
+    </div>
+  }
+    </div>
+
+    <!-- Side Panel (Teams-style) -->
+    @if (showSidePanel()) {
+      <div class="side-panel">
+        <div class="side-panel-header">
+          <h2>
+            @if (selectedClass()) {
+              Class Details
+            } @else {
+              {{ formatDateHeader(selectedDate()) }}
+            }
+          </h2>
+          <button class="close-panel-btn" (click)="closeSidePanel()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+
+        <div class="side-panel-body">
+          @if (selectedClass()) {
+            <!-- Single Class Details -->
+            <div class="class-details-card">
+              <div class="class-header">
+                <div class="class-time-badge">
+                  <i class="fas fa-clock"></i>
+                <span>{{ selectedClass()!.scheduledTime }}</span>
+              </div>
+                <span class="status-badge" [class]="getStatusClass(selectedClass()!.status)">
+                  {{ selectedClass()!.status }}
+                </span>
+              </div>
+
+              <div class="class-info">
+                <div class="info-item">
+                  <div class="info-label">
+                    <i class="fas fa-user-graduate"></i>
+                    <span>Student</span>
+            </div>
+                  <div class="info-value">
+                    <strong>{{ selectedClass()!.studentName }}</strong>
+                    @if (selectedClass()!.studentId) {
+                      <span class="info-meta">(ID: {{ selectedClass()!.studentId }})</span>
+                      }
+                    </div>
+                  </div>
+
+                <div class="info-item">
+                  <div class="info-label">
+                    <i class="fas fa-book"></i>
+                    <span>Course</span>
+                  </div>
+                  <div class="info-value">
+                    <strong>{{ selectedClass()!.courseName }}</strong>
+                    @if (selectedClass()!.courseId) {
+                      <span class="info-meta">(ID: {{ selectedClass()!.courseId }})</span>
+                }
+              </div>
+                </div>
+
+                <div class="info-item">
+                  <div class="info-label">
+                    <i class="fas fa-calendar"></i>
+                    <span>Date</span>
+                  </div>
+                  <div class="info-value">{{ formatDate(selectedClass()!.scheduledDate) }}</div>
+                </div>
+
+                <div class="info-item">
+                  <div class="info-label">
+                    <i class="fas fa-hourglass-half"></i>
+                    <span>Duration</span>
+                  </div>
+                  <div class="info-value">{{ formatDuration(selectedClass()!.duration) }}</div>
+                </div>
+
+              <!-- Edit timings actions -->
+              <div class="class-actions">
+                <button 
+                  class="btn btn-primary" 
+                  (click)="startEditSelectedClass()"
+                  [disabled]="isSavingEdit()">
+                  <i class="fas fa-edit"></i>
+                  <span>Edit Class Timing</span>
+                </button>
+              </div>
+
+              @if (isEditingClass()) {
+                <div class="edit-timing-form">
+                  <div class="edit-row">
+                    <div class="form-group">
+                      <label for="editDate">Date</label>
+                      <input
+                        id="editDate"
+                        type="date"
+                        class="form-control"
+                        [value]="editDate()"
+                        (change)="onEditDateChange($any($event.target).value)" />
+                    </div>
+                    <div class="form-group">
+                      <label for="editTime">Time</label>
+                      <input
+                        id="editTime"
+                        type="time"
+                        class="form-control"
+                        [value]="editTime()"
+                        (change)="onEditTimeChange($any($event.target).value)" />
+                    </div>
+                  </div>
+
+                  <div class="edit-row">
+                    <div class="form-group">
+                      <label for="editDuration">Duration (minutes)</label>
+                      <input
+                        id="editDuration"
+                        type="number"
+                        min="15"
+                        max="480"
+                        step="15"
+                        class="form-control"
+                        [value]="editDuration() ?? selectedClass()!.duration"
+                        (change)="onEditDurationChange($any($event.target).value)" />
+                    </div>
+                  </div>
+
+                  @if (editError()) {
+                    <div class="edit-error">
+                      {{ editError() }}
+                    </div>
+                  }
+
+                  <div class="edit-actions">
+                    <button 
+                      class="btn btn-secondary" 
+                      type="button"
+                      (click)="cancelEditSelectedClass()"
+                      [disabled]="isSavingEdit()">
+                      Cancel
+                    </button>
+                    <button 
+                      class="btn btn-primary" 
+                      type="button"
+                      (click)="saveEditedClassTiming()"
+                      [disabled]="isSavingEdit()">
+                      @if (isSavingEdit()) {
+                        <span>Saving...</span>
+                      } @else {
+                        <span>Save Changes</span>
+                      }
+                    </button>
+                  </div>
+                </div>
+              }
+
+                @if (selectedClass()!.topic && selectedClass()!.topic !== 'No topic') {
+                  <div class="info-item">
+                    <div class="info-label">
+                      <i class="fas fa-comment-alt"></i>
+                      <span>Topic</span>
+                    </div>
+                    <div class="info-value">{{ selectedClass()!.topic }}</div>
+                  </div>
+                }
+
+                @if (selectedClass()!.levelName) {
+                  <div class="info-item">
+                    <div class="info-label">
+                      <i class="fas fa-layer-group"></i>
+                      <span>Level</span>
+                    </div>
+                    <div class="info-value">{{ selectedClass()!.levelName }}</div>
+            </div>
+          }
+        </div>
+            </div>
+          } @else if (eventsForSelectedDate().length > 0) {
+            <!-- Multiple Events for Selected Date -->
+            <div class="events-list">
+              <div class="events-header">
+                <h3>{{ formatDateHeader(selectedDate()) }}</h3>
+                <span class="events-count">{{ eventsForSelectedDate().length }} class{{ eventsForSelectedDate().length !== 1 ? 'es' : '' }}</span>
+              </div>
+
+              <div class="events-container">
+                @for (event of eventsForSelectedDate(); track event.classId) {
+                  <div class="event-card" (click)="selectEvent(event)">
+                    <div class="event-time">
+                      <i class="fas fa-clock"></i>
+                      <span>{{ event.scheduledTime }}</span>
+                    </div>
+                    <div class="event-content">
+                      <div class="event-title">{{ event.studentName }}</div>
+                      <div class="event-subtitle">{{ event.courseName }}</div>
+                      @if (event.topic && event.topic !== 'No topic') {
+                        <div class="event-topic">
+                          <i class="fas fa-comment-alt"></i>
+                          <span>{{ event.topic }}</span>
+                        </div>
+                      }
+                      <div class="event-meta">
+                        <span class="event-duration">{{ formatDuration(event.duration) }}</span>
+                        <span class="status-badge" [class]="getStatusClass(event.status)">
+                          {{ event.status }}
+                        </span>
+        </div>
+      </div>
+    </div>
+  }
+              </div>
+            </div>
+          } @else {
+            <!-- No Events -->
+            <div class="empty-state">
+              <i class="fas fa-calendar-times"></i>
+              <h3>No classes scheduled</h3>
+              <p>There are no classes scheduled for {{ formatDateHeader(selectedDate()) }}</p>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </div>
+</div>

@@ -1,0 +1,44 @@
+<nav class="navbar navbar-expand-lg custom-navbar p-3 px-4">
+  <div class="container-fluid">
+    <a class="navbar-brand fw-bold fst-italic text-white fs-4" (click)="navigateToDashboard()" style="cursor: pointer;">
+      Abacus Learning System
+    </a>
+
+    <button
+      class="navbar-toggler text-white border-white"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNav"
+      aria-controls="navbarNav"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+      <ul class="navbar-nav fw-semibold align-items-center gap-3">
+        <li class="nav-item">
+          <span class="nav-link welcome-text">👋 Welcome, {{ username() }}</span>
+        </li>
+        <li class="nav-item">
+          <button
+            class="nav-link nav-pill theme-toggle-btn border-0"
+            (click)="toggleTheme()"
+            [attr.aria-label]="themeService.currentTheme() === 'light' ? 'Switch to dark mode' : 'Switch to light mode'"
+            [title]="themeService.currentTheme() === 'light' ? 'Switch to dark mode' : 'Switch to light mode'"
+            style="cursor: pointer;"
+          >
+            <i [class]="themeService.currentTheme() === 'light' ? 'fas fa-moon' : 'fas fa-sun'"></i>
+          </button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link nav-pill logout-link" (click)="logout()" style="cursor: pointer;">
+            <span>Logout</span>
+          </button>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+

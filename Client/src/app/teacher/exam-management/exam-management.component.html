@@ -1,0 +1,278 @@
+<div class="exam-management-container">
+  <div class="page-header">
+    <h1>Exam Management</h1>
+    <p>View and grade student exam submissions</p>
+  </div>
+
+  <!-- Exam Submissions Table -->
+  <div class="table-wrapper">
+    @if (isLoading()) {
+      <div class="loading-container">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    } @else {
+      <div class="table-responsive">
+        <table class="exam-table">
+          <thead>
+            <tr>
+              <th>Student</th>
+              <th>Course</th>
+              <th>File</th>
+              <th>Submitted On</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @if (examSubmissions().length === 0) {
+              <tr>
+                <td colspan="6" class="empty-state">
+                  <i class="fas fa-file-alt"></i>
+                  <p>No exam submissions found</p>
+                </td>
+              </tr>
+            } @else {
+              @for (submission of examSubmissions(); track submission.submissionId) {
+                <tr>
+                  <td class="student-cell">
+                    <div class="student-info">
+                      <i class="fas fa-user-graduate"></i>
+                      <span>{{ submission.studentName }}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="course-info">
+                      <i class="fas fa-book"></i>
+                      <span>{{ submission.courseName }}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="file-cell">
+                      <i [class]="getFileIcon(submission.fileName)"></i>
+                      <span class="file-name">{{ submission.fileName }}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="date-cell">
+                      <i class="fas fa-calendar"></i>
+                      <span>{{ formatDate(submission.submittedOn) }}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="status-info">
+                      <span class="status-badge" [class]="getStatusClass(submission.status)">
+                        {{ submission.status }}
+                      </span>
+                      @if (submission.grade !== undefined) {
+                        <div class="grade-details">
+                          <span class="grade-badge">Grade: {{ submission.grade }}/100</span>
+                          @if (submission.totalQuestions) {
+                            <span class="score-breakdown">
+                              {{ submission.correctAnswers || 0 }}/{{ submission.totalQuestions }} correct
+                            </span>
+                          }
+                        </div>
+                      }
+                    </div>
+                  </td>
+                  <td>
+                    <div class="actions-cell">
+                      <button 
+                        class="action-btn view-btn"
+                        (click)="viewFile(submission)"
+                        title="View File">
+                        <i class="fas fa-eye"></i>
+                        <span>View File</span>
+                      </button>
+                      <button 
+                        class="action-btn grade-btn"
+                        (click)="openGradeModal(submission)"
+                        title="Grade / Approve">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Grade / Approve</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+
+  <!-- View File Modal -->
+  @if (showViewModal() && selectedSubmission()) {
+    <div class="modal-overlay" (click)="closeViewModal()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>View File</h2>
+          <button class="close-btn" (click)="closeViewModal()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="file-details">
+            <div class="detail-row">
+              <label>Student:</label>
+              <span>{{ selectedSubmission()!.studentName }}</span>
+            </div>
+            <div class="detail-row">
+              <label>Course:</label>
+              <span>{{ selectedSubmission()!.courseName }}</span>
+            </div>
+            <div class="detail-row">
+              <label>File Name:</label>
+              <span>{{ selectedSubmission()!.fileName }}</span>
+            </div>
+            <div class="detail-row">
+              <label>Submitted On:</label>
+              <span>{{ formatDate(selectedSubmission()!.submittedOn) }}</span>
+            </div>
+            <div class="file-preview">
+              <i [class]="getFileIcon(selectedSubmission()!.fileName)" class="file-icon-large"></i>
+              <p>File preview would be displayed here</p>
+              <button class="btn-download" (click)="viewFile(selectedSubmission()!)">
+                <i class="fas fa-download"></i>
+                <span>Download File</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-close-modal" (click)="closeViewModal()">Close</button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Grade/Approve Modal -->
+  @if (showGradeModal() && selectedSubmission()) {
+    <div class="modal-overlay" (click)="closeGradeModal()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>Grade / Approve Submission</h2>
+          <button class="close-btn" (click)="closeGradeModal()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="submission-info">
+            <div class="info-row">
+              <label>Student:</label>
+              <span>{{ selectedSubmission()!.studentName }}</span>
+            </div>
+            <div class="info-row">
+              <label>Course:</label>
+              <span>{{ selectedSubmission()!.courseName }}</span>
+            </div>
+            <div class="info-row">
+              <label>File:</label>
+              <span>{{ selectedSubmission()!.fileName }}</span>
+            </div>
+          </div>
+
+          <form (ngSubmit)="submitGrade()">
+            <div class="grading-details">
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="totalQuestions">
+                    <i class="fas fa-question-circle"></i>
+                    Total Questions
+                  </label>
+                  <input
+                    id="totalQuestions"
+                    type="number"
+                    class="form-control"
+                    min="0"
+                    [value]="totalQuestions() ?? ''"
+                    (input)="onTotalQuestionsChange($any($event.target).value)"
+                    placeholder="Total questions">
+                </div>
+
+                <div class="form-group">
+                  <label for="correctAnswers">
+                    <i class="fas fa-check-circle"></i>
+                    Correct Answers
+                  </label>
+                  <input
+                    id="correctAnswers"
+                    type="number"
+                    class="form-control"
+                    min="0"
+                    [value]="correctAnswers() ?? ''"
+                    (input)="onCorrectAnswersChange($any($event.target).value)"
+                    placeholder="Correct answers">
+                </div>
+
+                <div class="form-group">
+                  <label for="wrongAnswers">
+                    <i class="fas fa-times-circle"></i>
+                    Wrong Answers
+                  </label>
+                  <input
+                    id="wrongAnswers"
+                    type="number"
+                    class="form-control"
+                    min="0"
+                    [value]="wrongAnswers() ?? ''"
+                    (input)="onWrongAnswersChange($any($event.target).value)"
+                    placeholder="Wrong answers">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="grade">
+                  <i class="fas fa-star"></i>
+                  Grade (0-100)
+                </label>
+                <input
+                  id="grade"
+                  type="number"
+                  class="form-control"
+                  min="0"
+                  max="100"
+                  [value]="grade() ?? ''"
+                  (input)="onGradeChange($any($event.target).value)"
+                  placeholder="Enter grade (0-100)"
+                  required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="gradeRemarks">
+                <i class="fas fa-comment"></i>
+                Remarks
+              </label>
+              <textarea
+                id="gradeRemarks"
+                class="form-control"
+                rows="4"
+                placeholder="Enter remarks or feedback..."
+                [value]="remarks()"
+                (input)="onRemarksChange($any($event.target).value)"></textarea>
+            </div>
+
+            <div class="modal-footer">
+              <button type="button" class="btn-cancel" (click)="closeGradeModal()">Cancel</button>
+              <button type="submit" class="btn-submit">Submit Grade</button>
+              @if (selectedSubmission()!.status === 'Graded') {
+                <button 
+                  type="button" 
+                  class="btn-approve"
+                  (click)="approveSubmission(selectedSubmission()!)">
+                  <i class="fas fa-check"></i>
+                  Approve
+                </button>
+              }
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  }
+</div>
+

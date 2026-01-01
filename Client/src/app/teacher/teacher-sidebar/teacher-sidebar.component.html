@@ -1,0 +1,54 @@
+<button
+  class="sidebar-toggle d-lg-none"
+  type="button"
+  data-bs-toggle="collapse"
+  data-bs-target="#sidebarMenu"
+  aria-expanded="false"
+  aria-controls="sidebarMenu"
+  aria-label="Toggle sidebar"
+>
+  <i class="fas fa-bars"></i>
+</button>
+
+<nav class="sidebar collapse d-lg-block" id="sidebarMenu">
+  <h2>Teacher Panel</h2>
+  <ul>
+    <li>
+      <a routerLink="/teacher/dashboard" routerLinkActive="active">
+        <i class="fas fa-home"></i>
+        <span>Dashboard</span>
+      </a>
+    </li>
+    <li>
+      <a routerLink="/teacher/students" routerLinkActive="active">
+        <i class="fas fa-users"></i>
+        <span>My Students</span>
+      </a>
+    </li>
+    <li>
+      <a routerLink="/teacher/calendar" routerLinkActive="active">
+        <i class="fas fa-calendar"></i>
+        <span>Calendar</span>
+      </a>
+    </li>
+    <li>
+      <a routerLink="/teacher/progress" routerLinkActive="active">
+        <i class="fas fa-chart-bar"></i>
+        <span>Progress Management</span>
+      </a>
+    </li>
+    <li>
+      <a routerLink="/teacher/attendance" routerLinkActive="active">
+        <i class="fas fa-clipboard-check"></i>
+        <span>Attendance</span>
+      </a>
+    </li>
+    <li>
+      <a routerLink="/teacher/exams" routerLinkActive="active">
+        <i class="fas fa-file-alt"></i>
+        <span>Exam Management</span>
+      </a>
+    </li>
+  </ul>
+</nav>
+

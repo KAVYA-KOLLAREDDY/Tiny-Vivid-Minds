@@ -1,0 +1,266 @@
+<!-- Teacher Registration Page -->
+<section class="auth-section">
+  <div class="container">
+    <div class="row justify-content-center align-items-center min-vh-100">
+      <div class="col-lg-7 col-md-9">
+        <div class="auth-card">
+          <!-- Header -->
+          <div class="auth-header text-center mb-4">
+            <div class="auth-icon mb-3">
+              <i class="fas fa-chalkboard-teacher"></i>
+            </div>
+            <h2 class="auth-title">Teacher Registration</h2>
+            <p class="auth-subtitle">
+              Join Tiny Vivid Minds as a teacher and inspire young minds
+            </p>
+          </div>
+
+          <!-- Register Form -->
+          <form
+            [formGroup]="registerForm"
+            (ngSubmit)="onSubmit()"
+            class="auth-form"
+          >
+            <!-- Full Name -->
+            <div class="form-group mb-3">
+              <label for="fullName" class="form-label">
+                <i class="fas fa-user me-2"></i>Full Name
+              </label>
+              <input
+                type="text"
+                class="form-control"
+                id="fullName"
+                formControlName="fullName"
+                placeholder="Enter your full name"
+                [class.is-invalid]="
+                  registerForm.get('fullName')?.invalid &&
+                  registerForm.get('fullName')?.touched
+                "
+              />
+              <div
+                *ngIf="
+                  registerForm.get('fullName')?.invalid &&
+                  registerForm.get('fullName')?.touched
+                "
+                class="invalid-feedback"
+              >
+                <span *ngIf="registerForm.get('fullName')?.errors?.['required']">
+                  Full name is required
+                </span>
+                <span *ngIf="registerForm.get('fullName')?.errors?.['minlength']">
+                  Name must be at least 2 characters
+                </span>
+              </div>
+            </div>
+
+            <!-- Email Field -->
+            <div class="form-group mb-3">
+              <label for="email" class="form-label">
+                <i class="fas fa-envelope me-2"></i>Email Address
+              </label>
+              <input
+                type="email"
+                class="form-control"
+                id="email"
+                formControlName="email"
+                placeholder="Enter your email"
+                [class.is-invalid]="
+                  registerForm.get('email')?.invalid &&
+                  registerForm.get('email')?.touched
+                "
+              />
+              <div
+                *ngIf="
+                  registerForm.get('email')?.invalid &&
+                  registerForm.get('email')?.touched
+                "
+                class="invalid-feedback"
+              >
+                <span *ngIf="registerForm.get('email')?.errors?.['required']">
+                  Email is required
+                </span>
+                <span *ngIf="registerForm.get('email')?.errors?.['email']">
+                  Please enter a valid email
+                </span>
+              </div>
+            </div>
+
+            <!-- Password Field -->
+            <div class="form-group mb-3">
+              <label for="password" class="form-label">
+                <i class="fas fa-lock me-2"></i>Password
+              </label>
+              <div class="password-input-wrapper">
+                <input
+                  [type]="showPassword ? 'text' : 'password'"
+                  class="form-control"
+                  id="password"
+                  formControlName="password"
+                  placeholder="Create a password (min. 6 characters)"
+                  [class.is-invalid]="
+                    registerForm.get('password')?.invalid &&
+                    registerForm.get('password')?.touched
+                  "
+                />
+                <button
+                  type="button"
+                  class="password-toggle"
+                  (click)="togglePasswordVisibility()"
+                  tabindex="-1"
+                >
+                  <i
+                    [class]="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"
+                  ></i>
+                </button>
+              </div>
+              <div
+                *ngIf="
+                  registerForm.get('password')?.invalid &&
+                  registerForm.get('password')?.touched
+                "
+                class="invalid-feedback"
+              >
+                <span *ngIf="registerForm.get('password')?.errors?.['required']">
+                  Password is required
+                </span>
+                <span
+                  *ngIf="registerForm.get('password')?.errors?.['minlength']"
+                >
+                  Password must be at least 6 characters
+                </span>
+              </div>
+            </div>
+
+            <!-- Qualification -->
+            <div class="form-group mb-3">
+              <label for="qualification" class="form-label">
+                <i class="fas fa-graduation-cap me-2"></i>Qualification
+              </label>
+              <input
+                type="text"
+                class="form-control"
+                id="qualification"
+                formControlName="qualification"
+                placeholder="e.g., B.Ed, M.Sc Mathematics"
+                [class.is-invalid]="
+                  registerForm.get('qualification')?.invalid &&
+                  registerForm.get('qualification')?.touched
+                "
+              />
+              <div
+                *ngIf="
+                  registerForm.get('qualification')?.invalid &&
+                  registerForm.get('qualification')?.touched
+                "
+                class="invalid-feedback"
+              >
+                Qualification is required
+              </div>
+            </div>
+
+            <!-- Experience Years -->
+            <div class="form-group mb-3">
+              <label for="experienceYears" class="form-label">
+                <i class="fas fa-briefcase me-2"></i>Years of Experience
+              </label>
+              <input
+                type="number"
+                class="form-control"
+                id="experienceYears"
+                formControlName="experienceYears"
+                placeholder="Enter years of experience"
+                min="0"
+                [class.is-invalid]="
+                  registerForm.get('experienceYears')?.invalid &&
+                  registerForm.get('experienceYears')?.touched
+                "
+              />
+              <div
+                *ngIf="
+                  registerForm.get('experienceYears')?.invalid &&
+                  registerForm.get('experienceYears')?.touched
+                "
+                class="invalid-feedback"
+              >
+                <span *ngIf="registerForm.get('experienceYears')?.errors?.['required']">
+                  Experience years is required
+                </span>
+                <span *ngIf="registerForm.get('experienceYears')?.errors?.['min']">
+                  Experience must be 0 or greater
+                </span>
+              </div>
+            </div>
+
+            <!-- Specialization -->
+            <div class="form-group mb-3">
+              <label for="specialization" class="form-label">
+                <i class="fas fa-star me-2"></i>Specialization
+              </label>
+              <input
+                type="text"
+                class="form-control"
+                id="specialization"
+                formControlName="specialization"
+                placeholder="e.g., Abacus, Vedic Maths"
+                [class.is-invalid]="
+                  registerForm.get('specialization')?.invalid &&
+                  registerForm.get('specialization')?.touched
+                "
+              />
+              <div
+                *ngIf="
+                  registerForm.get('specialization')?.invalid &&
+                  registerForm.get('specialization')?.touched
+                "
+                class="invalid-feedback"
+              >
+                Specialization is required
+              </div>
+            </div>
+
+            <!-- Bio -->
+            <div class="form-group mb-4">
+              <label for="bio" class="form-label">
+                <i class="fas fa-info-circle me-2"></i>Bio (Optional)
+              </label>
+              <textarea
+                class="form-control"
+                id="bio"
+                formControlName="bio"
+                rows="3"
+                placeholder="Tell us about yourself..."
+              ></textarea>
+            </div>
+
+            <!-- Submit Button -->
+            <button
+              type="submit"
+              class="btn btn-primary btn-lg w-100 mb-3"
+              [disabled]="registerForm.invalid || isSubmitting"
+            >
+              <span *ngIf="!isSubmitting">
+                <i class="fas fa-user-plus me-2"></i>Register as Teacher
+              </span>
+              <span *ngIf="isSubmitting">
+                <i class="fas fa-spinner fa-spin me-2"></i>Registering...
+              </span>
+            </button>
+
+            <!-- Login Link -->
+            <div class="text-center">
+              <p class="auth-footer-text">
+                Already have an account?
+                <a routerLink="/auth/login" class="auth-link">Sign in here</a>
+              </p>
+              <p class="auth-footer-text mt-2">
+                Want to register as a student?
+                <a routerLink="/auth/register/student" class="auth-link">Student Registration</a>
+              </p>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+

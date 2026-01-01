@@ -1,0 +1,1242 @@
+<!-- Social Media Sidebar -->
+<app-social-sidebar></app-social-sidebar>
+
+<!-- Hero Section -->
+<section class="contact-hero">
+  <div class="container">
+    <div class="row align-items-center min-vh-70">
+      <div class="col-lg-10 mx-auto text-center">
+        <h1 class="hero-title fade-in">
+          We're Here to Help Your Child Shine in Maths!
+        </h1>
+        <p class="hero-subtitle fade-in">
+          Have a question, feedback, or want to book a free demo? Let's connect
+          — we're just a message away!
+        </p>
+        <div class="hero-buttons fade-in mt-4">
+          <a href="#contact-form" class="btn btn-light btn-lg me-3">
+            <i class="fas fa-envelope me-2"></i>Send Us a Message
+          </a>
+          <a href="#book-demo" class="btn btn-outline-light btn-lg">
+            <i class="fas fa-calendar-check me-2"></i>Book a Free Demo
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Global Presence Section -->
+<section class="global-presence-section section-padding">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-10 mx-auto text-center mb-5">
+        <h2 class="section-title fade-in">Learning Without Borders</h2>
+        <p class="section-subtitle fade-in">
+          Tiny Vivid Minds proudly teaches students from 5+ countries, helping
+          children build confidence in maths from India to the USA.
+        </p>
+      </div>
+    </div>
+    <div class="row mb-5">
+      <div class="col-lg-12 mx-auto">
+        <div class="world-map-container fade-in">
+          <div class="world-map-visual">
+            <div
+              *ngIf="chartOptions"
+              echarts
+              [options]="chartOptions"
+              (chartInit)="onChartInit($event)"
+              class="world-map-chart"
+            ></div>
+            <div
+              *ngIf="!chartOptions"
+              class="world-map-chart d-flex align-items-center justify-content-center"
+            >
+              <div class="text-muted">Loading map...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-4 col-md-4 mb-4">
+        <div class="stat-card fade-in text-center">
+          <div class="stat-icon">
+            <i class="fas fa-globe-americas"></i>
+          </div>
+          <div class="stat-value">{{ animatedStudentCount }}+</div>
+          <div class="stat-label">Students Learning Globally</div>
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-4 mb-4">
+        <div class="stat-card fade-in text-center">
+          <div class="stat-icon">
+            <i class="fas fa-chalkboard-teacher"></i>
+          </div>
+          <div class="stat-value">Expert</div>
+          <div class="stat-label">Certified & Experienced Teachers</div>
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-4 mb-4">
+        <div class="stat-card fade-in text-center">
+          <div class="stat-icon">
+            <i class="fas fa-clock"></i>
+          </div>
+          <div class="stat-value">24/7</div>
+          <div class="stat-label">Parent Support (Flexible Timings)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Contact Forms Section -->
+<section
+  class="contact-forms-section section-padding bg-light"
+  id="contact-form"
+>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 mx-auto text-center mb-5">
+        <h2 class="section-title fade-in">Reach Out to Our Team</h2>
+        <p class="section-subtitle fade-in">
+          Fill out the form below and we'll respond within 24 hours.
+        </p>
+      </div>
+    </div>
+
+    <!-- Form Tabs -->
+    <div class="form-tabs mb-4">
+      <div
+        class="nav nav-pills justify-content-center"
+        id="contact-tabs"
+        role="tablist"
+      >
+        <button
+          class="nav-link active"
+          id="book-demo-tab"
+          data-bs-toggle="pill"
+          data-bs-target="#book-demo"
+          type="button"
+          role="tab"
+          aria-controls="book-demo"
+          aria-selected="true"
+        >
+          <i class="fas fa-calendar-alt me-2"></i>Book Free Demo
+        </button>
+        <button
+          class="nav-link"
+          id="contact-us-tab"
+          data-bs-toggle="pill"
+          data-bs-target="#contact-us"
+          type="button"
+          role="tab"
+          aria-controls="contact-us"
+          aria-selected="false"
+        >
+          <i class="fas fa-envelope me-2"></i>Contact Us
+        </button>
+        <button
+          class="nav-link"
+          id="join-us-tab"
+          data-bs-toggle="pill"
+          data-bs-target="#join-us"
+          type="button"
+          role="tab"
+          aria-controls="join-us"
+          aria-selected="false"
+        >
+          <i class="fas fa-user-plus me-2"></i>Join Our Team
+        </button>
+      </div>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="tab-content" id="contact-tabContent">
+      <!-- Book Demo Form -->
+      <div
+        class="tab-pane fade show active"
+        id="book-demo"
+        role="tabpanel"
+        aria-labelledby="book-demo-tab"
+      >
+        <div class="row">
+          <div class="col-lg-8 mx-auto">
+            <div class="form-container custom-card fade-in">
+              <div class="form-header text-center mb-4">
+                <h3 class="form-title">Book Your Free Demo</h3>
+                <p class="form-subtitle">
+                  Experience our teaching methods with a complimentary session
+                </p>
+              </div>
+
+              <form
+                [formGroup]="demoForm"
+                (ngSubmit)="onDemoSubmit()"
+                class="contact-form"
+              >
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label for="parentName" class="form-label"
+                      >Parent's Name *</label
+                    >
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="parentName"
+                      formControlName="parentName"
+                      placeholder="Enter parent's name"
+                      required
+                    />
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="email" class="form-label"
+                      >Email Address *</label
+                    >
+                    <input
+                      type="email"
+                      class="form-control"
+                      id="email"
+                      formControlName="email"
+                      placeholder="Enter email address"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label for="phone" class="form-label">Phone Number *</label>
+                    <input
+                      type="tel"
+                      class="form-control"
+                      id="phone"
+                      formControlName="phone"
+                      placeholder="Enter phone number"
+                      required
+                    />
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="childName" class="form-label"
+                      >Child's Name *</label
+                    >
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="childName"
+                      formControlName="childName"
+                      placeholder="Enter child's name"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label for="childAge" class="form-label"
+                      >Child's Age *</label
+                    >
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="childAge"
+                      formControlName="childAge"
+                      placeholder="Enter child's age"
+                      min="4"
+                      max="14"
+                      required
+                    />
+                    <div
+                      *ngIf="
+                        demoForm.get('childAge')?.invalid &&
+                        demoForm.get('childAge')?.touched
+                      "
+                      class="text-danger small mt-1"
+                    >
+                      <span
+                        *ngIf="demoForm.get('childAge')?.errors?.['required']"
+                        >Child's age is required</span
+                      >
+                      <span
+                        *ngIf="
+                          demoForm.get('childAge')?.errors?.['ageRange'] ||
+                          demoForm.get('childAge')?.errors?.['min'] ||
+                          demoForm.get('childAge')?.errors?.['max']
+                        "
+                        >Age must be between 4 and 14</span
+                      >
+                    </div>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="preferredCourse" class="form-label"
+                      >Preferred Course *</label
+                    >
+                    <select
+                      class="form-select"
+                      id="preferredCourse"
+                      formControlName="preferredCourse"
+                      required
+                    >
+                      <option value="">Select a course</option>
+                      <option value="Abacus">Abacus</option>
+                      <option value="Vedic Maths">Vedic Maths</option>
+                    </select>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="preferredDate" class="form-label"
+                      >Preferred Date *</label
+                    >
+                    <input
+                      type="date"
+                      class="form-control"
+                      id="preferredDate"
+                      formControlName="preferredDate"
+                      required
+                    />
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="preferredTime" class="form-label"
+                      >Preferred Time *</label
+                    >
+                    <select
+                      class="form-select"
+                      id="preferredTime"
+                      formControlName="preferredTime"
+                      required
+                    >
+                      <option value="">Select time</option>
+                      <option value="9:00 AM">9:00 AM</option>
+                      <option value="10:00 AM">10:00 AM</option>
+                      <option value="11:00 AM">11:00 AM</option>
+                      <option value="2:00 PM">2:00 PM</option>
+                      <option value="3:00 PM">3:00 PM</option>
+                      <option value="4:00 PM">4:00 PM</option>
+                      <option value="5:00 PM">5:00 PM</option>
+                      <option value="6:00 PM">6:00 PM</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="mb-4">
+                  <label for="message" class="form-label"
+                    >Additional Message</label
+                  >
+                  <textarea
+                    class="form-control"
+                    id="message"
+                    formControlName="message"
+                    rows="4"
+                    placeholder="Any specific requirements or questions..."
+                  ></textarea>
+                </div>
+
+                <div class="text-center">
+                  <button
+                    type="submit"
+                    class="btn btn-primary btn-lg"
+                    [disabled]="demoForm.invalid || isSubmitting"
+                    [class.btn-secondary]="demoForm.invalid"
+                  >
+                    <span *ngIf="!isSubmitting">
+                      <i class="fas fa-calendar-check me-2"></i>Book Demo
+                    </span>
+                    <span *ngIf="isSubmitting">
+                      <i class="fas fa-spinner fa-spin me-2"></i>Booking...
+                    </span>
+                  </button>
+                  <div
+                    *ngIf="demoForm.invalid && demoForm.touched"
+                    class="text-danger small mt-2"
+                  >
+                    <i class="fas fa-exclamation-circle me-1"></i>Please fill in
+                    all required fields correctly
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact Us Form -->
+      <div
+        class="tab-pane fade"
+        id="contact-us"
+        role="tabpanel"
+        aria-labelledby="contact-us-tab"
+      >
+        <div class="row">
+          <div class="col-lg-8 mx-auto">
+            <div class="form-container custom-card fade-in">
+              <div class="form-header text-center mb-4">
+                <h3 class="form-title">Contact Us</h3>
+                <p class="form-subtitle">
+                  Have questions? We'd love to hear from you
+                </p>
+              </div>
+
+              <form
+                [formGroup]="contactForm"
+                (ngSubmit)="onContactSubmit()"
+                class="contact-form"
+              >
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label for="contactName" class="form-label"
+                      >Parent's Name *</label
+                    >
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="contactName"
+                      formControlName="name"
+                      placeholder="Enter parent's name"
+                      required
+                    />
+                    <div
+                      *ngIf="
+                        contactForm.get('name')?.invalid &&
+                        contactForm.get('name')?.touched
+                      "
+                      class="text-danger small mt-1"
+                    >
+                      <span
+                        *ngIf="contactForm.get('name')?.errors?.['required']"
+                        >Name is required</span
+                      >
+                      <span
+                        *ngIf="contactForm.get('name')?.errors?.['minlength']"
+                        >Name must be at least 2 characters</span
+                      >
+                    </div>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="contactEmail" class="form-label"
+                      >Email Address *</label
+                    >
+                    <input
+                      type="email"
+                      class="form-control"
+                      id="contactEmail"
+                      formControlName="email"
+                      placeholder="Enter email address"
+                      required
+                    />
+                    <div
+                      *ngIf="
+                        contactForm.get('email')?.invalid &&
+                        contactForm.get('email')?.touched
+                      "
+                      class="text-danger small mt-1"
+                    >
+                      <span
+                        *ngIf="contactForm.get('email')?.errors?.['required']"
+                        >Email is required</span
+                      >
+                      <span *ngIf="contactForm.get('email')?.errors?.['email']"
+                        >Please enter a valid email address</span
+                      >
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label for="contactPhone" class="form-label"
+                      >Phone Number (with country code) *</label
+                    >
+                    <input
+                      type="tel"
+                      class="form-control"
+                      id="contactPhone"
+                      formControlName="phone"
+                      placeholder="e.g., +1 234 567 8900"
+                      required
+                    />
+                    <div
+                      *ngIf="
+                        contactForm.get('phone')?.invalid &&
+                        contactForm.get('phone')?.touched
+                      "
+                      class="text-danger small mt-1"
+                    >
+                      <span
+                        *ngIf="contactForm.get('phone')?.errors?.['required']"
+                        >Phone number is required</span
+                      >
+                      <span
+                        *ngIf="contactForm.get('phone')?.errors?.['pattern']"
+                        >Please enter a valid phone number</span
+                      >
+                    </div>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="subject" class="form-label">Ask about *</label>
+                    <select
+                      class="form-select"
+                      id="subject"
+                      formControlName="subject"
+                      required
+                    >
+                      <option value="">Select a topic</option>
+                      <option value="courses">Ask about courses</option>
+                      <option value="demo">Request a free demo</option>
+                      <option value="feedback">Share feedback</option>
+                      <option value="issue">Report an issue</option>
+                    </select>
+                    <div
+                      *ngIf="
+                        contactForm.get('subject')?.invalid &&
+                        contactForm.get('subject')?.touched
+                      "
+                      class="text-danger small mt-1"
+                    >
+                      <span
+                        *ngIf="contactForm.get('subject')?.errors?.['required']"
+                        >Please select a topic</span
+                      >
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label for="contactMessage" class="form-label"
+                    >Message *</label
+                  >
+                  <textarea
+                    class="form-control"
+                    id="contactMessage"
+                    formControlName="message"
+                    rows="5"
+                    placeholder="Enter your message..."
+                    required
+                  ></textarea>
+                  <div
+                    *ngIf="
+                      contactForm.get('message')?.invalid &&
+                      contactForm.get('message')?.touched
+                    "
+                    class="text-danger small mt-1"
+                  >
+                    <span
+                      *ngIf="contactForm.get('message')?.errors?.['required']"
+                      >Message is required</span
+                    >
+                    <span
+                      *ngIf="contactForm.get('message')?.errors?.['minlength']"
+                      >Message must be at least 10 characters</span
+                    >
+                  </div>
+                </div>
+
+                <div class="mb-4">
+                  <div class="form-check">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      id="newsletterCheck"
+                      formControlName="newsletter"
+                    />
+                    <label class="form-check-label" for="newsletterCheck">
+                      Receive updates and newsletters
+                    </label>
+                  </div>
+                </div>
+
+                <div class="text-center">
+                  <button
+                    type="submit"
+                    class="btn btn-primary btn-lg"
+                    [disabled]="contactForm.invalid || isSubmitting"
+                    [class.btn-secondary]="contactForm.invalid"
+                  >
+                    <span *ngIf="!isSubmitting">
+                      <i class="fas fa-paper-plane me-2"></i>Send Message
+                    </span>
+                    <span *ngIf="isSubmitting">
+                      <i class="fas fa-spinner fa-spin me-2"></i>Sending...
+                    </span>
+                  </button>
+                  <div
+                    *ngIf="contactForm.invalid && contactForm.touched"
+                    class="text-danger small mt-2"
+                  >
+                    <i class="fas fa-exclamation-circle me-1"></i>Please fill in
+                    all required fields correctly
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Join Us Form -->
+      <div
+        class="tab-pane fade"
+        id="join-us"
+        role="tabpanel"
+        aria-labelledby="join-us-tab"
+      >
+        <div class="row">
+          <div class="col-lg-8 mx-auto">
+            <div class="form-container custom-card fade-in">
+              <div class="form-header text-center mb-4">
+                <h3 class="form-title">Join Our Team</h3>
+                <p class="form-subtitle">
+                  Become part of our mission to transform children's
+                  mathematical learning
+                </p>
+              </div>
+
+              <form
+                [formGroup]="joinUsForm"
+                (ngSubmit)="onJoinUsSubmit()"
+                class="contact-form"
+              >
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label for="joinName" class="form-label">Full Name *</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="joinName"
+                      formControlName="name"
+                      placeholder="Enter your full name"
+                      required
+                    />
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="joinEmail" class="form-label"
+                      >Email Address *</label
+                    >
+                    <input
+                      type="email"
+                      class="form-control"
+                      id="joinEmail"
+                      formControlName="email"
+                      placeholder="Enter email address"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label for="joinPhone" class="form-label"
+                      >Phone Number *</label
+                    >
+                    <input
+                      type="tel"
+                      class="form-control"
+                      id="joinPhone"
+                      formControlName="phone"
+                      placeholder="Enter phone number"
+                      required
+                    />
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="qualification" class="form-label"
+                      >Qualification *</label
+                    >
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="qualification"
+                      formControlName="qualification"
+                      placeholder="e.g., B.Ed, M.Sc Mathematics"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label for="experience" class="form-label"
+                      >Teaching Experience *</label
+                    >
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="experience"
+                      formControlName="experience"
+                      placeholder="e.g., 3 years in primary education"
+                      required
+                    />
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="preferredSubject" class="form-label"
+                      >Preferred Subject *</label
+                    >
+                    <select
+                      class="form-select"
+                      id="preferredSubject"
+                      formControlName="preferredSubject"
+                      required
+                    >
+                      <option value="">Select subject</option>
+                      <option value="Abacus">Abacus</option>
+                      <option value="Vedic Maths">Vedic Maths</option>
+                      <option value="General Mathematics">
+                        General Mathematics
+                      </option>
+                      <option value="All Subjects">All Subjects</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label for="availability" class="form-label"
+                    >Availability *</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="availability"
+                    formControlName="availability"
+                    placeholder="e.g., Weekdays 4-8 PM, Weekends 9 AM-5 PM"
+                    required
+                  />
+                </div>
+
+                <div class="mb-4">
+                  <label for="joinMessage" class="form-label"
+                    >Cover Letter</label
+                  >
+                  <textarea
+                    class="form-control"
+                    id="joinMessage"
+                    formControlName="message"
+                    rows="4"
+                    placeholder="Tell us why you'd like to join our team..."
+                  ></textarea>
+                </div>
+
+                <div class="text-center">
+                  <button
+                    type="submit"
+                    class="btn btn-primary btn-lg"
+                    [disabled]="joinUsForm.invalid || isSubmitting"
+                  >
+                    <span *ngIf="!isSubmitting">
+                      <i class="fas fa-user-plus me-2"></i>Submit Application
+                    </span>
+                    <span *ngIf="isSubmitting">
+                      <i class="fas fa-spinner fa-spin me-2"></i>Submitting...
+                    </span>
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Success/Error Messages -->
+    <div *ngIf="submitSuccess" class="alert alert-success mt-4" role="alert">
+      <i class="fas fa-check-circle me-2"></i>
+      {{ successMessage }}
+    </div>
+
+    <div *ngIf="submitError" class="alert alert-danger mt-4" role="alert">
+      <i class="fas fa-exclamation-circle me-2"></i>
+      {{ errorMessage }}
+    </div>
+  </div>
+</section>
+
+<!-- Parent Testimonials Section -->
+<section class="testimonials-section section-padding" id="testimonials">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-10 mx-auto text-center mb-5">
+        <h2 class="section-title fade-in">What Parents Say About Us</h2>
+        <p class="section-subtitle fade-in">
+          Real feedback from families who have experienced our program.
+        </p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-4 col-md-6 mb-4">
+        <div class="testimonial-card fade-in">
+          <div class="stars mb-3">
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+          </div>
+          <p class="testimonial-text">
+            "Since joining Tiny Vivid Minds, my daughter's speed and confidence
+            in maths have doubled!"
+          </p>
+          <div class="testimonial-author-info">
+            <div class="author-avatar-small">
+              <i class="fas fa-user"></i>
+            </div>
+            <div class="author-details">
+              <h6 class="author-name-small">Mrs. Patel</h6>
+              <p class="author-role-small">Mother of Aarav (8)</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-6 mb-4">
+        <div class="testimonial-card fade-in">
+          <div class="stars mb-3">
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+          </div>
+          <p class="testimonial-text">
+            "The teachers are patient and engaging. My son actually looks
+            forward to math class now!"
+          </p>
+          <div class="testimonial-author-info">
+            <div class="author-avatar-small">
+              <i class="fas fa-user"></i>
+            </div>
+            <div class="author-details">
+              <h6 class="author-name-small">Mr. Reddy</h6>
+              <p class="author-role-small">Father of Vihaan (10)</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-6 mb-4">
+        <div class="testimonial-card fade-in">
+          <div class="stars mb-3">
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+          </div>
+          <p class="testimonial-text">
+            "Best decision we made! My daughter went from struggling to loving
+            math."
+          </p>
+          <div class="testimonial-author-info">
+            <div class="author-avatar-small">
+              <i class="fas fa-user"></i>
+            </div>
+            <div class="author-details">
+              <h6 class="author-name-small">Mrs. Kumar</h6>
+              <p class="author-role-small">Mother of Anaya (9)</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Feedback Form Section -->
+<section class="feedback-section section-padding bg-light">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-10 mx-auto">
+        <div class="feedback-form-container custom-card fade-in">
+          <div class="feedback-header text-center mb-5">
+            <h2 class="section-title">Share Your Feedback</h2>
+            <p class="section-subtitle">
+              Your feedback helps us grow and improve our learning experience.
+            </p>
+          </div>
+
+          <form
+            [formGroup]="feedbackForm"
+            (ngSubmit)="onFeedbackSubmit()"
+            class="feedback-form"
+          >
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="feedbackParentName" class="form-label"
+                  >Parent's Name *</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="feedbackParentName"
+                  formControlName="parentName"
+                  placeholder="Enter parent's name"
+                  required
+                />
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="feedbackChildName" class="form-label"
+                  >Child's Name *</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="feedbackChildName"
+                  formControlName="childName"
+                  placeholder="Enter child's name"
+                  required
+                />
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="feedbackCourse" class="form-label"
+                  >Course Taken *</label
+                >
+                <select
+                  class="form-select"
+                  id="feedbackCourse"
+                  formControlName="course"
+                  required
+                >
+                  <option value="">Select a course</option>
+                  <option value="Abacus">Abacus</option>
+                  <option value="Vedic Maths">Vedic Maths</option>
+                  <option value="Personalized Coaching">
+                    Personalized Coaching
+                  </option>
+                </select>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="feedbackRating" class="form-label">Rating *</label>
+                <div class="star-rating-container">
+                  <div class="star-rating">
+                    <i
+                      class="far fa-star"
+                      *ngFor="let star of stars; let i = index"
+                      [class.fas]="i < feedbackForm.get('rating')?.value"
+                      [class.filled]="i < feedbackForm.get('rating')?.value"
+                      (click)="setRating(i + 1)"
+                    ></i>
+                  </div>
+                  <input type="hidden" formControlName="rating" required />
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="feedbackMessage" class="form-label"
+                >Feedback Message *</label
+              >
+              <textarea
+                class="form-control"
+                id="feedbackMessage"
+                formControlName="message"
+                rows="5"
+                placeholder="Share your experience with us..."
+                required
+              ></textarea>
+            </div>
+
+            <div class="mb-3">
+              <label for="feedbackEmail" class="form-label"
+                >Email Address *</label
+              >
+              <input
+                type="email"
+                class="form-control"
+                id="feedbackEmail"
+                formControlName="email"
+                placeholder="Enter email address"
+                required
+              />
+              <small class="form-text text-muted">
+                We'll use this to send you a thank-you message.
+              </small>
+            </div>
+
+            <div class="text-center">
+              <button
+                type="submit"
+                class="btn btn-primary btn-lg"
+                [disabled]="feedbackForm.invalid || isSubmittingFeedback"
+              >
+                <span *ngIf="!isSubmittingFeedback">
+                  <i class="fas fa-paper-plane me-2"></i>Send Feedback
+                </span>
+                <span *ngIf="isSubmittingFeedback">
+                  <i class="fas fa-spinner fa-spin me-2"></i>Sending...
+                </span>
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Success Message -->
+        <div
+          *ngIf="feedbackSubmitSuccess"
+          class="alert alert-success mt-4 text-center"
+          role="alert"
+        >
+          <i class="fas fa-check-circle me-2"></i>
+          Thank you for sharing your thoughts! We truly appreciate your
+          feedback.
+        </div>
+
+        <!-- Error Message -->
+        <div
+          *ngIf="feedbackSubmitError"
+          class="alert alert-danger mt-4 text-center"
+          role="alert"
+        >
+          <i class="fas fa-exclamation-circle me-2"></i>
+          There was an error submitting your feedback. Please try again.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Social Media & Community Section -->
+<section class="social-media-section section-padding">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-10 mx-auto text-center mb-5">
+        <h2 class="section-title fade-in">Stay Connected With Us</h2>
+        <p class="section-subtitle fade-in">
+          Follow our learning journey, success stories, and student
+          achievements.
+        </p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-4 col-md-6 mb-4">
+        <div class="social-card fade-in text-center">
+          <div class="social-icon">
+            <i class="fab fa-instagram"></i>
+          </div>
+          <h5 class="mb-3">Instagram</h5>
+          <p class="social-description">
+            Follow us for daily learning tips, student success stories, and fun
+            math challenges.
+          </p>
+          <a
+            href="https://instagram.com"
+            target="_blank"
+            class="btn btn-outline-primary mt-2"
+          >
+            Follow Us
+          </a>
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-6 mb-4">
+        <div class="social-card fade-in text-center">
+          <div class="social-icon">
+            <i class="fab fa-facebook"></i>
+          </div>
+          <h5 class="mb-3">Facebook</h5>
+          <p class="social-description">
+            Join our community for parent discussions, class updates, and
+            educational resources.
+          </p>
+          <a
+            href="https://facebook.com"
+            target="_blank"
+            class="btn btn-outline-primary mt-2"
+          >
+            Like Our Page
+          </a>
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-6 mb-4">
+        <div class="social-card fade-in text-center">
+          <div class="social-icon">
+            <i class="fab fa-youtube"></i>
+          </div>
+          <h5 class="mb-3">YouTube</h5>
+          <p class="social-description">
+            Watch tutorial videos, class recordings, and student performances on
+            our channel.
+          </p>
+          <a
+            href="https://youtube.com"
+            target="_blank"
+            class="btn btn-outline-primary mt-2"
+          >
+            Subscribe
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ Section -->
+<section class="faq-section section-padding bg-light">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8">
+        <h2 class="section-title text-left fade-in">Have a Question?</h2>
+        <p class="section-subtitle text-left fade-in">
+          Find answers to common questions about our math learning programs.
+        </p>
+        <div class="faq-accordion">
+          <div class="faq-item fade-in" [class.active]="isFaqActive(0)">
+            <div class="faq-question" (click)="toggleFaq(0)">
+              <h5>What age group can join your programs?</h5>
+              <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="faq-answer">
+              <p>
+                We offer specialized programs for children aged 4-14, with
+                courses tailored to different skill levels and developmental
+                stages.
+              </p>
+            </div>
+          </div>
+          <div class="faq-item fade-in" [class.active]="isFaqActive(1)">
+            <div class="faq-question" (click)="toggleFaq(1)">
+              <h5>How do online classes work?</h5>
+              <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="faq-answer">
+              <p>
+                Our online classes are interactive, engaging, and designed to
+                provide personalized attention using advanced digital tools for
+                an immersive learning experience.
+              </p>
+            </div>
+          </div>
+          <div class="faq-item fade-in" [class.active]="isFaqActive(2)">
+            <div class="faq-question" (click)="toggleFaq(2)">
+              <h5>What if we miss a class?</h5>
+              <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="faq-answer">
+              <p>
+                No worries! We provide recorded sessions for all classes, and
+                you can schedule makeup classes at your convenience with
+                flexible timing options.
+              </p>
+            </div>
+          </div>
+          <div class="faq-item fade-in" [class.active]="isFaqActive(3)">
+            <div class="faq-question" (click)="toggleFaq(3)">
+              <h5>Do you provide progress reports?</h5>
+              <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="faq-answer">
+              <p>
+                Yes! We provide detailed progress reports every month, including
+                performance metrics, areas of improvement, and achievements.
+              </p>
+            </div>
+          </div>
+          <div class="faq-item fade-in" [class.active]="isFaqActive(4)">
+            <div class="faq-question" (click)="toggleFaq(4)">
+              <h5>How can I book a free trial class?</h5>
+              <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="faq-answer">
+              <p>
+                Simply fill out the "Book Free Demo" form above, and we'll
+                contact you within 24 hours to schedule your free trial session.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Final CTA Section -->
+<section class="final-cta-contact-section section-padding">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 mx-auto text-center">
+        <h2 class="cta-title-contact fade-in">
+          Ready to Build Your Child's Confidence in Maths?
+        </h2>
+        <p class="cta-subtitle-contact fade-in">
+          Join 200+ parents who trust Tiny Vivid Minds to make maths simple,
+          smart, and joyful.
+        </p>
+        <div class="cta-buttons fade-in">
+          <a href="#book-demo" class="btn btn-primary btn-lg me-3">
+            <i class="fas fa-calendar-check me-2"></i>Book a Free Demo Now
+          </a>
+          <a
+            routerLink="/courses/abacus"
+            class="btn btn-outline-primary btn-lg"
+          >
+            <i class="fas fa-graduation-cap me-2"></i>Explore Programs
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- Categories Section -->
+<!-- <section class="categories-section section-padding bg-light">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 mx-auto text-center mb-5">
+        <h2 class="section-title fade-in">
+          Browse by <span class="text-gradient">Category</span>
+        </h2>
+        <p class="section-subtitle fade-in">
+          Find articles that interest you most
+        </p>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-3 col-md-6 mb-4" *ngFor="let category of categories">
+        <div class="category-card custom-card text-center fade-in">
+          <div class="category-icon">
+            <i [class]="category.icon + ' fa-3x ' + category.color"></i>
+          </div>
+          <h4 class="category-title">{{ category.name }}</h4>
+          <p class="category-description">{{ category.description }}</p>
+          <div class="category-count">{{ category.count }} articles</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section> -->
+<!-- Newsletter Section -->
+<!-- <section class="newsletter-section section-padding">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 mx-auto text-center">
+        <div class="newsletter-content fade-in">
+          <h2 class="newsletter-title">Stay Updated</h2>
+          <p class="newsletter-subtitle">
+            Subscribe to our newsletter for the latest articles, tips, and
+            updates on mathematics education.
+          </p>
+
+          <form class="newsletter-form">
+            <div class="input-group">
+              <input
+                type="email"
+                class="form-control"
+                placeholder="Enter your email address"
+                aria-label="Email address"
+                aria-describedby="newsletter-button"
+              />
+              <button
+                class="btn btn-primary"
+                type="button"
+                id="newsletter-button"
+              >
+                <i class="fas fa-paper-plane me-2"></i>Subscribe
+              </button>
+            </div>
+          </form>
+
+          <p class="newsletter-note">
+            <small class="text-muted"
+              >We respect your privacy. Unsubscribe at any time.</small
+            >
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section> -->

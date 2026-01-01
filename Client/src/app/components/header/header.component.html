@@ -1,0 +1,164 @@
+<nav class="navbar navbar-expand-lg navbar-light sticky-top shadow-sm">
+  <div class="container">
+    <!-- Logo -->
+    <a class="navbar-brand d-flex align-items-center" routerLink="/">
+      <!-- <img
+        src="/logo.png"
+        alt="Tiny Vivid Minds Logo"
+        class="logo-image me-3"
+      /> -->
+      <div class="logo-container">
+        <span class="logo-text text-gradient fw-bold fs-3"
+          >Tiny Vivid Minds</span
+        >
+        <small class="logo-subtitle text-muted d-block"
+          >Enlarges the tiny minds of buds and lads</small
+        >
+      </div>
+    </a>
+
+    <!-- Mobile Toggle Button -->
+    <button
+      class="navbar-toggler border-0"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNav"
+      aria-controls="navbarNav"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Navigation Menu -->
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+          <a
+            class="nav-link fw-semibold"
+            routerLink="/"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }"
+          >
+            Home
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a
+            class="nav-link fw-semibold"
+            routerLink="/about"
+            routerLinkActive="active"
+          >
+            About Us
+          </a>
+        </li>
+
+        <!-- Courses Dropdown -->
+        <li class="nav-item dropdown">
+          <a
+            class="nav-link dropdown-toggle fw-semibold"
+            href="#"
+            id="coursesDropdown"
+            role="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            Courses
+          </a>
+          <ul
+            class="dropdown-menu dropdown-menu-end"
+            aria-labelledby="coursesDropdown"
+          >
+            <li>
+              <a class="dropdown-item" routerLink="/courses/abacus">
+                <i class="fas fa-calculator me-2"></i>Abacus
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" routerLink="/courses/vedic-maths">
+                <i class="fas fa-brain me-2"></i>Vedic Maths
+              </a>
+            </li>
+            <li>
+              <a
+                class="dropdown-item"
+                routerLink="/courses/personalized-coaching"
+              >
+                <i class="fas fa-user-graduate me-2"></i>Personalized Coaching
+              </a>
+            </li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a
+            class="nav-link fw-semibold"
+            routerLink="/media"
+            routerLinkActive="active"
+          >
+            Gallery
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a
+            class="nav-link fw-semibold"
+            routerLink="/contact"
+            routerLinkActive="active"
+          >
+            Contact Us
+          </a>
+        </li>
+
+        <!-- Theme Toggle -->
+        <li class="nav-item ms-3">
+          <button
+            class="theme-toggle"
+            (click)="toggleTheme()"
+            [attr.aria-label]="
+              themeService.currentTheme() === 'light'
+                ? 'Switch to dark mode'
+                : 'Switch to light mode'
+            "
+            title="{{
+              themeService.currentTheme() === 'light'
+                ? 'Switch to dark mode'
+                : 'Switch to light mode'
+            }}"
+          >
+            <i
+              [class]="
+                themeService.currentTheme() === 'light'
+                  ? 'fas fa-moon'
+                  : 'fas fa-sun'
+              "
+            ></i>
+          </button>
+        </li>
+
+        <!-- Login Icon -->
+        <li class="nav-item ms-3">
+          <a
+            class="login-icon-link"
+            routerLink="/auth/login"
+            title="Login"
+            aria-label="Login"
+          >
+            <i class="fas fa-sign-in-alt"></i>
+          </a>
+        </li>
+
+        <!-- CTA Buttons -->
+        <li class="nav-item ms-4">
+          <a
+            class="btn btn-primary btn-sm"
+            routerLink="/contact"
+            fragment="book-demo"
+          >
+            Book Free Demo
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
