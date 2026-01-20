@@ -37,18 +37,16 @@ export class ManageCoursesComponent implements OnInit {
 
   courses = signal<Course[]>([]);
   isLoading = signal<boolean>(false);
-  expandedCourses = signal<Set<number>>(new Set());
-  
+
   // Modal states
   showCourseModal = signal<boolean>(false);
+  showCourseViewModal = signal<boolean>(false);
   isEditMode = signal<boolean>(false);
   selectedCourse = signal<Course | null>(null);
-  
-  // Levels Modal state
-  showLevelsModal = signal<boolean>(false);
-  selectedCourseForLevels = signal<Course | null>(null);
-  
-  // Level form states
+  selectedCourseForView = signal<Course | null>(null);
+
+  // Accordion states for levels
+  expandedCourses = signal<Set<number>>(new Set());
   showLevelForm = signal<Map<number, boolean>>(new Map());
   editingLevel = signal<CourseLevel | null>(null);
 
@@ -111,34 +109,31 @@ export class ManageCoursesComponent implements OnInit {
     );
   }
 
-  openLevelsModal(courseId: number, event?: Event) {
+  toggleAccordion(courseId: number, event?: Event) {
     if (event) {
       event.stopPropagation();
       event.preventDefault();
     }
+
     const course = this.courses().find(c => c.courseId === courseId);
-    if (course) {
-      this.selectedCourseForLevels.set(course);
-      // Load levels if not already loaded
+    if (!course) return;
+
+    const currentExpanded = this.expandedCourses();
+    const newExpanded = new Set(currentExpanded);
+
+    if (newExpanded.has(courseId)) {
+      // Collapse - close any open forms
+      this.closeLevelForm(courseId);
+      newExpanded.delete(courseId);
+    } else {
+      // Expand - load levels if not already loaded
       if (!course.levels || course.levels.length === 0) {
         this.loadLevelsForCourse(courseId);
       }
-      this.showLevelsModal.set(true);
+      newExpanded.add(courseId);
     }
-  }
 
-  closeLevelsModal() {
-    const courseId = this.selectedCourseForLevels()?.courseId;
-    if (courseId) {
-      this.closeLevelForm(courseId);
-    }
-    this.showLevelsModal.set(false);
-    this.selectedCourseForLevels.set(null);
-  }
-
-  toggleExpand(courseId: number, event?: Event) {
-    // This method is kept for backward compatibility but now opens modal
-    this.openLevelsModal(courseId, event);
+    this.expandedCourses.set(newExpanded);
   }
 
   isExpanded(courseId: number): boolean {
@@ -177,6 +172,24 @@ export class ManageCoursesComponent implements OnInit {
     this.isEditMode.set(false);
     this.selectedCourse.set(null);
     this.courseForm.reset();
+  }
+
+  openCourseViewModal(course: Course, event?: Event) {
+    if (event) {
+      event.stopPropagation();
+      event.preventDefault();
+    }
+    this.selectedCourseForView.set(course);
+    // Load levels if not already loaded
+    if (!course.levels || course.levels.length === 0) {
+      this.loadLevelsForCourse(course.courseId);
+    }
+    this.showCourseViewModal.set(true);
+  }
+
+  closeCourseViewModal() {
+    this.showCourseViewModal.set(false);
+    this.selectedCourseForView.set(null);
   }
 
   onSubmitCourse() {
@@ -254,10 +267,9 @@ export class ManageCoursesComponent implements OnInit {
     }
   }
 
-  openLevelForm(courseId?: number, level?: CourseLevel) {
-    const targetCourseId = courseId || this.selectedCourseForLevels()?.courseId || 0;
+  openLevelForm(courseId: number, level?: CourseLevel) {
     const showForm = new Map(this.showLevelForm());
-    
+
     if (level) {
       this.editingLevel.set(level);
       this.levelForm.patchValue({
@@ -268,7 +280,7 @@ export class ManageCoursesComponent implements OnInit {
       });
     } else {
       this.editingLevel.set(null);
-      const course = this.courses().find(c => c.courseId === targetCourseId);
+      const course = this.courses().find(c => c.courseId === courseId);
       const maxLevel = course?.levels && course.levels.length > 0
         ? Math.max(...course.levels.map(l => l.levelNumber))
         : 0;
@@ -279,27 +291,25 @@ export class ManageCoursesComponent implements OnInit {
         durationWeeks: 4
       });
     }
-    
-    showForm.set(targetCourseId, true);
+
+    showForm.set(courseId, true);
     this.showLevelForm.set(showForm);
   }
 
-  closeLevelForm(courseId?: number) {
-    const targetCourseId = courseId || this.selectedCourseForLevels()?.courseId || 0;
+  closeLevelForm(courseId: number) {
     const showForm = new Map(this.showLevelForm());
-    showForm.delete(targetCourseId);
+    showForm.delete(courseId);
     this.showLevelForm.set(showForm);
     this.editingLevel.set(null);
     this.levelForm.reset();
   }
 
-  onSubmitLevel(courseId?: number) {
+  onSubmitLevel(courseId: number) {
     if (this.levelForm.invalid) {
       this.levelForm.markAllAsTouched();
       return;
     }
 
-    const targetCourseId = courseId || this.selectedCourseForLevels()?.courseId || 0;
     const levelData = {
       levelNumber: this.levelForm.value.levelNumber,
       levelName: this.levelForm.value.levelName,
@@ -308,23 +318,23 @@ export class ManageCoursesComponent implements OnInit {
     };
 
     const editingLevel = this.editingLevel();
-    
+
     if (editingLevel && editingLevel.levelId) {
       // Update level
       this.apiService.updateLevel(editingLevel.levelId, levelData).subscribe(
         handleResponse(this.loggingService, (data: any) => {
           this.loggingService.onSuccess('Level updated successfully!');
-          this.closeLevelForm(targetCourseId);
-          this.loadLevelsForCourse(targetCourseId);
+          this.closeLevelForm(courseId);
+          this.loadLevelsForCourse(courseId);
         })
       );
     } else {
       // Create level
-      this.apiService.createLevel(targetCourseId, levelData).subscribe(
+      this.apiService.createLevel(courseId, levelData).subscribe(
         handleResponse(this.loggingService, (data: any) => {
           this.loggingService.onSuccess('Level created successfully!');
-          this.closeLevelForm(targetCourseId);
-          this.loadLevelsForCourse(targetCourseId);
+          this.closeLevelForm(courseId);
+          this.loadLevelsForCourse(courseId);
         })
       );
     }
@@ -341,13 +351,19 @@ export class ManageCoursesComponent implements OnInit {
     }
   }
 
-  isLevelFormOpen(courseId?: number): boolean {
-    const targetCourseId = courseId || this.selectedCourseForLevels()?.courseId || 0;
-    return this.showLevelForm().has(targetCourseId);
+  isLevelFormOpen(courseId: number): boolean {
+    return this.showLevelForm().has(courseId);
   }
 
   getLevelCount(course: Course): number {
     return course.levels?.length || 0;
+  }
+
+  getTotalWeeks(course: Course): number {
+    if (!course.levels || course.levels.length === 0) {
+      return 0;
+    }
+    return course.levels.reduce((total, level) => total + level.durationWeeks, 0);
   }
 
   // Form validation helpers

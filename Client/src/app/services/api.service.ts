@@ -9,10 +9,12 @@ export class ApiService {
 
   // User Management
   getAllUsers() {
+    console.log('🔄 ApiService: getAllUsers called');
     return this.commonService.get(`${this.envUrl}/admin/users`);
   }
 
   getUsersByRole(role: string) {
+    console.log('🔄 ApiService: getUsersByRole called with role:', role);
     return this.commonService.get(`${this.envUrl}/admin/users/role/${role}`);
   }
 
@@ -35,6 +37,7 @@ export class ApiService {
 
   // Course Management
   getAllCourses() {
+    console.log('🔄 ApiService: getAllCourses called');
     return this.commonService.get(`${this.envUrl}/admin/courses`);
   }
 
@@ -117,6 +120,7 @@ export class ApiService {
 
   // Feedback Management
   getAllFeedbacks() {
+    console.log('🔄 ApiService: getAllFeedbacks called');
     return this.commonService.get(`${this.envUrl}/admin/feedbacks`);
   }
 
@@ -145,22 +149,26 @@ export class ApiService {
 
   // Demo Booking Management
   getAllDemoBookings() {
+    console.log('🔄 ApiService: getAllDemoBookings called');
     return this.commonService.get(`${this.envUrl}/admin/demo-bookings`);
   }
 
   bookDemo(demoBooking: any) {
+    console.log('🔄 ApiService: bookDemo called with data:', demoBooking);
     return this.commonService.post(`${this.envUrl}/book-demo`, demoBooking);
   }
 
   updateDemoBookingStatus(bookingId: number, status: string) {
+    console.log('🔄 ApiService: updateDemoBookingStatus called for ID:', bookingId, 'status:', status);
     return this.commonService.put(
       `${this.envUrl}/admin/demo-bookings/${bookingId}/status`,
-      status
+      { status: status }
     );
   }
 
   // Contact Management
   getAllContacts() {
+    console.log('🔄 ApiService: getAllContacts called');
     return this.commonService.get(`${this.envUrl}/admin/contacts`);
   }
 
@@ -169,9 +177,10 @@ export class ApiService {
   }
 
   updateContactStatus(contactId: number, status: string) {
+    console.log('🔄 ApiService: updateContactStatus called for ID:', contactId, 'status:', status);
     return this.commonService.put(
       `${this.envUrl}/admin/contacts/${contactId}/status`,
-      status
+      { status: status }
     );
   }
 

@@ -39,14 +39,22 @@ export class AbacusComponent implements OnInit, OnDestroy {
   isResetting = false; // Control for reset transitions
 
   ngOnInit(): void {
+    console.log('🚀 Abacus Component Initialized');
+
     // Initialize scroll animations
     this.initScrollAnimations();
+    console.log('✨ Scroll animations initialized');
+
     // Load testimonials
     this.loadTestimonials();
+
     // Set up auto-refresh for testimonials (every 5 minutes)
     this.setupAutoRefresh();
+    console.log('🔄 Auto-refresh setup for testimonials (every 5 minutes)');
+
     // Initialize levels carousel
     this.initializeLevelsCarousel();
+
     // Start auto-rotation for levels
     this.startLevelAutoRotation();
   }
@@ -93,22 +101,30 @@ export class AbacusComponent implements OnInit, OnDestroy {
 
   // Testimonials methods
   loadTestimonials(): void {
+    console.log('📝 Loading Abacus testimonials from API...');
     this.isLoadingTestimonials = true;
+
     this.apiService.getFeedbacks().subscribe({
       next: (feedbacks: any) => {
+        console.log('✅ Abacus Testimonials API Response:', feedbacks);
+
         // First try to get Abacus-specific feedback
         let abacusFeedbacks = feedbacks.filter(
           (feedback: any) =>
             feedback.isApproved === true && feedback.course === 'Abacus'
         );
 
+        console.log(`🎯 Found ${abacusFeedbacks.length} Abacus-specific testimonials`);
+
         // If no Abacus-specific feedback, show all approved feedback
         if (abacusFeedbacks.length === 0) {
           this.testimonials = feedbacks.filter(
             (feedback: any) => feedback.isApproved === true
           );
+          console.log(`📊 No specific Abacus feedback found, using ${this.testimonials.length} general approved testimonials`);
         } else {
           this.testimonials = abacusFeedbacks;
+          console.log(`✅ Using ${abacusFeedbacks.length} Abacus-specific testimonials`);
         }
 
         // If still no testimonials, use fallback data

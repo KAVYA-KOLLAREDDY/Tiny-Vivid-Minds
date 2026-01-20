@@ -35,18 +35,28 @@ export class LoginComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    console.log('🔐 LoginComponent: ngOnInit called');
+  }
 
   onSubmit(): void {
+    console.log('🔐 LoginComponent: onSubmit called');
+    console.log('🔐 LoginComponent: Form validity:', this.loginForm.valid);
+    console.log('🔐 LoginComponent: Form values:', this.loginForm.value);
+
     if (this.loginForm.valid) {
+      console.log('✅ LoginComponent: Form is valid, submitting login');
       this.isSubmitting = true;
       const credentials = {
         email: this.loginForm.value.email,
         password: this.loginForm.value.password,
       };
 
+      console.log('🔐 LoginComponent: Login credentials prepared:', { email: credentials.email, password: '***' });
+
       this.authService.login(credentials).subscribe(
         handleResponse(this.loggingService, (data) => {
+          console.log('✅ LoginComponent: Login successful, response:', data);
           this.loggingService.onSuccess('Logged in successfully!');
           const authorities = this.user().authorities;
           if (authorities && authorities.includes('ROLE_ADMIN')) {

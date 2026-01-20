@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -119,12 +120,12 @@ public class AdminController {
     }
 
     @PostMapping("/assign/student-teacher")
-    public ResponseEntity<StudentAssignmentDTO> assignStudentToTeacher(@RequestBody StudentAssignmentDTO dto) {
+    public ResponseEntity<?> assignStudentToTeacher(@RequestBody StudentAssignmentDTO dto) {
         try {
             StudentAssignmentDTO result = assignmentService.assignStudentToTeacher(dto);
             return ResponseEntity.status(HttpStatus.CREATED).body(result);
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
         }
     }
 

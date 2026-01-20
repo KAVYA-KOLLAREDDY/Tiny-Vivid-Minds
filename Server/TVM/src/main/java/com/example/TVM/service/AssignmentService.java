@@ -42,6 +42,8 @@ public class AssignmentService {
         assignment.setCourse(course);
         assignment.setStartDate(dto.getStartDate() != null ? dto.getStartDate() : LocalDate.now());
         assignment.setPreferredTime(dto.getPreferredTime());
+        assignment.setDurationMinutes(dto.getDurationMinutes());
+        assignment.setEndDate(dto.getEndDate());
         assignment.setStatus(StudentTeacherAssignment.AssignmentStatus.active);
 
         assignment = assignmentRepository.save(assignment);
@@ -105,6 +107,8 @@ public class AssignmentService {
         dto.setCourseId(assignment.getCourse().getCourseId());
         dto.setStartDate(assignment.getStartDate());
         dto.setPreferredTime(assignment.getPreferredTime());
+        dto.setDurationMinutes(assignment.getDurationMinutes());
+        dto.setEndDate(assignment.getEndDate());
         dto.setStatus(assignment.getStatus().name());
         return dto;
     }

@@ -30,5 +30,8 @@ public class TeacherProfile {
 
     @Column(columnDefinition = "TEXT")
     private String bio;
+
+    @Column(name = "contact_number")
+    private String contactNumber;
 }
 

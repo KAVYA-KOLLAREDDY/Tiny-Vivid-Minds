@@ -38,6 +38,16 @@ interface StudentAssignment {
   courseName?: string;
 }
 
+interface TeacherCourseAssignment {
+  assignmentId: number;
+  teacherId: number;
+  teacherName: string;
+  teacherEmail: string;
+  courseId: number;
+  courseName: string;
+  assignedAt: string;
+}
+
 @Component({
   selector: 'app-student-assignment',
   standalone: true,
@@ -51,11 +61,17 @@ export class StudentAssignmentComponent implements OnInit {
 
   courses = signal<Course[]>([]);
   teachers = signal<Teacher[]>([]);
+  teacherCourseAssignments = signal<TeacherCourseAssignment[]>([]);
   students = signal<Student[]>([]);
   assignments = signal<StudentAssignment[]>([]);
   isLoading = signal<boolean>(false);
   isLoadingAssignments = signal<boolean>(false);
   isAssigning = signal<boolean>(false);
+  isReassigning = signal<boolean>(false);
+
+  // Modal states
+  showReassignModal = signal<boolean>(false);
+  selectedAssignmentForReassign = signal<StudentAssignment | null>(null);
 
   // Form selections
   selectedCourseId = signal<number | null>(null);
@@ -66,6 +82,20 @@ export class StudentAssignmentComponent implements OnInit {
   durationMinutes = signal<number>(60); // Default 60 minutes
   startDate = signal<string>('');
   endDate = signal<string>('');
+
+  // Computed signal for teachers filtered by selected course
+  filteredTeachers = computed(() => {
+    const selectedCourseId = this.selectedCourseId();
+    if (!selectedCourseId) {
+      return this.teachers(); // Return all teachers if no course selected
+    }
+
+    const assignedTeacherIds = this.teacherCourseAssignments()
+      .filter(assignment => assignment.courseId === selectedCourseId)
+      .map(assignment => assignment.teacherId);
+
+    return this.teachers().filter(teacher => assignedTeacherIds.includes(teacher.userId));
+  });
 
   // Get today's date in YYYY-MM-DD format for date inputs
   getTodayDate(): string {
@@ -79,28 +109,47 @@ export class StudentAssignmentComponent implements OnInit {
 
   // Computed values
   canAssign = computed(() => {
-    return this.selectedCourseId() !== null && 
-           this.selectedTeacherId() !== null && 
+    return this.selectedCourseId() !== null &&
+           this.selectedTeacherId() !== null &&
            this.selectedStudentIds().length > 0 &&
            this.preferredTime().trim() !== '' &&
            this.startDate().trim() !== '' &&
            this.durationMinutes() > 0 &&
-           !this.hasDuplicateAssignments();
+           !this.hasAssignmentConflicts();
   });
 
-  hasDuplicateAssignments = computed(() => {
+  hasAssignmentConflicts = computed(() => {
     const courseId = this.selectedCourseId();
+    const teacherId = this.selectedTeacherId();
     const studentIds = this.selectedStudentIds();
-    
-    if (!courseId || studentIds.length === 0) return false;
-    
-    // Check if any selected student is already assigned to a different teacher for this course
+    const startDate = this.startDate();
+    const endDate = this.endDate();
+    const preferredTime = this.preferredTime();
+    const duration = this.durationMinutes();
+
+    if (!courseId || !teacherId || studentIds.length === 0 || !startDate) return false;
+
+    // Check for teacher scheduling conflicts
+    if (this.hasTeacherSchedulingConflict(teacherId, startDate, endDate, preferredTime, duration)) {
+      return true;
+    }
+
+    // Check for student scheduling conflicts with existing assignments
     return studentIds.some(studentId => {
-      const existingAssignment = this.assignments().find(a => 
-        a.studentId === studentId && a.courseId === courseId
-      );
-      return existingAssignment !== undefined;
+      return this.hasSchedulingConflict(studentId, startDate, endDate, preferredTime, duration);
     });
+  });
+
+  hasTeacherConflict = computed(() => {
+    const teacherId = this.selectedTeacherId();
+    const startDate = this.startDate();
+    const endDate = this.endDate();
+    const preferredTime = this.preferredTime();
+    const duration = this.durationMinutes();
+
+    if (!teacherId || !startDate) return false;
+
+    return this.hasTeacherSchedulingConflict(teacherId, startDate, endDate, preferredTime, duration);
   });
 
   ngOnInit() {
@@ -111,10 +160,11 @@ export class StudentAssignmentComponent implements OnInit {
     this.isLoading.set(true);
     let coursesLoaded = false;
     let teachersLoaded = false;
+    let teacherCourseAssignmentsLoaded = false;
     let studentsLoaded = false;
-    
+
     const checkAllLoaded = () => {
-      if (coursesLoaded && teachersLoaded && studentsLoaded) {
+      if (coursesLoaded && teachersLoaded && teacherCourseAssignmentsLoaded && studentsLoaded) {
         this.isLoading.set(false);
       }
     };
@@ -183,6 +233,38 @@ export class StudentAssignmentComponent implements OnInit {
         this.teachers.set([]);
         this.loggingService.onError('Failed to load teachers. Please try again.');
         teachersLoaded = true;
+        checkAllLoaded();
+      }
+    });
+
+    // Load teacher-course assignments
+    this.apiService.getAllTeacherAssignments().subscribe({
+      next: (response: any) => {
+        try {
+          let assignmentsData = response;
+          if (response?.data) {
+            assignmentsData = response.data;
+          } else if (response?.body) {
+            assignmentsData = response.body;
+          }
+          const assignmentsArray = Array.isArray(assignmentsData) ? assignmentsData : [];
+          this.teacherCourseAssignments.set(assignmentsArray);
+          console.log('Teacher-course assignments loaded:', assignmentsArray.length);
+          teacherCourseAssignmentsLoaded = true;
+          checkAllLoaded();
+        } catch (error) {
+          console.error('Error processing teacher-course assignments:', error);
+          this.teacherCourseAssignments.set([]);
+          this.loggingService.onError('Failed to load teacher-course assignments');
+          teacherCourseAssignmentsLoaded = true;
+          checkAllLoaded();
+        }
+      },
+      error: (error: any) => {
+        console.error('Error loading teacher-course assignments:', error);
+        this.teacherCourseAssignments.set([]);
+        this.loggingService.onError('Failed to load teacher-course assignments. Please try again.');
+        teacherCourseAssignmentsLoaded = true;
         checkAllLoaded();
       }
     });
@@ -318,7 +400,9 @@ export class StudentAssignmentComponent implements OnInit {
 
   onCourseChange(courseId: string | null) {
     this.selectedCourseId.set(courseId ? parseInt(courseId, 10) : null);
-    // Clear selected students when course changes to avoid conflicts
+    // Clear selected teacher and students when course changes
+    // since the teacher might not be assigned to the new course
+    this.selectedTeacherId.set(null);
     this.selectedStudentIds.set([]);
   }
 
@@ -367,10 +451,172 @@ export class StudentAssignmentComponent implements OnInit {
   isStudentAlreadyAssigned(studentId: number): boolean {
     const courseId = this.selectedCourseId();
     if (!courseId) return false;
-    
-    return this.assignments().some(a => 
+
+    return this.assignments().some(a =>
       a.studentId === studentId && a.courseId === courseId
     );
+  }
+
+  hasSchedulingConflictForStudent(studentId: number): boolean {
+    const startDate = this.startDate();
+    const endDate = this.endDate();
+    const preferredTime = this.preferredTime();
+    const duration = this.durationMinutes();
+
+    if (!startDate) return false;
+
+    return this.hasSchedulingConflict(studentId, startDate, endDate, preferredTime, duration);
+  }
+
+  openReassignModal(assignment: StudentAssignment) {
+    this.selectedAssignmentForReassign.set(assignment);
+    this.selectedTeacherId.set(null); // Reset teacher selection
+    this.showReassignModal.set(true);
+  }
+
+  closeReassignModal() {
+    this.showReassignModal.set(false);
+    this.selectedAssignmentForReassign.set(null);
+    this.selectedTeacherId.set(null);
+  }
+
+  reassignStudent() {
+    const assignment = this.selectedAssignmentForReassign();
+    const newTeacherId = this.selectedTeacherId();
+
+    if (!assignment || !newTeacherId) {
+      this.loggingService.onError('Please select a teacher');
+      return;
+    }
+
+    // Don't allow reassigning to the same teacher
+    if (assignment.teacherId === newTeacherId) {
+      this.loggingService.onError('Student is already assigned to this teacher');
+      return;
+    }
+
+    this.isReassigning.set(true);
+
+    // For now, we'll delete the old assignment and create a new one
+    // In a real implementation, you might have a dedicated reassignment API
+    const reassignmentData = {
+      studentId: assignment.studentId,
+      teacherId: newTeacherId,
+      courseId: assignment.courseId,
+      preferredTime: assignment.preferredTime,
+      timezone: assignment.timezone,
+      durationMinutes: assignment.durationMinutes,
+      startDate: assignment.startDate,
+      endDate: assignment.endDate,
+      status: assignment.status
+    };
+
+    this.apiService.assignStudentToTeacher(reassignmentData).subscribe({
+      next: (data: any) => {
+        this.loggingService.onSuccess('Student reassigned successfully!');
+
+        // Update the assignment in the local list
+        const updatedAssignment: StudentAssignment = {
+          ...assignment,
+          teacherId: newTeacherId,
+          teacherName: this.getTeacherName(newTeacherId),
+          assignmentId: data?.assignmentId
+        };
+
+        this.assignments.update(assignments =>
+          assignments.map(a =>
+            a.assignmentId === assignment.assignmentId ? updatedAssignment : a
+          )
+        );
+
+        this.closeReassignModal();
+        this.isReassigning.set(false);
+      },
+      error: (error: any) => {
+        console.error('Error reassigning student:', error);
+        this.loggingService.onError('Failed to reassign student. Please try again.');
+        this.isReassigning.set(false);
+      }
+    });
+  }
+
+  // Check for scheduling conflicts when assigning to multiple courses
+  hasSchedulingConflict(studentId: number, newStartDate: string, newEndDate?: string, newPreferredTime?: string, newDuration?: number): boolean {
+    const studentAssignments = this.assignments().filter(a => a.studentId === studentId && a.status === 'active');
+
+    // Check each existing assignment for time conflicts
+    return studentAssignments.some(assignment => {
+      // Skip if this is the same course (for reassignments)
+      if (this.selectedCourseId() && assignment.courseId === this.selectedCourseId()) {
+        return false;
+      }
+
+      // Simple conflict detection - if dates overlap and times are close
+      const existingStart = new Date(assignment.startDate || '');
+      const existingEnd = assignment.endDate ? new Date(assignment.endDate) : null;
+      const newStart = new Date(newStartDate);
+      const newEnd = newEndDate ? new Date(newEndDate) : null;
+
+      // If date ranges overlap
+      if ((existingEnd && newStart <= existingEnd) || (!existingEnd && newStart >= existingStart) ||
+          (newEnd && existingStart <= newEnd) || (!newEnd && existingStart <= newStart)) {
+
+        // Check if times are too close (within 2 hours)
+        if (assignment.preferredTime && newPreferredTime) {
+          const existingTime = this.parseTime(assignment.preferredTime);
+          const newTime = this.parseTime(newPreferredTime);
+
+          if (Math.abs(existingTime - newTime) < 120) { // 2 hours in minutes
+            return true;
+          }
+        }
+      }
+
+      return false;
+    });
+  }
+
+  parseTime(timeString: string): number {
+    // Convert time string (HH:MM or HH:MM:SS) to minutes since midnight
+    const parts = timeString.split(':');
+    const hours = parseInt(parts[0]) || 0;
+    const minutes = parseInt(parts[1]) || 0;
+    return hours * 60 + minutes;
+  }
+
+  // Check for teacher scheduling conflicts - prevent assigning when teacher already has a course at the same time/day
+  hasTeacherSchedulingConflict(teacherId: number, newStartDate: string, newEndDate?: string, newPreferredTime?: string, newDuration?: number): boolean {
+    const teacherAssignments = this.assignments().filter(a => a.teacherId === teacherId && a.status === 'active');
+
+    return teacherAssignments.some(assignment => {
+      // Skip if this is the same course (for reassignments)
+      if (this.selectedCourseId() && assignment.courseId === this.selectedCourseId()) {
+        return false;
+      }
+
+      // Check date overlap
+      const existingStart = new Date(assignment.startDate || '');
+      const existingEnd = assignment.endDate ? new Date(assignment.endDate) : null;
+      const newStart = new Date(newStartDate);
+      const newEnd = newEndDate ? new Date(newEndDate) : null;
+
+      // If date ranges overlap
+      if ((existingEnd && newStart <= existingEnd) || (!existingEnd && newStart >= existingStart) ||
+          (newEnd && existingStart <= newEnd) || (!newEnd && existingStart <= newStart)) {
+
+        // Check if times are too close (within 2 hours) - same logic as student conflicts
+        if (assignment.preferredTime && newPreferredTime) {
+          const existingTime = this.parseTime(assignment.preferredTime);
+          const newTime = this.parseTime(newPreferredTime);
+
+          if (Math.abs(existingTime - newTime) < 120) { // 2 hours in minutes
+            return true;
+          }
+        }
+      }
+
+      return false;
+    });
   }
 
   assignStudents() {
@@ -393,8 +639,14 @@ export class StudentAssignmentComponent implements OnInit {
       return;
     }
 
-    if (this.hasDuplicateAssignments()) {
-      this.loggingService.onError('One or more selected students are already assigned to a teacher for this course');
+    if (this.hasAssignmentConflicts()) {
+      // Check for teacher conflicts first
+      if (this.hasTeacherSchedulingConflict(teacherId, startDate, endDate, time, duration)) {
+        this.loggingService.onError('The selected teacher already has a course scheduled at this time. Please choose a different time or teacher.');
+        return;
+      }
+      // Otherwise it's student conflicts
+      this.loggingService.onError('One or more selected students have scheduling conflicts with their existing assignments');
       return;
     }
 

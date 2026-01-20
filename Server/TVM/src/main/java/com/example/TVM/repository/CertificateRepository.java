@@ -16,3 +16,10 @@ public interface CertificateRepository extends JpaRepository<Certificate, Intege
 }
 
 
+
+
+
+
+
+
+

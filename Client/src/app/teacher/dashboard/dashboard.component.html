@@ -3,9 +3,13 @@
   <div class="dashboard-header">
     <h1 class="dashboard-title">Dashboard</h1>
     <div class="header-actions">
-      <button class="action-btn theme-toggle-btn" (click)="themeService.toggleTheme()" [attr.aria-label]="themeService.currentTheme() === 'light' ? 'Switch to dark mode' : 'Switch to light mode'">
-        <i [class]="themeService.currentTheme() === 'light' ? 'fas fa-moon' : 'fas fa-sun'"></i>
-        <span>{{ themeService.currentTheme() === 'light' ? 'Dark' : 'Light' }}</span>
+      <button class="action-btn refresh-btn" (click)="refreshDashboard()" [disabled]="isLoading()">
+        <i class="fas fa-sync-alt" [class.fa-spin]="isLoading()"></i>
+        <span>Refresh</span>
+      </button>
+      <button class="action-btn theme-toggle-btn" (click)="toggleTheme()" [attr.aria-label]="getThemeLabel()">
+        <i [class]="getThemeIcon()"></i>
+        <span>{{ getThemeText() }}</span>
       </button>
     </div>
   </div>
@@ -28,6 +32,23 @@
         <div class="kpi-content">
           <h3 class="kpi-value">{{ card.value }}</h3>
           <p class="kpi-title">{{ card.title }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Stats Row -->
+    <div class="quick-stats-row">
+      <div *ngFor="let stat of quickStatsData()" class="quick-stat-card">
+        <div class="stat-icon">
+          <i [class]="stat.icon"></i>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ stat.value }}</div>
+          <div class="stat-label">{{ stat.label }}</div>
+          <div class="stat-change" [class]="stat.trend">
+            <i [class]="stat.trend === 'up' ? 'fas fa-arrow-up' : stat.trend === 'down' ? 'fas fa-arrow-down' : 'fas fa-minus'"></i>
+            {{ stat.change }}%
+          </div>
         </div>
       </div>
     </div>
@@ -79,6 +100,7 @@
         </div>
       </div>
     </div>
+
 
     <!-- View Details Button -->
     <div class="dashboard-row">

@@ -46,20 +46,28 @@
                 </td>
                 <td class="levels-cell">
                   <span class="levels-badge">{{ getLevelCount(course) }} Level(s)</span>
-                  <button 
+                  <button
                     type="button"
-                    class="btn-expand" 
-                    (click)="openLevelsModal(course.courseId, $event)"
+                    class="btn-expand"
+                    (click)="toggleAccordion(course.courseId, $event)"
                     title="View Levels">
-                    <i class="fas fa-list"></i>
-                    <span>Show Levels</span>
+                    <i [class]="isExpanded(course.courseId) ? 'fas fa-chevron-up' : 'fas fa-chevron-down'"></i>
+                    <span>{{ isExpanded(course.courseId) ? 'Hide Levels' : 'Show Levels' }}</span>
                   </button>
                 </td>
                 <td class="actions-cell">
                   <div class="action-buttons">
-                    <button 
+                    <button
                       type="button"
-                      class="btn-action btn-edit" 
+                      class="btn-action btn-view"
+                      (click)="openCourseViewModal(course, $event)"
+                      title="View Course Details">
+                      <i class="fas fa-eye"></i>
+                      <span>View</span>
+                    </button>
+                    <button
+                      type="button"
+                      class="btn-action btn-edit"
                       (click)="openCourseModal(course, $event)"
                       title="Edit Course">
                       <i class="fas fa-edit"></i>
@@ -76,6 +84,141 @@
                   </div>
                 </td>
               </tr>
+
+              <!-- Accordion Content for Levels -->
+              @if (isExpanded(course.courseId)) {
+                <tr class="accordion-row">
+                  <td colspan="4" class="accordion-content">
+                    <div class="levels-accordion">
+                      <div class="accordion-header">
+                        <h4>
+                          <i class="fas fa-layer-group"></i>
+                          Course Levels for {{ course.courseName }}
+                        </h4>
+                        <button
+                          type="button"
+                          class="btn-add-level"
+                          (click)="openLevelForm(course.courseId)"
+                          [disabled]="isLevelFormOpen(course.courseId)">
+                          <i class="fas fa-plus"></i>
+                          <span>Add Level</span>
+                        </button>
+                      </div>
+
+                      <!-- Level Form -->
+                      @if (isLevelFormOpen(course.courseId)) {
+                        <div class="level-form-container">
+                          <form [formGroup]="levelForm" (ngSubmit)="onSubmitLevel(course.courseId)">
+                            <div class="form-row">
+                              <div class="form-group">
+                                <label>Level Number *</label>
+                                <input
+                                  type="number"
+                                  formControlName="levelNumber"
+                                  class="form-control"
+                                  min="1"
+                                  max="100">
+                                @if (levelForm.get('levelNumber')?.invalid && levelForm.get('levelNumber')?.touched) {
+                                  <span class="error-text">Level number is required (1-100)</span>
+                                }
+                              </div>
+                              <div class="form-group">
+                                <label>Level Name *</label>
+                                <input
+                                  type="text"
+                                  formControlName="levelName"
+                                  class="form-control"
+                                  placeholder="e.g., Beginner, Intermediate">
+                                @if (levelForm.get('levelName')?.invalid && levelForm.get('levelName')?.touched) {
+                                  <span class="error-text">Level name is required</span>
+                                }
+                              </div>
+                              <div class="form-group">
+                                <label>Duration (Weeks) *</label>
+                                <input
+                                  type="number"
+                                  formControlName="durationWeeks"
+                                  class="form-control"
+                                  min="1">
+                                @if (levelForm.get('durationWeeks')?.invalid && levelForm.get('durationWeeks')?.touched) {
+                                  <span class="error-text">Duration is required</span>
+                                }
+                              </div>
+                            </div>
+                            <div class="form-group">
+                              <label>Objectives *</label>
+                              <textarea
+                                formControlName="objectives"
+                                class="form-control"
+                                rows="3"
+                                placeholder="Describe the learning objectives for this level..."></textarea>
+                              @if (levelForm.get('objectives')?.invalid && levelForm.get('objectives')?.touched) {
+                                <span class="error-text">Objectives are required</span>
+                              }
+                            </div>
+                            <div class="form-actions">
+                              <button type="submit" class="btn-submit" [disabled]="levelForm.invalid">
+                                {{ editingLevel() ? 'Update Level' : 'Add Level' }}
+                              </button>
+                              <button type="button" class="btn-cancel" (click)="closeLevelForm(course.courseId)">
+                                Cancel
+                              </button>
+                            </div>
+                          </form>
+                        </div>
+                      }
+
+                      <!-- Levels List -->
+                      <div class="levels-list">
+                        @if (course.levels && course.levels.length > 0) {
+                          @for (level of course.levels; track level.levelId || $index) {
+                            <div class="level-item">
+                              <div class="level-header">
+                                <div class="level-info">
+                                  <h4>
+                                    <span class="level-number">Level {{ level.levelNumber }}</span>
+                                    <span class="level-name">{{ level.levelName }}</span>
+                                  </h4>
+                                  <p class="level-duration">
+                                    <i class="fas fa-clock"></i>
+                                    {{ level.durationWeeks }} week(s)
+                                  </p>
+                                </div>
+                                <div class="level-actions">
+                                  <button
+                                    type="button"
+                                    class="btn-level-action btn-edit-level"
+                                    (click)="openLevelForm(course.courseId, level)"
+                                    title="Edit Level">
+                                    <i class="fas fa-edit"></i>
+                                  </button>
+                                  @if (level.levelId) {
+                                    <button
+                                      type="button"
+                                      class="btn-level-action btn-delete-level"
+                                      (click)="deleteLevel(course.courseId, level.levelId!)"
+                                      title="Delete Level">
+                                      <i class="fas fa-trash"></i>
+                                    </button>
+                                  }
+                                </div>
+                              </div>
+                              <div class="level-objectives">
+                                <p><strong>Objectives:</strong> {{ level.objectives }}</p>
+                              </div>
+                            </div>
+                          }
+                        } @else {
+                          <div class="empty-levels">
+                            <i class="fas fa-layer-group"></i>
+                            <p>No levels added yet. Click "Add Level" to get started.</p>
+                          </div>
+                        }
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              }
             } @empty {
               <tr>
                 <td colspan="4" class="empty-cell">
@@ -166,149 +309,111 @@
   </div>
 }
 
-<!-- Levels Modal -->
-@if (showLevelsModal() && selectedCourseForLevels()) {
-  <div class="modal-overlay" (click)="closeLevelsModal()">
-    <div class="modal-content levels-modal" (click)="$event.stopPropagation()">
+<!-- Course View Modal -->
+@if (showCourseViewModal() && selectedCourseForView()) {
+  <div class="modal-overlay" (click)="closeCourseViewModal()">
+    <div class="modal-content course-view-modal" (click)="$event.stopPropagation()">
       <div class="modal-header">
         <h2>
-          <i class="fas fa-layer-group"></i>
-          Course Levels - {{ selectedCourseForLevels()!.courseName }}
+          <i class="fas fa-book"></i>
+          Course Details - {{ selectedCourseForView()!.courseName }}
         </h2>
-        <button type="button" class="modal-close" (click)="closeLevelsModal()">
+        <button type="button" class="modal-close" (click)="closeCourseViewModal()">
           <i class="fas fa-times"></i>
         </button>
       </div>
       <div class="modal-body">
-        <div class="levels-container">
-          <div class="levels-header">
-            <button 
-              type="button"
-              class="btn-add-level" 
-              (click)="openLevelForm()"
-              [disabled]="isLevelFormOpen()">
-              <i class="fas fa-plus"></i>
-              <span>Add Level</span>
-            </button>
+        <div class="course-details">
+          <!-- Basic Information -->
+          <div class="detail-section">
+            <h3 class="section-title">
+              <i class="fas fa-info-circle"></i>
+              Basic Information
+            </h3>
+            <div class="detail-grid">
+              <div class="detail-item">
+                <label>Course ID:</label>
+                <span>{{ selectedCourseForView()!.courseId }}</span>
+              </div>
+              <div class="detail-item">
+                <label>Course Name:</label>
+                <span>{{ selectedCourseForView()!.courseName }}</span>
+              </div>
+              <div class="detail-item">
+                <label>Created By:</label>
+                <span>{{ selectedCourseForView()!.createdBy || 'System' }}</span>
+              </div>
+              <div class="detail-item">
+                <label>Created Date:</label>
+                <span>{{ selectedCourseForView()!.createdAt | date:'medium' }}</span>
+              </div>
+              <div class="detail-item full-width">
+                <label>Description:</label>
+                <p class="description-text">{{ selectedCourseForView()!.description || 'No description provided' }}</p>
+              </div>
+            </div>
           </div>
 
-          <!-- Level Form -->
-          @if (isLevelFormOpen()) {
-            <div class="level-form-container">
-              <form [formGroup]="levelForm" (ngSubmit)="onSubmitLevel()">
-                <div class="form-row">
-                  <div class="form-group">
-                    <label>Level Number *</label>
-                    <input 
-                      type="number" 
-                      formControlName="levelNumber" 
-                      class="form-control"
-                      min="1"
-                      max="100">
-                    @if (levelForm.get('levelNumber')?.invalid && levelForm.get('levelNumber')?.touched) {
-                      <span class="error-text">Level number is required (1-100)</span>
-                    }
-                  </div>
-                  <div class="form-group">
-                    <label>Level Name *</label>
-                    <input 
-                      type="text" 
-                      formControlName="levelName" 
-                      class="form-control"
-                      placeholder="e.g., Beginner, Intermediate">
-                    @if (levelForm.get('levelName')?.invalid && levelForm.get('levelName')?.touched) {
-                      <span class="error-text">Level name is required</span>
-                    }
-                  </div>
-                  <div class="form-group">
-                    <label>Duration (Weeks) *</label>
-                    <input 
-                      type="number" 
-                      formControlName="durationWeeks" 
-                      class="form-control"
-                      min="1">
-                    @if (levelForm.get('durationWeeks')?.invalid && levelForm.get('durationWeeks')?.touched) {
-                      <span class="error-text">Duration is required</span>
-                    }
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label>Objectives *</label>
-                  <textarea 
-                    formControlName="objectives" 
-                    class="form-control"
-                    rows="3"
-                    placeholder="Describe the learning objectives for this level..."></textarea>
-                  @if (levelForm.get('objectives')?.invalid && levelForm.get('objectives')?.touched) {
-                    <span class="error-text">Objectives are required</span>
-                  }
-                </div>
-                <div class="form-actions">
-                  <button type="submit" class="btn-submit" [disabled]="levelForm.invalid">
-                    {{ editingLevel() ? 'Update Level' : 'Add Level' }}
-                  </button>
-                  <button type="button" class="btn-cancel" (click)="closeLevelForm()">
-                    Cancel
-                  </button>
-                </div>
-              </form>
-            </div>
-          }
-
-          <!-- Levels List -->
-          <div class="levels-list">
-            @if (selectedCourseForLevels()!.levels && selectedCourseForLevels()!.levels!.length > 0) {
-              @for (level of selectedCourseForLevels()!.levels; track level.levelId || $index) {
-                <div class="level-item">
-                  <div class="level-header">
-                    <div class="level-info">
-                      <h4>
-                        <span class="level-number">Level {{ level.levelNumber }}</span>
-                        <span class="level-name">{{ level.levelName }}</span>
-                      </h4>
-                      <p class="level-duration">
-                        <i class="fas fa-clock"></i>
-                        {{ level.durationWeeks }} week(s)
-                      </p>
+          <!-- Course Levels -->
+          <div class="detail-section">
+            <h3 class="section-title">
+              <i class="fas fa-layer-group"></i>
+              Course Levels ({{ getLevelCount(selectedCourseForView()!) }})
+            </h3>
+            @if (selectedCourseForView()!.levels && selectedCourseForView()!.levels!.length > 0) {
+              <div class="levels-summary">
+                @for (level of selectedCourseForView()!.levels; track level.levelId) {
+                  <div class="level-summary-card">
+                    <div class="level-summary-header">
+                      <h4>Level {{ level.levelNumber }}: {{ level.levelName }}</h4>
+                      <span class="level-duration">{{ level.durationWeeks }} weeks</span>
                     </div>
-                    <div class="level-actions">
-                      <button 
-                        type="button"
-                        class="btn-level-action btn-edit-level" 
-                        (click)="openLevelForm(undefined, level)"
-                        title="Edit Level">
-                        <i class="fas fa-edit"></i>
-                      </button>
-                      @if (level.levelId) {
-                        <button 
-                          type="button"
-                          class="btn-level-action btn-delete-level" 
-                          (click)="deleteLevel(selectedCourseForLevels()!.courseId, level.levelId!)"
-                          title="Delete Level">
-                          <i class="fas fa-trash"></i>
-                        </button>
-                      }
+                    <div class="level-summary-content">
+                      <p class="level-objectives">{{ level.objectives }}</p>
                     </div>
                   </div>
-                  <div class="level-objectives">
-                    <p><strong>Objectives:</strong> {{ level.objectives }}</p>
-                  </div>
-                </div>
-              }
+                }
+              </div>
             } @else {
-              <div class="empty-levels">
+              <div class="no-levels-message">
                 <i class="fas fa-layer-group"></i>
-                <p>No levels added yet. Click "Add Level" to get started.</p>
+                <p>No levels have been added to this course yet.</p>
               </div>
             }
+          </div>
+
+          <!-- Course Statistics -->
+          <div class="detail-section">
+            <h3 class="section-title">
+              <i class="fas fa-chart-bar"></i>
+              Course Statistics
+            </h3>
+            <div class="stats-grid">
+              <div class="stat-item">
+                <div class="stat-value">{{ getLevelCount(selectedCourseForView()!) }}</div>
+                <div class="stat-label">Total Levels</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-value">
+                  {{ getTotalWeeks(selectedCourseForView()!) }}
+                </div>
+                <div class="stat-label">Total Weeks</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-value">{{ selectedCourseForView()!.createdAt | date:'yyyy' }}</div>
+                <div class="stat-label">Created Year</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn-modal btn-secondary" (click)="closeLevelsModal()">
+        <button type="button" class="btn-modal btn-primary" (click)="closeCourseViewModal()">
+          <i class="fas fa-times"></i>
           Close
         </button>
       </div>
     </div>
   </div>
 }
+

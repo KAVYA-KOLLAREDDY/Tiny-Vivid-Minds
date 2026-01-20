@@ -88,6 +88,60 @@
   border-left-color: var(--primary-hover);
 }
 
+.clickable-card {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.clickable-card:hover {
+  transform: translateY(-8px) scale(1.03);
+}
+
+.table-card {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  animation: fadeInUp 0.6s ease-in-out;
+}
+
+.table-responsive {
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.table {
+  margin-bottom: 0;
+}
+
+.table thead th {
+  position: sticky;
+  top: 0;
+  background: var(--bg-secondary);
+  border-bottom: 2px solid var(--border-light);
+  font-weight: 600;
+  color: var(--text-primary);
+  z-index: 10;
+}
+
+.table tbody tr:hover {
+  background-color: rgba(99, 102, 241, 0.05);
+}
+
+.badge {
+  font-size: 0.75rem;
+  padding: 0.375rem 0.75rem;
+}
+
+.stars {
+  display: flex;
+  gap: 0.125rem;
+}
+
+.stars i {
+  font-size: 0.875rem;
+}
+
 .kpi-icon {
   width: 60px;
   height: 60px;

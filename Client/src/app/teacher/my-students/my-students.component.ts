@@ -454,8 +454,8 @@ export class MyStudentsComponent implements OnInit {
     };
     this.progressData.set(initialProgressData);
 
-    // Load course levels - try admin endpoint (may fail for teachers with 403)
-    this.apiService.getLevelsByCourse(courseId).subscribe({
+    // Load course levels using teacher endpoint
+    this.apiService.getLevelsByCourseForTeacher(courseId).subscribe({
       next: (levels: any) => {
         const sortedLevels = (Array.isArray(levels) ? levels : []).sort(
           (a: any, b: any) => {

@@ -8,7 +8,6 @@ import { CalendarOptions, EventInput } from '@fullcalendar/core';
 import { ApiService } from '../../services/api.service';
 import { ThemeService } from '../../services/theme.service';
 import { LoggingService } from '../../services/logging.service';
-import { handleResponse } from '../../utils/handle-response.utils';
 
 interface KPICard {
   title: string;
@@ -24,6 +23,17 @@ interface TodayClass {
   scheduledDate: string;
   scheduledTime: string;
   status: string;
+  assignmentId?: number;
+  studentId?: number;
+  courseId?: number;
+}
+
+interface QuickStat {
+  label: string;
+  value: string;
+  change: number;
+  trend: 'up' | 'down' | 'neutral';
+  icon: string;
 }
 
 @Component({
@@ -48,33 +58,87 @@ export class TeacherDashboardComponent implements OnInit {
   isLoading = signal<boolean>(true);
   calendarEvents = signal<EventInput[]>([]);
 
-  // KPI Cards
-  kpiCards = computed<KPICard[]>(() => [
-    {
-      title: 'My Students',
-      value: this.totalStudents(),
-      icon: 'fas fa-user-graduate',
-      gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-    },
-    {
-      title: 'Upcoming Classes',
-      value: this.upcomingClassesCount(),
-      icon: 'fas fa-calendar-check',
-      gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-    },
-    {
-      title: 'Courses',
-      value: this.totalCourses(),
-      icon: 'fas fa-book',
-      gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-    },
-    {
-      title: 'Pending Evaluations',
-      value: this.pendingEvaluations(),
-      icon: 'fas fa-clipboard-check',
-      gradient: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
-    },
-  ]);
+  // KPI Cards - dynamically computed
+  kpiCards = computed<KPICard[]>(() => {
+    const kpiData = [
+      {
+        title: 'My Students',
+        value: this.totalStudents(),
+        icon: 'fas fa-user-graduate',
+        gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      },
+      {
+        title: 'Upcoming Classes',
+        value: this.upcomingClassesCount(),
+        icon: 'fas fa-calendar-check',
+        gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+      },
+      {
+        title: 'Courses',
+        value: this.totalCourses(),
+        icon: 'fas fa-book',
+        gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+      },
+      {
+        title: 'Pending Evaluations',
+        value: this.pendingEvaluations(),
+        icon: 'fas fa-clipboard-check',
+        gradient: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+      },
+    ];
+
+    console.log('📊 Dynamic KPI Cards Computed:', {
+      myStudents: this.totalStudents(),
+      upcomingClasses: this.upcomingClassesCount(),
+      courses: this.totalCourses(),
+      pendingEvaluations: this.pendingEvaluations(),
+      timestamp: new Date().toISOString()
+    });
+
+    return kpiData;
+  });
+
+  // Quick Stats - only Classes This Week and Avg Class Duration
+  quickStatsData = computed<QuickStat[]>(() => {
+    const todayClasses = this.todayClasses();
+    const upcomingClasses = this.upcomingClassesCount();
+
+    // Calculate classes this week (today + upcoming)
+    const classesThisWeek = Math.max(1, todayClasses.length + upcomingClasses);
+    const classesChange = 8.2; // This would come from historical data comparison
+
+    // Average class duration (fixed for now)
+    const avgDuration = 45; // Default 45 minutes
+    const durationChange = 5.0;
+
+    console.log('🎯 Dynamic Quick Stats Calculated:', {
+      classesThisWeek,
+      classesChange,
+      avgDuration: `${avgDuration}m`,
+      durationChange,
+      dataSource: {
+        todayClasses: todayClasses.length,
+        upcomingClasses: upcomingClasses
+      }
+    });
+
+    return [
+      {
+        label: 'Classes This Week',
+        value: classesThisWeek.toString(),
+        change: classesChange,
+        trend: classesChange >= 0 ? 'up' : 'down',
+        icon: 'fas fa-calendar-week',
+      },
+      {
+        label: 'Avg Class Duration',
+        value: `${avgDuration}m`,
+        change: durationChange,
+        trend: durationChange >= 0 ? 'up' : 'down',
+        icon: 'fas fa-clock',
+      },
+    ];
+  });
 
   // Calendar options
   calendarOptions: CalendarOptions = {
@@ -98,18 +162,20 @@ export class TeacherDashboardComponent implements OnInit {
   };
 
   ngOnInit(): void {
+    console.log('🚀 Teacher Dashboard Component Initialized');
     this.loadDashboardData();
   }
 
   loadDashboardData(): void {
     this.isLoading.set(true);
 
-    // Load students
-    this.apiService.getMyStudents().subscribe(
-      handleResponse(this.loggingService, (students: any) => {
+    // Load students - try multiple endpoints
+    this.apiService.getMyStudents().subscribe({
+      next: (students: any) => {
+        console.log('✅ getMyStudents API Response:', students);
         const studentsList = Array.isArray(students) ? students : [];
         this.totalStudents.set(studentsList.length);
-        
+
         // Get unique courses from student assignments
         const uniqueCourses = new Set(
           studentsList
@@ -117,29 +183,64 @@ export class TeacherDashboardComponent implements OnInit {
             .filter((name: any) => name)
         );
         this.totalCourses.set(uniqueCourses.size);
-        
-        this.checkLoadingComplete();
-      }, () => {
-        this.totalStudents.set(0);
-        this.totalCourses.set(0);
-        this.checkLoadingComplete();
-      })
-    );
 
-    // Load calendar data
+        console.log('👥 Dynamic KPI - My Students:', {
+          totalStudents: this.totalStudents(),
+          studentsList: studentsList.map(s => ({ id: s.userId || s.id, name: s.fullName || s.name })),
+          uniqueCourses: Array.from(uniqueCourses),
+          totalCourses: this.totalCourses(),
+          rawResponse: students
+        });
+
+        this.checkLoadingComplete();
+      },
+      error: (error) => {
+        console.log('❌ getMyStudents API failed, trying getAllMyStudents:', error);
+        // Fallback to all students endpoint
+        this.apiService.getAllMyStudents().subscribe({
+          next: (allStudents: any) => {
+            console.log('✅ getAllMyStudents API Response:', allStudents);
+            const studentsList = Array.isArray(allStudents) ? allStudents : [];
+            this.totalStudents.set(studentsList.length);
+            // For courses, we'll need to estimate or set to 0 for now
+            this.totalCourses.set(0);
+
+            console.log('👥 Dynamic KPI - All My Students (fallback):', {
+              totalStudents: this.totalStudents(),
+              studentsList: studentsList.slice(0, 5).map(s => ({ id: s.userId || s.id, name: s.fullName || s.name })),
+              totalCourses: this.totalCourses()
+            });
+
+            this.checkLoadingComplete();
+          },
+          error: () => {
+            this.totalStudents.set(0);
+            this.totalCourses.set(0);
+            console.log('❌ Both student APIs failed - setting defaults');
+            this.checkLoadingComplete();
+          }
+        });
+      }
+    });
+
+    // Load calendar data - use date-only format for API
     const today = new Date();
     const startDate = new Date(today);
-    startDate.setMonth(startDate.getMonth() - 1); // Get data from last month
+    startDate.setDate(startDate.getDate() - 30); // Get data from last 30 days
     const endDate = new Date(today);
-    endDate.setMonth(endDate.getMonth() + 2); // Get data up to 2 months ahead
+    endDate.setDate(endDate.getDate() + 90); // Get data up to 90 days ahead
 
-    const start = startDate.toISOString();
-    const end = endDate.toISOString();
+    // Format as YYYY-MM-DD for the API
+    const start = startDate.toISOString().split('T')[0];
+    const end = endDate.toISOString().split('T')[0];
 
-    this.apiService.getMyCalendar(start, end).subscribe(
-      handleResponse(this.loggingService, (schedules: any) => {
+    console.log('🔍 Calling getMyCalendar with date range:', start, 'to', end);
+
+    this.apiService.getMyCalendar(start, end).subscribe({
+      next: (schedules: any) => {
+        console.log('✅ getMyCalendar API Response:', schedules);
         const schedulesList = Array.isArray(schedules) ? schedules : [];
-        
+
         // Filter upcoming classes (from today onwards)
         const upcoming = schedulesList.filter((schedule: any) => {
           const scheduleDate = new Date(schedule.scheduledDate || schedule.date);
@@ -167,30 +268,71 @@ export class TeacherDashboardComponent implements OnInit {
 
         // Load calendar events
         this.loadCalendarEvents(schedulesList);
-        
+
         // Calculate pending evaluations (schedules that need evaluation)
         const pending = schedulesList.filter((schedule: any) => {
           const scheduleDate = new Date(schedule.scheduledDate || schedule.date);
-          return scheduleDate < today && 
-                 schedule.status === 'COMPLETED' && 
+          return scheduleDate < today &&
+                 schedule.status === 'COMPLETED' &&
                  !schedule.evaluated;
         });
         this.pendingEvaluations.set(pending.length);
-        
+
+        console.log('📅 Dynamic KPI - Classes & Evaluations:', {
+          upcomingClassesCount: this.upcomingClassesCount(),
+          upcomingClasses: upcoming.map(c => ({
+            date: c.scheduledDate || c.date,
+            student: c.studentName || c.student?.name,
+            course: c.courseName || c.course?.name,
+            status: c.status
+          })),
+          todayClassesCount: todayClassesList.length,
+          todayClasses: todayClassesList.map(c => ({
+            student: c.studentName,
+            course: c.courseName,
+            time: c.scheduledTime,
+            status: c.status
+          })),
+          pendingEvaluationsCount: this.pendingEvaluations(),
+          pendingEvaluations: pending.map(p => ({
+            date: p.scheduledDate || p.date,
+            student: p.studentName || p.student?.name,
+            course: p.courseName || p.course?.name,
+            evaluated: p.evaluated
+          })),
+          totalSchedulesLoaded: schedulesList.length,
+          rawResponse: schedules
+        });
+
         this.checkLoadingComplete();
-      }, () => {
+      },
+      error: (error) => {
+        console.log('❌ getMyCalendar API failed:', error);
         this.upcomingClassesCount.set(0);
         this.todayClasses.set([]);
         this.pendingEvaluations.set(0);
+        console.log('❌ Failed to load calendar data - setting defaults');
         this.checkLoadingComplete();
-      })
-    );
+      }
+    });
+
   }
+
 
   private checkLoadingComplete(): void {
     // Simple check - in a real app, you'd track individual API calls
     setTimeout(() => {
       this.isLoading.set(false);
+      console.log('✅ Teacher Dashboard Loading Complete:', {
+        finalStats: {
+          totalStudents: this.totalStudents(),
+          upcomingClasses: this.upcomingClassesCount(),
+          totalCourses: this.totalCourses(),
+          pendingEvaluations: this.pendingEvaluations(),
+          todayClasses: this.todayClasses().length
+        },
+        timestamp: new Date().toISOString()
+      });
     }, 500);
   }
 
@@ -253,6 +395,29 @@ export class TeacherDashboardComponent implements OnInit {
     }
     // Otherwise try to parse and format
     return time;
+  }
+
+  // Refresh dashboard data
+  refreshDashboard(): void {
+    this.isLoading.set(true);
+    this.loadDashboardData();
+  }
+
+  // Theme methods to avoid template compilation issues
+  toggleTheme(): void {
+    this.themeService.toggleTheme();
+  }
+
+  getThemeIcon(): string {
+    return this.themeService.currentTheme() === 'light' ? 'fas fa-moon' : 'fas fa-sun';
+  }
+
+  getThemeText(): string {
+    return this.themeService.currentTheme() === 'light' ? 'Dark' : 'Light';
+  }
+
+  getThemeLabel(): string {
+    return this.themeService.currentTheme() === 'light' ? 'Switch to dark mode' : 'Switch to light mode';
   }
 }
 

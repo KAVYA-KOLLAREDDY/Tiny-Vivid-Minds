@@ -22,19 +22,23 @@ export class AuthService {
   currentUser = this.user.asReadonly();
 
   private tokenResponse(data: any) {
+    console.log('🔐 AuthService: tokenResponse called with data:', data);
     // Backend returns { status, token }
     const token = data.token || data;
     if (!token) {
-      console.error('No token received in response:', data);
+      console.error('❌ AuthService: No token received in response:', data);
       return;
     }
+    console.log('✅ AuthService: Token found, storing it');
     this.tokenService.setAccessToken(token);
     const jwtDetails: any = jwtDecode(token);
+    console.log('🔐 AuthService: JWT details decoded:', jwtDetails);
     this.user.set(jwtDetails);
-    console.log('Token stored successfully');
+    console.log('✅ AuthService: Token stored successfully');
   }
 
   login(credentials: { email: string; password: string }) {
+    console.log('🔐 AuthService: login called with credentials:', { email: credentials.email, password: '***' });
     return this.commonService
       .post(`${this.API}/login`, credentials, {
         withCredentials: true,
@@ -42,8 +46,12 @@ export class AuthService {
       .pipe(
         tap({
           next: (data: any) => {
+            console.log('✅ AuthService: Login API response received:', data);
             this.tokenResponse(data);
           },
+          error: (error) => {
+            console.error('❌ AuthService: Login API error:', error);
+          }
         })
       );
   }

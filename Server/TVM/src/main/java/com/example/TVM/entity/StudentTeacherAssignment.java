@@ -38,6 +38,12 @@ public class StudentTeacherAssignment {
     @Column(name = "preferred_time")
     private LocalTime preferredTime;
 
+    @Column(name = "duration_minutes")
+    private Integer durationMinutes;
+
+    @Column(name = "end_date")
+    private LocalDate endDate;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private AssignmentStatus status = AssignmentStatus.active;
@@ -64,6 +70,12 @@ public class StudentTeacherAssignment {
 
     public LocalTime getPreferredTime() { return preferredTime; }
     public void setPreferredTime(LocalTime preferredTime) { this.preferredTime = preferredTime; }
+
+    public Integer getDurationMinutes() { return durationMinutes; }
+    public void setDurationMinutes(Integer durationMinutes) { this.durationMinutes = durationMinutes; }
+
+    public LocalDate getEndDate() { return endDate; }
+    public void setEndDate(LocalDate endDate) { this.endDate = endDate; }
 
     public AssignmentStatus getStatus() { return status; }
     public void setStatus(AssignmentStatus status) { this.status = status; }

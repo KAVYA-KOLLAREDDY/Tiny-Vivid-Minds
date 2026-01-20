@@ -30,6 +30,7 @@ CREATE TABLE teacher_profile (
     experience_years INT,
     specialization VARCHAR(255),
     bio TEXT,
+    contact_number VARCHAR(20),
     FOREIGN KEY (teacher_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 

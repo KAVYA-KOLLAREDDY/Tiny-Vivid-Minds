@@ -32,6 +32,8 @@ build/
 ### VS Code ###
 .vscode/
 OnlineAssessment-v3/
-.node_modules/
 target/
+
+### Node.js ###
+Client/node_modules/
 

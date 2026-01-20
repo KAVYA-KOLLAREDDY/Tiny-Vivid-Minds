@@ -14,8 +14,8 @@
         <div class="form-row">
           <div class="form-group">
             <label>Select Course *</label>
-            <select 
-              class="form-select" 
+            <select
+              class="form-select"
               [ngModel]="selectedCourseId()?.toString() || ''"
               (ngModelChange)="onCourseChange($event)"
               [disabled]="isLoading() || courses().length === 0">
@@ -35,21 +35,21 @@
 
           <div class="form-group">
             <label>Select Teacher *</label>
-            <select 
-              class="form-select" 
+            <select
+              class="form-select"
               [ngModel]="selectedTeacherId()?.toString() || ''"
               (ngModelChange)="onTeacherChange($event)"
-              [disabled]="isLoading() || teachers().length === 0">
+              [disabled]="isLoading() || filteredTeachers().length === 0">
               <option value="">-- Select Teacher --</option>
               @if (isLoading()) {
                 <option disabled>Loading teachers...</option>
               } @else {
-                @for (teacher of teachers(); track teacher.userId) {
+                @for (teacher of filteredTeachers(); track teacher.userId) {
                   <option [value]="teacher.userId.toString()">{{ teacher.fullName || 'Unknown' }} ({{ teacher.email || 'No email' }})</option>
                 }
               }
             </select>
-            @if (teachers().length === 0 && !isLoading()) {
+            @if (filteredTeachers().length === 0 && !isLoading()) {
               <span class="error-text">No approved teachers available.</span>
             }
           </div>
@@ -57,20 +57,20 @@
 
         <div class="form-group">
           <label>Select Student(s) *</label>
-          <select 
-            class="form-select form-select-multi" 
+          <select
+            class="form-select form-select-multi"
             multiple
             size="5"
             [disabled]="isLoading() || students().length === 0 || !selectedCourseId()"
             (change)="onStudentChange($event)">
             @for (student of students(); track student.userId) {
-              <option 
+              <option
                 [value]="student.userId"
-                [class.already-assigned]="isStudentAlreadyAssigned(student.userId)"
-                [disabled]="isStudentAlreadyAssigned(student.userId)">
+                [class.schedule-conflict]="hasSchedulingConflictForStudent(student.userId)"
+                [disabled]="hasSchedulingConflictForStudent(student.userId)">
                 {{ student.fullName }} ({{ student.email }})
-                @if (isStudentAlreadyAssigned(student.userId)) {
-                  <span class="assignment-note"> - Already assigned to this course</span>
+                @if (hasSchedulingConflictForStudent(student.userId)) {
+                  <span class="assignment-note"> - Schedule conflict with existing courses</span>
                 }
               </option>
             }
@@ -93,14 +93,14 @@
           <div class="form-group">
             <label>Preferred Time *</label>
             <div class="time-input-group">
-              <input 
-                type="time" 
+              <input
+                type="time"
                 class="form-control"
                 [value]="preferredTime()"
                 (change)="onTimeChange($any($event.target).value)"
                 [disabled]="isLoading()"
                 required>
-              <select 
+              <select
                 class="form-select timezone-select"
                 [value]="timezone()"
                 (change)="onTimezoneChange($any($event.target).value)"
@@ -123,8 +123,8 @@
 
           <div class="form-group">
             <label>Duration (minutes) *</label>
-            <input 
-              type="number" 
+            <input
+              type="number"
               class="form-control"
               [value]="durationMinutes()"
               (change)="onDurationChange($any($event.target).value)"
@@ -147,8 +147,8 @@
 
           <div class="form-group">
             <label>Start Date *</label>
-            <input 
-              type="date" 
+            <input
+              type="date"
               class="form-control"
               [value]="startDate()"
               (change)="onStartDateChange($any($event.target).value)"
@@ -163,8 +163,8 @@
 
           <div class="form-group">
             <label>End Date</label>
-            <input 
-              type="date" 
+            <input
+              type="date"
               class="form-control"
               [value]="endDate()"
               (change)="onEndDateChange($any($event.target).value)"
@@ -183,16 +183,22 @@
           </div>
         </div>
 
-        @if (hasDuplicateAssignments()) {
+        @if (hasAssignmentConflicts()) {
           <div class="alert alert-error">
             <i class="fas fa-exclamation-triangle"></i>
-            <span>One or more selected students are already assigned to a teacher for this course.</span>
+            <span>
+              @if (hasTeacherConflict()) {
+                The selected teacher already has a course scheduled at this time. Please choose a different time or teacher.
+              } @else {
+                One or more selected students have scheduling conflicts with their existing assignments.
+              }
+            </span>
           </div>
         }
 
         <div class="form-actions">
-          <button 
-            class="btn-assign" 
+          <button
+            class="btn-assign"
             (click)="assignStudents()"
             [disabled]="!canAssign() || isAssigning()">
             @if (isAssigning()) {
@@ -215,8 +221,8 @@
         <i class="fas fa-list"></i>
         Student Assignments
       </h2>
-      <button 
-        class="btn-refresh" 
+      <button
+        class="btn-refresh"
         (click)="loadAssignments()"
         [disabled]="isLoadingAssignments()"
         title="Refresh assignments">
@@ -238,12 +244,13 @@
               <th>Preferred Time</th>
               <th>Duration</th>
               <th>Status</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             @if (isLoadingAssignments()) {
               <tr>
-                <td colspan="8" class="loading-cell">
+                <td colspan="9" class="loading-cell">
                   <div class="spinner-container">
                     <div class="spinner-border text-primary" role="status">
                       <span class="visually-hidden">Loading...</span>
@@ -309,10 +316,20 @@
                       {{ getStatusDisplay(assignment.status) }}
                     </span>
                   </td>
+                  <td class="actions-cell">
+                    <button
+                      type="button"
+                      class="btn-action btn-reassign"
+                      (click)="openReassignModal(assignment)"
+                      title="Reassign to different teacher">
+                      <i class="fas fa-exchange-alt"></i>
+                      <span>Reassign</span>
+                    </button>
+                  </td>
                 </tr>
               } @empty {
                 <tr>
-                  <td colspan="8" class="empty-cell">
+                  <td colspan="9" class="empty-cell">
                     <div class="empty-state">
                       <i class="fas fa-inbox"></i>
                       <p>No student assignments yet. Assign students to teachers to get started.</p>
@@ -326,5 +343,90 @@
       </div>
     </div>
   </div>
-</div>
 
+  <!-- Reassign Modal -->
+  @if (showReassignModal() && selectedAssignmentForReassign()) {
+    <div class="modal-overlay" (click)="closeReassignModal()">
+      <div class="modal-content reassign-modal" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>
+            <i class="fas fa-exchange-alt"></i>
+            Reassign Student to Different Teacher
+          </h2>
+          <button type="button" class="modal-close" (click)="closeReassignModal()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="reassignment-info">
+            <div class="info-section">
+              <h4>Current Assignment</h4>
+              <div class="info-grid">
+                <div class="info-item">
+                  <label>Student:</label>
+                  <span>{{ selectedAssignmentForReassign()!.studentName }}</span>
+                </div>
+                <div class="info-item">
+                  <label>Current Teacher:</label>
+                  <span>{{ selectedAssignmentForReassign()!.teacherName }}</span>
+                </div>
+                <div class="info-item">
+                  <label>Course:</label>
+                  <span>{{ selectedAssignmentForReassign()!.courseName }}</span>
+                </div>
+                <div class="info-item">
+                  <label>Schedule:</label>
+                  <span>{{ formatDate(selectedAssignmentForReassign()!.startDate) }} - {{ formatTimeWithTimezone(selectedAssignmentForReassign()!.preferredTime!) }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="reassignment-form">
+              <div class="form-group">
+                <label>Select New Teacher *</label>
+                <select
+                  class="form-select"
+                  [ngModel]="selectedTeacherId()?.toString() || ''"
+                  (ngModelChange)="onTeacherChange($event)"
+                  [disabled]="isReassigning() || filteredTeachers().length === 0">
+                  <option value="">-- Select New Teacher --</option>
+                  @for (teacher of filteredTeachers(); track teacher.userId) {
+                    <option
+                      [value]="teacher.userId.toString()"
+                      [disabled]="teacher.userId === selectedAssignmentForReassign()!.teacherId">
+                      {{ teacher.fullName || 'Unknown' }} ({{ teacher.email || 'No email' }})
+                      @if (teacher.userId === selectedAssignmentForReassign()!.teacherId) {
+                        <span> - Current teacher</span>
+                      }
+                    </option>
+                  }
+                </select>
+                @if (filteredTeachers().length === 0) {
+                  <span class="error-text">No teachers available for reassignment.</span>
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-modal btn-secondary" (click)="closeReassignModal()">
+            Cancel
+          </button>
+          <button
+            type="button"
+            class="btn-modal btn-primary"
+            (click)="reassignStudent()"
+            [disabled]="!selectedTeacherId() || selectedTeacherId() === selectedAssignmentForReassign()!.teacherId || isReassigning()">
+            @if (isReassigning()) {
+              <i class="fas fa-spinner fa-spin"></i>
+              <span>Reassigning...</span>
+            } @else {
+              <i class="fas fa-exchange-alt"></i>
+              <span>Reassign Student</span>
+            }
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

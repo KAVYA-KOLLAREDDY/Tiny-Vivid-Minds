@@ -2,7 +2,9 @@ package com.example.TVM.service;
 
 import com.example.TVM.dto.UserDTO;
 import com.example.TVM.entity.User;
+import com.example.TVM.entity.TeacherProfile;
 import com.example.TVM.repository.UserRepository;
+import com.example.TVM.repository.TeacherProfileRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +16,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final TeacherProfileRepository teacherProfileRepository;
 
     public List<UserDTO> getAllUsers() {
         return userRepository.findAll().stream()
@@ -61,6 +64,39 @@ public class UserService {
         dto.setRole(user.getRole().name());
         dto.setStatus(user.getStatus().name());
         dto.setCreatedAt(user.getCreatedAt());
+
+        // Set phone number based on user role
+        String phone = null;
+        if (user.getRole() == User.UserRole.student && user.getStudentProfile() != null) {
+            phone = user.getStudentProfile().getContactNumber();
+            System.out.println("UserService: Mapped phone for student " + user.getUserId() + ": " + phone);
+        } else if (user.getRole() == User.UserRole.teacher) {
+            // Ensure TeacherProfile exists for teacher
+            TeacherProfile teacherProfile = user.getTeacherProfile();
+            if (teacherProfile == null) {
+                // Create TeacherProfile if it doesn't exist
+                teacherProfile = new TeacherProfile();
+                teacherProfile.setUser(user);
+                teacherProfile = teacherProfileRepository.save(teacherProfile);
+                System.out.println("UserService: Created new TeacherProfile for teacher " + user.getUserId());
+            }
+
+            phone = teacherProfile.getContactNumber();
+            if (phone == null || phone.trim().isEmpty()) {
+                // Set a default phone number if not set
+                phone = "Not Provided";
+                System.out.println("UserService: Teacher " + user.getUserId() + " has no phone number set, using default");
+            } else {
+                System.out.println("UserService: Mapped phone for teacher " + user.getUserId() + ": " + phone);
+            }
+        } else if (user.getRole() == User.UserRole.admin) {
+            // For admins, phone is not applicable
+            phone = null;
+            System.out.println("UserService: No phone available for admin " + user.getUserId());
+        }
+        dto.setPhone(phone);
+
+        System.out.println("UserService: Mapped UserDTO for user " + user.getUserId() + " with phone: " + phone);
         return dto;
     }
 }
