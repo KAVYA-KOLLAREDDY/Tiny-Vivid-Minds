@@ -1,20 +1,15 @@
 /* Desktop Sidebar */
 .sidebar {
   background: var(--gradient-primary);
-  width: 250px;
-  height: calc(100vh - 75px);
-  position: fixed;
-  top: 78px;
-  left: 0;
   padding: 30px 20px;
   color: white;
   box-shadow: 4px 0 12px rgba(0, 0, 0, 0.08);
   font-family: 'Poppins', sans-serif;
   overflow-y: auto;
   border-top-right-radius: 0px;
-  z-index: 1050;
   transition: all 0.3s ease-in-out;
 }
+
 
 .sidebar h2 {
   text-align: center;

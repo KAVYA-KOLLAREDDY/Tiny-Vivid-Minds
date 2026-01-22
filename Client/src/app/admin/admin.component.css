@@ -1,38 +1,42 @@
-.admin-container {
-  min-height: 100vh;
-  background: white;
-  margin-top: 75px;
-  padding: 0;
+:root {
+  --navbar-height: 75px;
+  --sidebar-width: 250px;
 }
 
-.admin-container .row {
-  margin: 0;
+/* LAYOUT CONTROLS SIDEBAR POSITION */
+app-admin-sidebar {
+  position: fixed;
+  top: var(--navbar-height);
+  left: 0;
+  width: var(--sidebar-width);
+  height: calc(100vh - var(--navbar-height));
+  z-index: 900;
 }
 
-.admin-container .col-3 {
-  padding-right: 0;
-  width: 250px;
+/* Make sure the sidebar element fills its host */
+app-admin-sidebar .sidebar {
+  height: 100%;
 }
 
-.admin-container .col {
-  padding-left: 0;
-  margin-left: 250px;
-  padding-top: 20px;
-  padding-right: 20px;
-}
 
+/* Main content */
+.app-content {
+  margin-left: var(--sidebar-width);
+  margin-top: var(--navbar-height);
+  padding: 24px;
+  background: #fafbff;
+  min-height: calc(100vh - var(--navbar-height));
+}
 @media (max-width: 991.98px) {
-  .admin-container {
-    margin-top: 0;
-  }
-
-  .admin-container .col-3 {
+  app-admin-sidebar {
+    position: relative;
     width: 100%;
+    height: auto;
+    top: 0;
   }
 
-  .admin-container .col {
+  .app-content {
     margin-left: 0;
-    width: 100%;
-    padding-top: 10px;
+    margin-top: var(--navbar-height);
   }
 }

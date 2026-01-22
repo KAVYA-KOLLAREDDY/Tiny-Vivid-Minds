@@ -286,7 +286,7 @@ export class MediaComponent implements OnInit, AfterViewInit {
   }
 
   bookDemo(): void {
-    // Navigate to contact page with demo booking fragment
+    // Navigate tov contact page with demo booking fragment
     const element = document.getElementById('contact') || document.body;
     element.scrollIntoView({ behavior: 'smooth' });
   }
