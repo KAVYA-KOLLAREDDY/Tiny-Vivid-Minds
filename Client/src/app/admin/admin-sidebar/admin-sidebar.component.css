@@ -4,12 +4,13 @@
   padding: 30px 20px;
   color: white;
   box-shadow: 4px 0 12px rgba(0, 0, 0, 0.08);
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   overflow-y: auto;
   border-top-right-radius: 0px;
   transition: all 0.3s ease-in-out;
+  height: 100%;
+  min-height: 100vh;
 }
-
 
 .sidebar h2 {
   text-align: center;
